@@ -36,3 +36,5 @@ npm-debug.log*
 *.pem
 
 .pnpm
+__pycache__
+__pycache__/
