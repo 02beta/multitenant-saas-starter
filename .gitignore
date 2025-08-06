@@ -1,11 +1,4 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# Dependencies
-node_modules
-.pnp
-.pnp.js
-.pnpm/
-
+# Global patterns
 **/__pycache__/
 **/.next/
 **/.turbo/
@@ -14,16 +7,19 @@ node_modules
 **/dist
 **/build
 **/out
-**/lib
-**/lib64
-**/parts
 **/.venv
 **/.ruff_cache
 **/.mypy_cache
 **/.pytest_cache
 **/.coverage
 **/.coverage.*
-**/.coverage.xml
+
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+.pnpm/
+
 # Local env files
 .env
 .env.local
@@ -31,7 +27,6 @@ node_modules
 .env.test.local
 .env.production.local
 .env.*.local
-
 
 # Virtual environments
 .venv/
@@ -45,6 +40,10 @@ uv.lock
 
 # Testing
 coverage
+htmlcov/
+coverage.xml
+*.cover
+.hypothesis/
 
 # Turbo
 .turbo
@@ -93,19 +92,6 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
-# Python development tools
-.ruff_cache/
-.mypy_cache/
-
-# FastAPI
-.pytest_cache/
-htmlcov/
-.coverage
-.coverage.*
-coverage.xml
-*.cover
-.hypothesis/
 
 # Database files
 *.db
