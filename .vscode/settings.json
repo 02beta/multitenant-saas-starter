@@ -1,0 +1,78 @@
+{
+  "tailwindCSS.experimental.configFile": "libs/ui/src/styles/globals.css",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/.idea": true,
+    "**/.pnpm": true,
+    "**/.next": true,
+    "**/.turbo": true,
+    "**/.__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/dist": true,
+    "**/node_modules": true,
+    "**/build": true,
+    "**/out": true,
+    "**/target": true,
+    "**/tmp": true,
+    "**/logs": true,
+    "**/cache": true,
+    "**/temp": true,
+    "**/.venv": true,
+    "**/.mypy_cache": true,
+    "**/uv.lock": true
+  },
+
+  // TypeScript settings for better monorepo DX
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "typescript.suggest.paths": true,
+  "typescript.suggest.includeCompletionsForImportStatements": true,
+
+  // Path intellisense for monorepo aliases
+  "path-intellisense.mappings": {
+    "@workspace/ui": "${workspaceFolder}/libs/ui/src",
+    "@workspace/ui/components": "${workspaceFolder}/libs/ui/src/components",
+    "@workspace/ui/components/ui": "${workspaceFolder}/libs/ui/src/components/ui",
+    "@workspace/ui/lib": "${workspaceFolder}/libs/ui/src/lib",
+    "@workspace/ui/hooks": "${workspaceFolder}/libs/ui/src/hooks",
+    "@workspace/ui/styles": "${workspaceFolder}/libs/ui/src/styles/globals.css",
+    "@workspace/typescript-config": "${workspaceFolder}/libs/typescript-config",
+    "@workspace/eslint-config": "${workspaceFolder}/libs/eslint-config"
+  },
+
+  // Recommended: Enable workspace-wide search and references
+  "search.useIgnoreFiles": true,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.next": true,
+    "**/.turbo": true,
+    "**/.pnpm": true,
+    "**/build": true,
+    "**/out": true
+  },
+
+  // Recommended: Format on save for all supported files
+  "editor.formatOnSave": true,
+
+  // Recommended: Enable eslint for all workspace files
+  "eslint.enable": true,
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+
+  // Recommended: Enable Prettier if used
+  "prettier.enable": true,
+
+  // Recommended: Enable TypeScript references for all projects
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  // Recommended: Enable Python references for all projects
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/libs/db/src",
+    "${workspaceFolder}/apps/api/src"
+  ]
+}

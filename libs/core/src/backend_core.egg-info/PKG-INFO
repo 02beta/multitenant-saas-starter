@@ -1,0 +1,56 @@
+Metadata-Version: 2.4
+Name: backend-core
+Version: 0.1.0
+Summary: Core backend logic including domains, common utilities, and configuration
+Author-email: Mac Anderson <mac@02beta.com>
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: sqlmodel>=0.0.24
+Requires-Dist: pydantic>=2.11.0
+Requires-Dist: uvicorn>=0.24.0
+Requires-Dist: python-multipart>=0.0.6
+Requires-Dist: python-jose[cryptography]>=3.3.0
+Requires-Dist: passlib[bcrypt]>=1.7.4
+Requires-Dist: alembic>=1.12.0
+Requires-Dist: psycopg2-binary>=2.9.0
+Requires-Dist: asyncpg>=0.29.0
+Requires-Dist: pydantic-settings>=2.10.1
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: mypy>=1.5.0; extra == "dev"
+
+# Backend Core
+
+The `backend-core` workspace is a Python library that provides the foundational infrastructure for backend applications. It contains core functionality including database connection management, domain models, data validation, exception handling, and shared utilities. This workspace serves as the central hub for business logic and data access patterns across the application.
+
+Key features:
+
+- **Database Management**: PostgreSQL connection handling with both sync and async support
+- **Domain Models**: SQLModel-based data models with audit trails and soft delete capabilities
+- **Configuration**: Centralized settings management using Pydantic
+- **Exception Handling**: Comprehensive error handling with domain-specific exceptions
+- **Common Utilities**: Shared mixins, protocols, and base classes for consistent development patterns
+
+## Workspace Structure
+
+```sh
+libs/backend-core/src/
+├── config/
+│   ├── __init__.py
+│   └── settings.py
+├── domains/
+│   ├── __init__.py
+│   ├── users/
+│   ├── tenants/
+│   └── tenant_users/
+├── common/
+│   ├── __init__.py
+│   ├── exceptions.py
+│   ├── mixins.py
+│   └── protocols.py
+├── database.py
+└── exceptions.py
+```

@@ -1,0 +1,14 @@
+{
+  "name": "@workspace/core",
+  "description": "Core backend logic including domains, common utilities, and configuration",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "uv build",
+    "install": "uv pip install -r requirements.txt",
+    "export": "uv pip freeze --no-hashes > requirements.txt",
+    "lint": "uv pip install ruff && ruff check .",
+    "lint:fix": "uv pip install ruff && ruff check --fix .",
+    "format": "uv pip install ruff && ruff format ."
+  }
+}

@@ -1,0 +1,371 @@
+erDiagram
+    %% Supabase Auth Schema (managed by Supabase)
+    auth_users {
+        uuid id PK
+        text email
+        text encrypted_password
+        timestamptz email_confirmed_at
+        timestamptz created_at
+        timestamptz updated_at
+        jsonb raw_app_meta_data
+        jsonb raw_user_meta_data
+    }
+
+    %% Identity Schema (your user management)
+    identity_users {
+        uuid id PK
+        text full_name
+        text avatar_url
+        timestamptz created_at
+        timestamptz updated_at
+        timestamptz last_seen_at
+    }
+
+    %% Organization Schema
+    org_organizations {
+        uuid id PK
+        text name
+        text slug
+        text billing_email
+        text stripe_customer_id
+        jsonb settings
+        timestamptz created_at
+        timestamptz updated_at
+        boolean is_active
+    }
+
+    org_memberships {
+        uuid id PK
+        uuid organization_id FK
+        uuid user_id FK
+        text role
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    org_teams {
+        uuid id PK
+        uuid organization_id FK
+        text name
+        text description
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    org_team_memberships {
+        uuid id PK
+        uuid team_id FK
+        uuid user_id FK
+        text role
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    org_invitations {
+        uuid id PK
+        uuid organization_id FK
+        text email
+        text role
+        text token
+        uuid invited_by FK
+        timestamptz expires_at
+        timestamptz accepted_at
+        timestamptz created_at
+    }
+
+    %% Core Application Schema  
+    projects {
+        uuid id PK
+        uuid organization_id FK
+        text name
+        text description
+        uuid created_by FK
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    usage_tracking {
+        uuid id PK
+        uuid organization_id FK
+        text metric_name
+        integer value
+        date tracked_date
+        timestamptz created_at
+    }
+
+    %% Stripe Sync Tables
+    stripe_customers {
+        text id PK
+        uuid organization_id FK
+        text email
+        text name
+        jsonb metadata
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    stripe_products {
+        text id PK
+        text name
+        text description
+        boolean active
+        jsonb metadata
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    stripe_prices {
+        text id PK
+        text product_id FK
+        integer unit_amount_cents
+        text currency
+        text recurring_interval
+        integer recurring_interval_count
+        boolean active
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    stripe_subscriptions {
+        text id PK
+        uuid organization_id FK
+        text customer_id FK
+        text price_id FK
+        text status
+        timestamptz current_period_start
+        timestamptz current_period_end
+        timestamptz cancel_at
+        timestamptz canceled_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    stripe_invoices {
+        text id PK
+        text subscription_id FK
+        text customer_id FK
+        uuid organization_id FK
+        integer amount_paid_cents
+        integer amount_due_cents
+        text currency
+        text status
+        timestamptz created_at
+        timestamptz updated_at
+        text hosted_invoice_url
+        text invoice_pdf
+    }
+
+    stripe_payments {
+        text id PK
+        text invoice_id FK
+        text customer_id FK
+        uuid organization_id FK
+        integer amount_cents
+        text currency
+        text status
+        text payment_method_id
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    %% Generic Billing Tables
+    billing_accounts {
+        uuid id PK
+        uuid organization_id FK
+        text provider
+        text external_customer_id
+        text status
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    billing_plans {
+        uuid id PK
+        text name
+        text description
+        integer monthly_price_cents
+        integer annual_price_cents
+        jsonb features
+        boolean active
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    billing_subscriptions {
+        uuid id PK
+        uuid organization_id FK
+        uuid billing_account_id FK
+        uuid billing_plan_id FK
+        text provider
+        text external_subscription_id
+        text status
+        timestamptz current_period_start
+        timestamptz current_period_end
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    %% Stripe Sync Tables (external data)
+    stripe_customers {
+        text id PK
+        uuid organization_id FK
+        text email
+        text name
+        jsonb metadata
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    stripe_products {
+        text id PK
+        text name
+        text description
+        boolean active
+        jsonb metadata
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    stripe_prices {
+        text id PK
+        text product_id FK
+        integer unit_amount_cents
+        text currency
+        text recurring_interval
+        integer recurring_interval_count
+        boolean active
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    stripe_subscriptions {
+        text id PK
+        uuid organization_id FK
+        text customer_id FK
+        text price_id FK
+        text status
+        timestamptz current_period_start
+        timestamptz current_period_end
+        timestamptz cancel_at
+        timestamptz canceled_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    stripe_invoices {
+        text id PK
+        text subscription_id FK
+        text customer_id FK
+        uuid organization_id FK
+        integer amount_paid_cents
+        integer amount_due_cents
+        text currency
+        text status
+        timestamptz created_at
+        timestamptz updated_at
+        text hosted_invoice_url
+        text invoice_pdf
+    }
+
+    stripe_payments {
+        text id PK
+        text invoice_id FK
+        text customer_id FK
+        uuid organization_id FK
+        integer amount_cents
+        text currency
+        text status
+        text payment_method_id
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    %% Generic Billing Tables (your business logic)
+    billing_accounts {
+        uuid id PK
+        uuid organization_id FK
+        text provider "stripe, paddle, manual"
+        text external_customer_id
+        text status "active, suspended, cancelled"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    billing_plans {
+        uuid id PK
+        text name
+        text description
+        integer monthly_price_cents
+        integer annual_price_cents
+        jsonb features
+        boolean active
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    billing_subscriptions {
+        uuid id PK
+        uuid organization_id FK
+        uuid billing_account_id FK
+        uuid billing_plan_id FK
+        text provider "stripe, paddle, manual"
+        text external_subscription_id
+        text status "active, past_due, cancelled"
+        timestamptz current_period_start
+        timestamptz current_period_end
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    %% Application Tables
+    projects {
+        uuid id PK
+        uuid organization_id FK
+        text name
+        text description
+        uuid created_by FK
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    usage_tracking {
+        uuid id PK
+        uuid organization_id FK
+        text metric_name
+        integer value
+        date tracked_date
+        timestamptz created_at
+    }
+
+    %% Relationships
+    auth_users ||--|| identity_users : "id"
+    org_organizations ||--o{ org_memberships : "organization_id"
+    org_organizations ||--o{ org_teams : "organization_id"
+    identity_users ||--o{ org_memberships : "user_id"
+    org_teams ||--o{ org_team_memberships : "team_id"
+    identity_users ||--o{ org_team_memberships : "user_id"
+    org_organizations ||--o{ org_invitations : "organization_id"
+    identity_users ||--o{ org_invitations : "invited_by"
+    
+    %% Stripe sync relationships
+    org_organizations ||--|| stripe_customers : "organization_id"
+    stripe_customers ||--o{ stripe_subscriptions : "customer_id"
+    stripe_products ||--o{ stripe_prices : "product_id"
+    stripe_prices ||--o{ stripe_subscriptions : "price_id"
+    stripe_subscriptions ||--o{ stripe_invoices : "subscription_id"
+    stripe_customers ||--o{ stripe_invoices : "customer_id"
+    org_organizations ||--o{ stripe_invoices : "organization_id"
+    stripe_invoices ||--o{ stripe_payments : "invoice_id"
+    stripe_customers ||--o{ stripe_payments : "customer_id"
+    org_organizations ||--o{ stripe_payments : "organization_id"
+    
+    %% Generic billing relationships
+    org_organizations ||--o{ billing_accounts : "organization_id"
+    billing_accounts ||--o{ billing_subscriptions : "billing_account_id"
+    billing_plans ||--o{ billing_subscriptions : "billing_plan_id"
+    org_organizations ||--o{ billing_subscriptions : "organization_id"
+    
+    %% Application relationships
+    org_organizations ||--o{ projects : "organization_id"
+    identity_users ||--o{ projects : "created_by"
+    org_organizations ||--o{ usage_tracking : "organization_id"

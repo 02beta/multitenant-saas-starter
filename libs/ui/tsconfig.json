@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@workspace/typescript-config/react-library.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@workspace/ui/*": ["./src/*"],
+      "@workspace/ui/components/*": ["./src/components/*"],
+      "@workspace/ui/lib/*": ["./src/lib/*"],
+      "@workspace/ui/hooks/*": ["./src/hooks/*"],
+      "@workspace/ui/styles/*": ["./src/styles/*"],
+      "@workspace/ui/types/*": ["./src/types/*"],
+      "@workspace/ui/utils/*": ["./src/utils/*"]
+    },
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.config.*",
+    "**/*.config.js",
+    "**/*.config.mjs"
+  ]
+}

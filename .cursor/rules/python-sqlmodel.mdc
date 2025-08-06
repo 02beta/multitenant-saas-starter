@@ -1,0 +1,102 @@
+---
+description: |
+globs: libs/core/**/*.py
+alwaysApply: false
+---
+
+# Core Library Domain Definition Rules (SQLModel)
+
+## **NEVER BREAK THESE RULES WHEN DEFINING A NEW DOMAIN IN THE CORE LIBRARY**
+
+1. **Use SQLModel for all models and schemas.**
+
+   - All database models must inherit from SQLModel.
+   - Use `table=True` for the main model class that maps to the database table.
+   - Use `__tablename__` to define the table name.
+   - Use `__table_args__` to define the table arguments and always include the schema name. Example: `__table_args__ = {"schema": "public"}`
+   - Do not use the public schema.
+   - Users table should be named `users` and should be in the `identity` schema.
+   - Organizations table should be named `organizations` and should be in the `org` schema.
+   - Org Memberships table should be named `memberships` and should be in the `org` schema.
+   <!-- - Ignore this point: Be aware of PII and GDPR compliance when defining models if you require PII or GDPR protected data make sure to add the `GDPRMixin` to the table with the metadata including the names of the fields that are PII or GDPR protected. -->
+
+2. **Mixins for Audit and Soft Delete**
+
+   - Always use `AuditFieldsMixin` and `SoftDeleteMixin` (from `common.mixins`) for models that require audit fields (created_at, updated_at, etc.) and soft deletion.
+   - If your model supports soft delete, you must also define a protocol for it using the provided protocols in `common.protocols`.
+
+3. **File Structure**
+
+   - Each domain must have its own directory under `libs/core/src/core/<domain>/`.
+   - Required files:
+     - `__init__.py` (exports models, schemas, repositories, exceptions and services)
+     - `models.py` (all database models and api schemas)
+     - `repository.py` (repository class for the model)
+     - `services.py` (service class for the model)
+     - `exceptions.py` (exceptions for the domain)
+
+4. **models.py Requirements**
+
+   - Define:
+     - A base model class with all shared fields.
+     - The main model class (with `table=True` and mixins).
+     - A create schema class.
+     - An update schema class.
+     - A public schema class for API responses.
+   - Use type annotations and SQLModel's `Field` for all fields, including validation (min/max length, regex, etc.).
+   - Use UUIDs for primary keys and always set `default_factory=uuid4`.
+
+5. **repository.py Requirements**
+
+   - Inherit from a generic `CRUDBase` (from `shared.protocols` or `shared.crud_base`).
+   - Use the main model class (with `table=True`) for all DB operations.
+   - Implement:
+     - `get` method: fetch by primary key.
+     - `get_records` method: supports filtering, sorting, pagination, soft delete, and active/inactive filtering. Must dynamically check for the presence of relevant fields.
+     - Any domain-specific query methods (e.g., `get_by_slug`, `get_user_tenants`), which should leverage the base filtering/sorting/pagination logic where possible.
+   - All queries must use SQLModel's `select` and composable query expressions.
+   - Never leak ORM details to service or API layers.
+   - Document every method with a clear docstring.
+
+6. **services.py Requirements**
+
+   - Use the repository class from `repository.py` for all data access.
+   - Use the model class from `models.py` (the one with `table=True`) for all business logic.
+   - Implement a service class with methods for each supported database operation.
+   - All business logic and validation must be in the service layer, not the repository.
+   - Use FastAPI's `HTTPException` for error handling and validation failures.
+   - Never bypass the repository for direct DB access.
+
+7. **General Best Practices**
+
+   - All code must be type-annotated.
+   - All methods must have docstrings.
+   - All queries must be safe, efficient, and support multi-tenancy and auditability as needed.
+   - Always separate domain logic (service) from data access (repository).
+   - Never duplicate logic between repository and service layers.
+   - Use [Type] | None for optional fields.
+   - Use UUID from uuid for field types of id fields with a default factory of uuid4.
+   - Use datetime from datetime for field types of created_at and updated_at fields with a default factory of datetime.now.
+   - Use the following format for the docstring of the model:
+
+     ```python
+     """Model for the <domain> domain."""
+     ```
+
+   - Use the following format for the docstring of the repository:
+
+     ```python
+     """Repository for the <domain> domain."""
+     ```
+
+   - Use the following format for the docstring of the service:
+
+     ```python
+     """Service for the <domain> domain."""
+     ```
+
+   - All fields should have titles and concise descriptions.
+   - All fields should contain validation rules where applicable.
+   - Make use of properties and computed fields where applicable. Properties should be used for simple calculations and computed fields should be used if the model needs to return the field in a response. If the field is internal then use a property.
+
+---

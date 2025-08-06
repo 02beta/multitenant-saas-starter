@@ -1,0 +1,33 @@
+{
+  "name": "web",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm run dev:kill && next dev --turbopack",
+    "dev:kill": "lsof -ti:3000-3010 | xargs kill -9 2>/dev/null || true && pkill -f 'next' || true",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.3",
+    "@workspace/ui": "workspace:*",
+    "framer-motion": "^12.23.12",
+    "lucide-react": "^0.475.0",
+    "next": "^15.2.3",
+    "next-themes": "^0.4.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@workspace/eslint-config": "workspace:^",
+    "@workspace/typescript-config": "workspace:*",
+    "typescript": "^5.7.3"
+  }
+}
