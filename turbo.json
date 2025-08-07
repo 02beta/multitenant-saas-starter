@@ -6,10 +6,24 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**",
+        "libs/typescript-sdk/dist/**",
+        "libs/ui/dist/**",
+        "!**/node_modules/**",
+        "!**/*.log"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]
+    },
+    "lint:fix": {
+      "dependsOn": ["^lint:fix"]
+    },
+    "format": {
+      "dependsOn": ["^format"]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"]
