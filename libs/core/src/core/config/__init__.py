@@ -1,5 +1,5 @@
 """Configuration module for the core package."""
 
-from .settings import Settings, settings
+from .settings import settings
 
-__all__ = ["Settings", "settings"]
+__all__ = ["settings"]

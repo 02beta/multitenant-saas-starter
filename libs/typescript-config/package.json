@@ -5,5 +5,8 @@
   "license": "PROPRIETARY",
   "publishConfig": {
     "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules dist"
   }
 }

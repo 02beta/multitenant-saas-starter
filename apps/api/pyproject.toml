@@ -5,6 +5,7 @@ description = "FastAPI backend server"
 requires-python = ">=3.11"
 dependencies = [
     "core",
+    "supabase-auth",
     "fastapi[standard]>=0.116.1",
     "pydantic-settings>=2.10.1",
 ]
@@ -19,6 +20,7 @@ dev = [
 
 [tool.uv.sources]
 core = { workspace = true }
+supabase-auth = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]

@@ -9,7 +9,7 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "clean": "rm -rf node_modules dist"
+    "clean": "rm -rf node_modules dist .turbo"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

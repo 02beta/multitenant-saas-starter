@@ -260,6 +260,13 @@ create_new_project() {
     echo "Generated and added SUPABASE_PRODUCTION_DB_PASSWORD to $SUPABASE_ENV_FILE"
   fi
 
+  # Generate a jwt secret if not set
+  if [ -z "$JWT_SECRET" ]; then
+    JWT_SECRET=$(openssl rand -hex 16)
+    echo "JWT_SECRET=$JWT_SECRET" >> "$SUPABASE_ENV_FILE"
+    echo "Generated and added JWT_SECRET to $SUPABASE_ENV_FILE"
+  fi
+
   echo "Creating Supabase project with:"
   echo "  Name: $SUPABASE_PROJECT_ID"
   echo "  Region: $SUPABASE_CLOUD_REGION"

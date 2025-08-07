@@ -74,8 +74,8 @@ def run_command(
 
 
 def ensure_supabase_workdir():
-    """Ensure SUPABASE_WORKDIR is always set to 'infra' in .env.local."""
-    env_file = Path(".env.local")
+    """Ensure SUPABASE_WORKDIR is always set to 'infra' in .env.development.local."""
+    env_file = Path(".env.development.local")
     key = "SUPABASE_WORKDIR"
     value = "infra"
 
@@ -403,12 +403,23 @@ def set_vars():
             database_url_value = value
             continue
 
-        # Prefix variable with SUPABASE_ if not already present
-        if not var.startswith("SUPABASE_"):
-            prefixed_var = f"SUPABASE_{var}"
-            line = f"SUPABASE_{line}"
+        # Handle special renaming cases
+        if var == "API_URL":
+            prefixed_var = "SUPABASE_PUBLIC_KEY"
+            line = f"SUPABASE_PUBLIC_KEY={value}"
+        elif var == "SERVICE_ROLE_KEY":
+            prefixed_var = "SUPABASE_SECRET_KEY"
+            line = f"SUPABASE_SECRET_KEY={value}"
+        elif var == "JWT_SECRET":
+            prefixed_var = "AUTH_JWT_SECRET"
+            line = f"AUTH_JWT_SECRET={value}"
         else:
-            prefixed_var = var
+            # Prefix variable with SUPABASE_ if not already present
+            if not var.startswith("SUPABASE_"):
+                prefixed_var = f"SUPABASE_{var}"
+                line = f"SUPABASE_{line}"
+            else:
+                prefixed_var = var
 
         # Add if not already present
         if not any(
@@ -506,7 +517,7 @@ def set_vars():
 
 @app.command()
 def start():
-    """Start Supabase (restarts if already running)."""
+    """Start Supabase (only if not already running)."""
     # Check if Supabase CLI is installed
     try:
         run_command(["supabase", "--version"], capture_output=True)
@@ -518,15 +529,8 @@ def start():
     ensure_supabase_workdir()
 
     if is_supabase_running():
-        console.print("Supabase is already running. Restarting...")
-        try:
-            project_id = get_project_id()
-            run_command(["supabase", "stop", "--project-id", project_id])
-            console.print("Supabase stopped.")
-        except Exception:
-            # If we can't get project ID, just stop without it
-            run_command(["supabase", "stop"])
-            console.print("Supabase stopped.")
+        console.print("✅ [bold green]Supabase is already running.[/bold green]")
+        return
 
     console.print("🔄 [bold blue]Starting Supabase...[/bold blue]")
     run_command(["supabase", "start"])

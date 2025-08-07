@@ -5,7 +5,7 @@ from typing import Optional
 from uuid import UUID
 
 # from zoneinfo import ZoneInfo
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field
 
 # def datetime_to_gmt_str(dt: datetime) -> str:
 #     """Convert datetime to GMT string format."""
@@ -30,7 +30,7 @@ from sqlmodel import Field, SQLModel
 #         return data
 
 
-class AuditFieldsMixin(SQLModel):
+class AuditFieldsMixin:
     """Mixin for created_at and updated_at timestamps."""
 
     created_at: datetime = Field(
@@ -66,7 +66,7 @@ class AuditFieldsMixin(SQLModel):
         self.updated_by = updated_by_id
 
 
-class SoftDeleteMixin(SQLModel):
+class SoftDeleteMixin:
     """Mixin for soft delete functionality."""
 
     deleted_at: Optional[datetime] = Field(

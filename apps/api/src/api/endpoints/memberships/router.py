@@ -3,33 +3,22 @@
 from typing import List
 from uuid import UUID
 
+from api.endpoints.auth.dependencies import get_current_user
 from api.utils import handle_domain_exception
 from core.common.exceptions import DomainException
 from core.database import get_session
 from core.domains.memberships import (
     MembershipCreate,
     MembershipPublic,
-    MembershipRepository,
-    MembershipService,
     MembershipUpdate,
 )
 from core.domains.users import User
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
+from .dependencies import get_membership_service
+
 router = APIRouter(prefix="/memberships", tags=["memberships"])
-
-
-def get_membership_service() -> MembershipService:
-    """Get MembershipService instance."""
-    membership_repository = MembershipRepository()
-    return MembershipService(membership_repository)
-
-
-def get_current_user() -> User:
-    """Placeholder for current user dependency."""
-    # This should be replaced with actual authentication logic
-    pass
 
 
 @router.post("/", response_model=MembershipPublic)
@@ -37,7 +26,7 @@ async def create_membership(
     membership: MembershipCreate,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    membership_service: MembershipService = Depends(get_membership_service),
+    membership_service=Depends(get_membership_service),
 ):
     """Create a new organization user."""
     try:
@@ -55,7 +44,7 @@ async def list_memberships(
     limit: int = 100,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    membership_service: MembershipService = Depends(get_membership_service),
+    membership_service=Depends(get_membership_service),
 ):
     """List organization users with pagination."""
     try:
@@ -75,7 +64,7 @@ async def get_membership(
     membership_id: UUID,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    membership_service: MembershipService = Depends(get_membership_service),
+    membership_service=Depends(get_membership_service),
 ):
     """Get a specific organization user by ID."""
     try:
@@ -98,7 +87,7 @@ async def update_membership(
     membership_update: MembershipUpdate,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    membership_service: MembershipService = Depends(get_membership_service),
+    membership_service=Depends(get_membership_service),
 ):
     """Update a organization user."""
     try:
@@ -125,7 +114,7 @@ async def delete_membership(
     membership_id: UUID,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    membership_service: MembershipService = Depends(get_membership_service),
+    membership_service=Depends(get_membership_service),
 ):
     """Soft delete a organization user."""
     try:
@@ -149,7 +138,7 @@ async def activate_membership(
     membership_id: UUID,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    membership_service: MembershipService = Depends(get_membership_service),
+    membership_service=Depends(get_membership_service),
 ):
     """Activate a organization user."""
     try:
@@ -176,7 +165,7 @@ async def deactivate_membership(
     membership_id: UUID,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    membership_service: MembershipService = Depends(get_membership_service),
+    membership_service=Depends(get_membership_service),
 ):
     """Deactivate a organization user."""
     try:
@@ -204,7 +193,7 @@ async def get_membership_count(
     active_only: bool = True,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    membership_service: MembershipService = Depends(get_membership_service),
+    membership_service=Depends(get_membership_service),
 ):
     """Get count of organization users for a specific organization."""
     try:

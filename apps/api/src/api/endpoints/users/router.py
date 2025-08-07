@@ -3,21 +3,21 @@
 from typing import List
 from uuid import UUID
 
+from api.endpoints.auth.dependencies import get_current_user
 from api.utils import handle_domain_exception
 from core.common.exceptions import DomainException
 from core.database import get_session
 from core.domains.users import (
-    PasswordService,
     User,
     UserCreate,
     UserPublic,
-    UserRepository,
-    UserService,
     UserUpdate,
 )
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlmodel import Session
+
+from .dependencies import get_user_service
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -35,25 +35,12 @@ class GeneratePasswordResponse(BaseModel):
     password: str
 
 
-def get_user_service() -> UserService:
-    """Get UserService instance."""
-    user_repository = UserRepository()
-    password_service = PasswordService()
-    return UserService(user_repository, password_service)
-
-
-def get_current_user() -> User:
-    """Placeholder for current user dependency."""
-    # This should be replaced with actual authentication logic
-    pass
-
-
 @router.post("/", response_model=UserPublic)
 async def create_user(
     user: UserCreate,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    user_service: UserService = Depends(get_user_service),
+    user_service=Depends(get_user_service),
 ):
     """Create a new user."""
     try:
@@ -71,7 +58,7 @@ async def list_users(
     active_only: bool = Query(True),
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    user_service: UserService = Depends(get_user_service),
+    user_service=Depends(get_user_service),
 ):
     """List users with pagination."""
     try:
@@ -87,7 +74,7 @@ async def get_user(
     user_id: UUID,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    user_service: UserService = Depends(get_user_service),
+    user_service=Depends(get_user_service),
 ):
     """Get a user by ID."""
     try:
@@ -118,7 +105,7 @@ async def update_user(
     user_update: UserUpdate,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    user_service: UserService = Depends(get_user_service),
+    user_service=Depends(get_user_service),
 ):
     """Update a user."""
     try:
@@ -155,7 +142,7 @@ async def delete_user(
     user_id: UUID,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    user_service: UserService = Depends(get_user_service),
+    user_service=Depends(get_user_service),
 ):
     """Soft delete a user."""
     try:
@@ -176,7 +163,7 @@ async def activate_user(
     user_id: UUID,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    user_service: UserService = Depends(get_user_service),
+    user_service=Depends(get_user_service),
 ):
     """Activate a user account."""
     try:
@@ -210,7 +197,7 @@ async def deactivate_user(
     user_id: UUID,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    user_service: UserService = Depends(get_user_service),
+    user_service=Depends(get_user_service),
 ):
     """Deactivate a user account."""
     try:
@@ -244,7 +231,7 @@ async def promote_to_superuser(
     user_id: UUID,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    user_service: UserService = Depends(get_user_service),
+    user_service=Depends(get_user_service),
 ):
     """Promote user to superuser status."""
     try:
@@ -278,7 +265,7 @@ async def revoke_superuser(
     user_id: UUID,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    user_service: UserService = Depends(get_user_service),
+    user_service=Depends(get_user_service),
 ):
     """Revoke superuser status from user."""
     try:
@@ -313,7 +300,7 @@ async def change_password(
     password_change: PasswordChangeRequest,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    user_service: UserService = Depends(get_user_service),
+    user_service=Depends(get_user_service),
 ):
     """Change user's password."""
     try:
@@ -352,7 +339,7 @@ async def search_users_by_name(
     limit: int = Query(10, ge=1, le=50),
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    user_service: UserService = Depends(get_user_service),
+    user_service=Depends(get_user_service),
 ):
     """Search users by name or email."""
     try:
@@ -366,7 +353,7 @@ async def get_user_by_email(
     email: str,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    user_service: UserService = Depends(get_user_service),
+    user_service=Depends(get_user_service),
 ):
     """Get a user by email address."""
     try:
@@ -396,7 +383,7 @@ async def get_user_count(
     active_only: bool = Query(True),
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-    user_service: UserService = Depends(get_user_service),
+    user_service=Depends(get_user_service),
 ):
     """Get total count of users."""
     try:
@@ -413,6 +400,8 @@ async def generate_secure_password(
 ):
     """Generate a secure random password."""
     try:
+        from core.domains.users import PasswordService
+
         password = PasswordService.generate_secure_password(length=length)
         return GeneratePasswordResponse(password=password)
     except DomainException as exc:
@@ -424,7 +413,7 @@ async def authenticate_user(
     email: str,
     password: str,
     session: Session = Depends(get_session),
-    user_service: UserService = Depends(get_user_service),
+    user_service=Depends(get_user_service),
 ):
     """Authenticate a user by email and password."""
     try:
