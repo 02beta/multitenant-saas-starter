@@ -6,8 +6,6 @@
   "scripts": {
     "dev": "pnpm run dev:kill && uv run fastapi dev src/api/main.py --host 0.0.0.0 --port 8000",
     "dev:kill": "pkill -f 'fastapi|uvicorn' || true",
-    "build": "which uv || curl -LsSf https://astral.sh/uv/install.sh | sh && uv build",
-    "install": "which uv || curl -LsSf https://astral.sh/uv/install.sh | sh && uv sync",
     "lint": "which uv || curl -LsSf https://astral.sh/uv/install.sh | sh && (uv tool list | grep -q ruff || uv tool install ruff) && uv tool run ruff check .",
     "lint:fix": "which uv || curl -LsSf https://astral.sh/uv/install.sh | sh && (uv tool list | grep -q ruff || uv tool install ruff) && uv tool run ruff check --fix .",
     "format": "which uv || curl -LsSf https://astral.sh/uv/install.sh | sh && (uv tool list | grep -q ruff || uv tool install ruff) && uv tool run ruff format .",
