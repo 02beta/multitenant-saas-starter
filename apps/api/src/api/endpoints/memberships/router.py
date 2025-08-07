@@ -30,9 +30,7 @@ async def create_membership(
 ):
     """Create a new organization user."""
     try:
-        return membership_service.create_membership(
-            session, membership_in=membership, invited_by_id=current_user.id
-        )
+        return membership_service.create_membership(session, membership_in=membership, invited_by_id=current_user.id)
     except DomainException as exc:
         return handle_domain_exception(exc)
 

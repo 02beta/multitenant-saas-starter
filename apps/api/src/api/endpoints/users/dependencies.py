@@ -31,9 +31,7 @@ def get_user_service() -> UserService:
     return UserService(user_repository, password_service)
 
 
-async def validate_user_access(
-    user_id: UUID, current_user: User = Depends(get_current_user)
-) -> bool:
+async def validate_user_access(user_id: UUID, current_user: User = Depends(get_current_user)) -> bool:
     """Validate user has access to user resource."""
     if current_user.is_superuser or current_user.id == user_id:
         return True

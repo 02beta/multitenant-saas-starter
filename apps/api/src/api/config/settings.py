@@ -40,9 +40,7 @@ class Settings(BaseSettings):
     # Supabase settings
     supabase_api_url: str = Field(default="", description="Supabase API URL")
     supabase_public_key: str = Field(default="", description="Supabase anonymous key")
-    supabase_secret_key: str = Field(
-        default="", description="Supabase service role key"
-    )
+    supabase_secret_key: str = Field(default="", description="Supabase service role key")
     auth_jwt_secret: str = Field(default="", description="Supabase JWT secret")
 
 

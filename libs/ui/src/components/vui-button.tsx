@@ -32,7 +32,7 @@ const vuiButtonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 function VuiButton({

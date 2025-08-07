@@ -24,9 +24,7 @@ async def get_auth_service(session: Session = Depends(get_session)) -> AuthServi
         "jwt_secret": settings.auth_jwt_secret,
     }
 
-    provider = AuthProviderRegistry.create_provider(
-        settings.auth_provider, provider_config
-    )
+    provider = AuthProviderRegistry.create_provider(settings.auth_provider, provider_config)
 
     return AuthService(provider, session)
 

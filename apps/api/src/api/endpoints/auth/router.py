@@ -3,7 +3,7 @@
 from typing import Optional
 from uuid import UUID
 
-from core.auth import AuthResult, AuthService, AuthSessionModel
+from core.auth import AuthService, AuthSessionModel
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
@@ -27,9 +27,7 @@ class LoginResponse(BaseModel):
 
 
 @router.post("/login", response_model=LoginResponse)
-async def login(
-    login_data: LoginRequest, auth_service: AuthService = Depends(get_auth_service)
-):
+async def login(login_data: LoginRequest, auth_service: AuthService = Depends(get_auth_service)):
     """Login with provider-agnostic authentication."""
     try:
         auth_result = await auth_service.authenticate_user(
@@ -50,7 +48,8 @@ async def login(
         )
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Invalid credentials: {e}",
         )
 
 
@@ -65,9 +64,7 @@ async def logout(
 
 
 @router.post("/refresh", response_model=LoginResponse)
-async def refresh_token(
-    refresh_token: str, auth_service: AuthService = Depends(get_auth_service)
-):
+async def refresh_token(refresh_token: str, auth_service: AuthService = Depends(get_auth_service)):
     """Refresh access token."""
     try:
         auth_result = await auth_service.refresh_session(refresh_token)
@@ -82,9 +79,7 @@ async def refresh_token(
             },
         )
     except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token"
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
 
 
 @router.get("/me")

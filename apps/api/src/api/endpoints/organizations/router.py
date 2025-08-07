@@ -48,9 +48,7 @@ async def list_user_organizations(
 ):
     """List organizations for the current user."""
     try:
-        return await organization_service.get_user_organizations(
-            session, user_id=current_user.id
-        )
+        return await organization_service.get_user_organizations(session, user_id=current_user.id)
     except DomainException as exc:
         return handle_domain_exception(exc)
 
@@ -64,13 +62,9 @@ async def get_organization(
 ):
     """Get a specific organization by ID."""
     try:
-        organization = await organization_service.get_organization(
-            session, organization_id=organization_id
-        )
+        organization = await organization_service.get_organization(session, organization_id=organization_id)
         if not organization:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found")
         return organization
     except DomainException as exc:
         return handle_domain_exception(exc)
@@ -85,13 +79,9 @@ async def get_organization_by_slug(
 ):
     """Get a specific organization by slug."""
     try:
-        organization = await organization_service.get_organization_by_slug(
-            session, slug=slug
-        )
+        organization = await organization_service.get_organization_by_slug(session, slug=slug)
         if not organization:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found")
         return organization
     except DomainException as exc:
         return handle_domain_exception(exc)
@@ -107,13 +97,9 @@ async def update_organization(
 ):
     """Update a organization."""
     try:
-        existing_organization = await organization_service.get_organization(
-            session, organization_id=organization_id
-        )
+        existing_organization = await organization_service.get_organization(session, organization_id=organization_id)
         if not existing_organization:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found")
 
         return await organization_service.update_organization(
             session, organization=existing_organization, update_data=organization_update
@@ -131,13 +117,9 @@ async def delete_organization(
 ):
     """Soft delete a organization."""
     try:
-        existing_organization = await organization_service.get_organization(
-            session, organization_id=organization_id
-        )
+        existing_organization = await organization_service.get_organization(session, organization_id=organization_id)
         if not existing_organization:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found")
 
         success = await organization_service.delete_organization(
             session, organization_id=organization_id, deleted_by_id=current_user.id
@@ -164,9 +146,7 @@ async def search_organizations_by_name(
     """Search organizations by name."""
     try:
         organization_repository = OrganizationRepository()
-        return organization_repository.search_by_name(
-            session, search_term=search_term, limit=limit
-        )
+        return organization_repository.search_by_name(session, search_term=search_term, limit=limit)
     except DomainException as exc:
         return handle_domain_exception(exc)
 
@@ -180,8 +160,6 @@ async def get_organizations_by_plan(
     """Get all active organizations on a specific plan."""
     try:
         organization_repository = OrganizationRepository()
-        return organization_repository.get_active_organizations_by_plan(
-            session, plan_name=plan_name
-        )
+        return organization_repository.get_active_organizations_by_plan(session, plan_name=plan_name)
     except DomainException as exc:
         return handle_domain_exception(exc)

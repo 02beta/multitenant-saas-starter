@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { FC, ReactNode, useMemo, useState } from "react";
@@ -20,7 +19,7 @@ interface StepperProps {
 export const Stepper: FC<StepperProps> = ({ activeStep, stepOptions }) => {
   const activeIdx = useMemo(
     () => stepOptions.findIndex((i) => i.value === activeStep.value),
-    [activeStep, stepOptions]
+    [activeStep, stepOptions],
   );
 
   return (
@@ -42,7 +41,7 @@ export const Stepper: FC<StepperProps> = ({ activeStep, stepOptions }) => {
           <div key={step.value} className="flex items-center">
             <div
               className={cn(
-                "z-[1] p-2 transition duration-500 ease-in-out rounded-full  hidden sm:flex"
+                "z-[1] p-2 transition duration-500 ease-in-out rounded-full  hidden sm:flex",
               )}
               style={{
                 backgroundColor:
@@ -170,13 +169,13 @@ const stepOptions: Step[] = [
 
 export function StepperDemo({ className }: { className?: string }) {
   const [activeStep, setActiveStep] = useState<Step>(
-    stepOptions[0] ?? { label: "", value: "", stepSvg: <></> }
+    stepOptions[0] ?? { label: "", value: "", stepSvg: <></> },
   );
   return (
     <div
       className={cn(
         "w-[90%] flex flex-col gap-5 items-center bg-white p-4 rounded-xl",
-        className
+        className,
       )}
     >
       <div
@@ -191,7 +190,7 @@ export function StepperDemo({ className }: { className?: string }) {
         variant="outline"
         onClick={() => {
           const currentIndex = stepOptions.findIndex(
-            (i) => i.value === activeStep.value
+            (i) => i.value === activeStep.value,
           );
           const nextIndex = (currentIndex + 1) % stepOptions.length;
           const nextStep = stepOptions[nextIndex] ?? stepOptions[0];

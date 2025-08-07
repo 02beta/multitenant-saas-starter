@@ -19,9 +19,9 @@ export const config = [
     },
     rules: {
       "turbo/no-undeclared-env-vars": "warn",
-      "turbo/no-undeclared-inputs": "warn",
-      "turbo/no-undeclared-outputs": "warn",
-      "turbo/no-undeclared-dependencies": "warn",
+      // "turbo/no-undeclared-inputs": "warn",
+      // "turbo/no-undeclared-outputs": "warn",
+      // "turbo/no-undeclared-dependencies": "warn",
     },
   },
   {

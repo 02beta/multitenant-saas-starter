@@ -51,11 +51,11 @@ const useAutoResizeTextarea = ({
       // Calculate new height
       const newHeight = Math.max(
         minHeight,
-        Math.min(textarea.scrollHeight, maxHeight ?? Number.POSITIVE_INFINITY)
+        Math.min(textarea.scrollHeight, maxHeight ?? Number.POSITIVE_INFINITY),
       );
       textarea.style.height = `${newHeight}px`;
     },
-    [minHeight, maxHeight]
+    [minHeight, maxHeight],
   );
   useEffect(() => {
     // Set initial height
@@ -93,7 +93,7 @@ export const AIInput = ({ className, ...props }: AIInputProps) => (
       "[-ms-overflow-style:none] [scrollbar-width:none]",
       "[&_*]:scrollbar-none [&_*::-webkit-scrollbar]:hidden",
       "[&_*]:[-ms-overflow-style:none] [&_*]:[scrollbar-width:none]",
-      className
+      className,
     )}
     {...props}
   />
@@ -142,7 +142,7 @@ export const AIInputTextarea = ({
         // Additional scrollbar hiding for all states
         "[&:focus::-webkit-scrollbar]:hidden [&:hover::-webkit-scrollbar]:hidden",
         "[&:active::-webkit-scrollbar]:hidden [&:disabled::-webkit-scrollbar]:hidden",
-        className
+        className,
       )}
       name="message"
       onChange={(e) => {
@@ -172,7 +172,7 @@ export const AIInputToolbar = ({
       // Hide scrollbars here too
       "scrollbar-none overflow-hidden",
       "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
-      className
+      className,
     )}
     {...props}
   />
@@ -186,7 +186,7 @@ export const AIInputTools = ({ className, ...props }: AIInputToolsProps) => (
       "[&_button:first-child]:rounded-bl-2xl",
       "scrollbar-none overflow-hidden overflow-x-auto",
       "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
-      className
+      className,
     )}
     {...props}
   />
@@ -233,7 +233,7 @@ export const AIInputButton = ({
         "before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent",
         "before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700",
         colorClasses[colorScheme as keyof typeof colorClasses],
-        className
+        className,
       )}
       size={newSize}
       type="button"
@@ -308,9 +308,9 @@ export const AIInputToggleButton = ({
           ? colorClasses[colorScheme as keyof typeof colorClasses].active
           : cn(
               "text-muted-foreground hover:text-foreground border-transparent",
-              colorClasses[colorScheme as keyof typeof colorClasses].hover
+              colorClasses[colorScheme as keyof typeof colorClasses].hover,
             ),
-        className
+        className,
       )}
       size={newSize}
       type="button"
@@ -363,7 +363,7 @@ export const AIInputSubmit = ({
         status === "ready" && "animate-pulse",
         status === "error" &&
           "bg-gradient-to-r from-destructive via-destructive to-destructive/90 hover:from-destructive/90 hover:via-destructive/95 hover:to-destructive",
-        className
+        className,
       )}
       disabled={isDisabled}
       size={size}
@@ -401,7 +401,7 @@ export const AIInputModelSelectTrigger = ({
       // Add shimmer
       "before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent",
       "before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700",
-      className
+      className,
     )}
     {...props}
   />
@@ -426,7 +426,7 @@ export const AIInputModelSelectContent = ({
       "[-ms-overflow-style:none] [scrollbar-width:none]",
       "[&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden",
       "max-h-[250px]",
-      className
+      className,
     )}
     {...props}
   />
@@ -444,7 +444,7 @@ export const AIInputModelSelectItem = ({
       "hover:scale-[1.02] focus:scale-[1.02] hover:translate-x-1 focus:translate-x-1",
       "active:scale-[0.98] cursor-pointer",
       "backdrop-blur-sm",
-      className
+      className,
     )}
     {...props}
   />
@@ -518,7 +518,7 @@ export default function MagicalChatInput() {
         className={cn(
           "relative z-10 max-w-4xl w-full",
           "transform transition-all duration-700 ease-out",
-          isFocused && "scale-102 translate-y-[-2px]"
+          isFocused && "scale-102 translate-y-[-2px]",
         )}
       >
         <AIInputTextarea
@@ -529,7 +529,7 @@ export default function MagicalChatInput() {
           className={cn(
             "transition-all duration-500 ease-out",
             isFocused && "transform translate-y-[-1px]",
-            text.length > 0 && "font-semibold"
+            text.length > 0 && "font-semibold",
           )}
           placeholder="Ask me anything... ✨"
         />
@@ -537,7 +537,7 @@ export default function MagicalChatInput() {
           className={cn(
             "transition-all duration-500 ease-out",
             text.length > 0 &&
-              "bg-gradient-to-r from-muted/10 via-muted/20 to-muted/10 backdrop-blur-lg"
+              "bg-gradient-to-r from-muted/10 via-muted/20 to-muted/10 backdrop-blur-lg",
           )}
         >
           <AIInputTools className="space-x-3">
@@ -604,7 +604,7 @@ export default function MagicalChatInput() {
             className={cn(
               "relative overflow-hidden z-10",
               text.length > 0 && "shadow-2xl shadow-primary/40 scale-105",
-              status === "ready" && text.length > 0 && "animate-none"
+              status === "ready" && text.length > 0 && "animate-none",
             )}
           />
         </AIInputToolbar>

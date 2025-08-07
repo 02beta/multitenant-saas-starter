@@ -28,9 +28,7 @@ async def validate_organization_access(
 
     # Check membership
     membership_service = MembershipService(MembershipRepository())
-    membership = membership_service.get_user_membership(
-        session, current_user.id, organization_id
-    )
+    membership = membership_service.get_user_membership(session, current_user.id, organization_id)
 
     if not membership or not membership.is_active:
         raise HTTPException(

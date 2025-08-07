@@ -44,9 +44,7 @@ async def create_user(
 ):
     """Create a new user."""
     try:
-        return user_service.create_user(
-            session, user_in=user, created_by_id=current_user.id
-        )
+        return user_service.create_user(session, user_in=user, created_by_id=current_user.id)
     except DomainException as exc:
         return handle_domain_exception(exc)
 
@@ -62,9 +60,7 @@ async def list_users(
 ):
     """List users with pagination."""
     try:
-        return user_service.get_users(
-            session, skip=skip, limit=limit, active_only=active_only
-        )
+        return user_service.get_users(session, skip=skip, limit=limit, active_only=active_only)
     except DomainException as exc:
         return handle_domain_exception(exc)
 
@@ -80,9 +76,7 @@ async def get_user(
     try:
         user = user_service.get_user(session, user_id=user_id)
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
         # Convert to public schema
         return UserPublic(
@@ -111,9 +105,7 @@ async def update_user(
     try:
         existing_user = user_service.get_user(session, user_id=user_id)
         if not existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
         updated_user = user_service.update_user(
             session,
@@ -146,13 +138,9 @@ async def delete_user(
 ):
     """Soft delete a user."""
     try:
-        success = user_service.delete_user(
-            session, user_id=user_id, deleted_by_id=current_user.id
-        )
+        success = user_service.delete_user(session, user_id=user_id, deleted_by_id=current_user.id)
         if not success:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         return {"message": "User deleted successfully"}
     except DomainException as exc:
         return handle_domain_exception(exc)
@@ -169,13 +157,9 @@ async def activate_user(
     try:
         existing_user = user_service.get_user(session, user_id=user_id)
         if not existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-        activated_user = user_service.activate_user(
-            session, user=existing_user, activated_by_id=current_user.id
-        )
+        activated_user = user_service.activate_user(session, user=existing_user, activated_by_id=current_user.id)
 
         # Convert to public schema
         return UserPublic(
@@ -203,13 +187,9 @@ async def deactivate_user(
     try:
         existing_user = user_service.get_user(session, user_id=user_id)
         if not existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-        deactivated_user = user_service.deactivate_user(
-            session, user=existing_user, deactivated_by_id=current_user.id
-        )
+        deactivated_user = user_service.deactivate_user(session, user=existing_user, deactivated_by_id=current_user.id)
 
         # Convert to public schema
         return UserPublic(
@@ -237,13 +217,9 @@ async def promote_to_superuser(
     try:
         existing_user = user_service.get_user(session, user_id=user_id)
         if not existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-        promoted_user = user_service.promote_to_superuser(
-            session, user=existing_user, promoted_by_id=current_user.id
-        )
+        promoted_user = user_service.promote_to_superuser(session, user=existing_user, promoted_by_id=current_user.id)
 
         # Convert to public schema
         return UserPublic(
@@ -271,13 +247,9 @@ async def revoke_superuser(
     try:
         existing_user = user_service.get_user(session, user_id=user_id)
         if not existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-        revoked_user = user_service.revoke_superuser(
-            session, user=existing_user, revoked_by_id=current_user.id
-        )
+        revoked_user = user_service.revoke_superuser(session, user=existing_user, revoked_by_id=current_user.id)
 
         # Convert to public schema
         return UserPublic(
@@ -306,9 +278,7 @@ async def change_password(
     try:
         existing_user = user_service.get_user(session, user_id=user_id)
         if not existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
         updated_user = user_service.change_password(
             session,
@@ -359,9 +329,7 @@ async def get_user_by_email(
     try:
         user = user_service.get_user_by_email(session, email=email)
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
         # Convert to public schema
         return UserPublic(
@@ -419,9 +387,7 @@ async def authenticate_user(
     try:
         user = user_service.authenticate_user(session, email=email, password=password)
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
-            )
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
         # Convert to public schema
         return UserPublic(
