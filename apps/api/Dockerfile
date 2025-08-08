@@ -81,7 +81,10 @@ RUN echo "🐍 Installing Python dependencies..." && \
         asyncpg \
         sqlalchemy[asyncio] \
         alembic && \
-    echo "✅ All Python dependencies installed successfully!"
+# Copy virtual environment from builder stage
+RUN echo "🐍 Copying virtual environment from builder stage..." && \
+    cp -r /app/.venv .venv && \
+    echo "✅ Virtual environment copied successfully!"
 
 # Create a non-root user
 RUN echo "👤 Creating non-root user..." && \
