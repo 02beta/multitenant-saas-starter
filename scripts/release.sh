@@ -392,7 +392,6 @@ update_package_json_files() {
         "
     done
 }
-
 sync_versions() {
     local current_version
     current_version=$(get_current_version)
