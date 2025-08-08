@@ -50,7 +50,7 @@ wheels = [
 [[package]]
 name = "api"
 version = "0.0.0"
-source = { editable = "apps/api" }
+source = { virtual = "apps/api" }
 dependencies = [
     { name = "core" },
     { name = "fastapi", extra = ["standard"] },
