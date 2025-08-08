@@ -4,7 +4,6 @@
   "description": "API for the project",
   "private": true,
   "scripts": {
-    "install": "pnpm run export && uv pip install toml && uv pip install -r requirements.txt",
     "dev": "uv run fastapi dev --host 0.0.0.0 --port 8080",
     "start": "uv run fastapi run --host 0.0.0.0 --port 8080",
     "lint": "uv run ruff check .",
