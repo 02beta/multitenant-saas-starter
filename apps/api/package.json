@@ -4,12 +4,23 @@
   "description": "API for the project",
   "private": true,
   "scripts": {
-    "dev": "pnpm run dev:kill && uv run fastapi dev src/api/main.py --host 0.0.0.0 --port 8000",
-    "dev:kill": "pkill -f 'fastapi|uvicorn' || true",
-    "lint": "which uv || curl -LsSf https://astral.sh/uv/install.sh | sh && (uv tool list | grep -q ruff || uv tool install ruff) && uv tool run ruff check .",
-    "lint:fix": "which uv || curl -LsSf https://astral.sh/uv/install.sh | sh && (uv tool list | grep -q ruff || uv tool install ruff) && uv tool run ruff check --fix .",
-    "format": "which uv || curl -LsSf https://astral.sh/uv/install.sh | sh && (uv tool list | grep -q ruff || uv tool install ruff) && uv tool run ruff format .",
-    "start": "uv run fastapi run src/api/main.py --host 0.0.0.0 --port 8000",
-    "clean": "pnpm run dev:kill && rm -rf .turbo"
+    "install": "pnpm run export && uv pip install toml && uv pip install -r requirements.txt",
+    "dev": "uv run fastapi dev --host 0.0.0.0 --port 8080",
+    "start": "uv run fastapi run --host 0.0.0.0 --port 8080",
+    "lint": "uv run ruff check .",
+    "lint:fix": "uv run ruff check --fix .",
+    "clean": "rm -rf __pycache__ .pytest_cache .ruff_cache dist build *.egg-info .turbo",
+    "format": "uv run ruff format .",
+    "export": "cd ../.. && uv sync && uv export --no-hashes --format requirements-txt --output-file apps/api/requirements.txt",
+    "precommit": "pnpm run lint:fix && pnpm run format",
+    "sync": "cd ../.. && uv sync && pnpm run export && cd apps/api",
+    "bump": "pnpm run bump:patch",
+    "bump:patch": "cd ../.. && uv run python -c \"import sys; import os; sys.path.append('.'); import toml; data = toml.load('apps/api/pyproject.toml'); version_parts = data['project']['version'].split('.'); version_parts[2] = str(int(version_parts[2]) + 1); data['project']['version'] = '.'.join(version_parts); toml.dump(data, open('apps/api/pyproject.toml', 'w')); print(f'Bumped patch version to {data[\"project\"][\"version\"]}')\"",
+    "bump:minor": "cd ../.. && uv run python -c \"import sys; import os; sys.path.append('.'); import toml; data = toml.load('apps/api/pyproject.toml'); version_parts = data['project']['version'].split('.'); version_parts[1] = str(int(version_parts[1]) + 1); version_parts[2] = '0'; data['project']['version'] = '.'.join(version_parts); toml.dump(data, open('apps/api/pyproject.toml', 'w')); print(f'Bumped minor version to {data[\"project\"][\"version\"]}')\"",
+    "bump:major": "cd ../.. && uv run python -c \"import sys; import os; sys.path.append('.'); import toml; data = toml.load('apps/api/pyproject.toml'); version_parts = data['project']['version'].split('.'); version_parts[0] = str(int(version_parts[0]) + 1); version_parts[1] = '0'; version_parts[2] = '0'; data['project']['version'] = '.'.join(version_parts); toml.dump(data, open('apps/api/pyproject.toml', 'w')); print(f'Bumped major version to {data[\"project\"][\"version\"]}')\"",
+    "release": "pnpm run release:patch",
+    "release:patch": "pnpm run precommit && pnpm run bump:patch && pnpm run clean && pnpm run sync && cd ../.. && git add . && git commit -m 'chore: release:patch' && git push",
+    "release:minor": "pnpm run precommit && pnpm run bump:minor && pnpm run clean && pnpm run sync && cd ../.. && git add . && git commit -m 'chore: release:minor' && git push",
+    "release:major": "pnpm run precommit && pnpm run bump:major && pnpm run clean && pnpm run sync && cd ../.. && git add . && git commit -m 'chore: release:major' && git push"
   }
 }
