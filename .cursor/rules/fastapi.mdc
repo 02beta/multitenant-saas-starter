@@ -1,6 +1,6 @@
 ---
 description: |
-globs: apps/api/src/api/**/*.py
+globs: apps/api/routes/**/*.py
 alwaysApply: false
 ---
 

@@ -16,7 +16,7 @@ The api workspace is structured as follows:
 
 ```sh title="API Workspace Structure"
 # apps/api/src/api/
-├── endpoints/         # Domain-based endpoints
+├── routes/         # Domain-based routes
 │   ├── __init__.py
 │   ├── auth/          # Provider-agnostic authentication
 │   │   ├── __init__.py

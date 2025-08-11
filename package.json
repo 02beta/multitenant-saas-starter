@@ -1,12 +1,13 @@
 {
   "name": "multitenant-saas-starter",
-  "description": "Template for a monorepo with nextjs v15, tailwindcss v4, shadcn ui, turbo and pnpm",
   "version": "0.1.1",
   "private": true,
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "dev:kill": "uv run cli workspace dev-stop",
     "lint": "turbo lint",
+    "lint:fix": "turbo lint --fix",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "clean": "turbo clean"
   },

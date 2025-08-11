@@ -3,7 +3,7 @@
 from typing import List
 from uuid import UUID
 
-from api.endpoints.auth.dependencies import get_current_user
+from api.routes.auth.dependencies import get_current_user
 from api.utils import handle_domain_exception
 from core.common.exceptions import DomainException
 from core.database import get_session
@@ -30,7 +30,9 @@ async def create_membership(
 ):
     """Create a new organization user."""
     try:
-        return membership_service.create_membership(session, membership_in=membership, invited_by_id=current_user.id)
+        return membership_service.create_membership(
+            session, membership_in=membership, invited_by_id=current_user.id
+        )
     except DomainException as exc:
         return handle_domain_exception(exc)
 
@@ -67,7 +69,9 @@ async def get_membership(
     """Get a specific organization user by ID."""
     try:
         membership = membership_service.get_membership(
-            session, membership_id=membership_id, current_user_id=current_user.id
+            session,
+            membership_id=membership_id,
+            current_user_id=current_user.id,
         )
         if not membership:
             raise HTTPException(
@@ -90,7 +94,9 @@ async def update_membership(
     """Update a organization user."""
     try:
         existing_membership = membership_service.get_membership(
-            session, membership_id=membership_id, current_user_id=current_user.id
+            session,
+            membership_id=membership_id,
+            current_user_id=current_user.id,
         )
         if not existing_membership:
             raise HTTPException(
@@ -141,7 +147,9 @@ async def activate_membership(
     """Activate a organization user."""
     try:
         existing_membership = membership_service.get_membership(
-            session, membership_id=membership_id, current_user_id=current_user.id
+            session,
+            membership_id=membership_id,
+            current_user_id=current_user.id,
         )
         if not existing_membership:
             raise HTTPException(
@@ -168,7 +176,9 @@ async def deactivate_membership(
     """Deactivate a organization user."""
     try:
         existing_membership = membership_service.get_membership(
-            session, membership_id=membership_id, current_user_id=current_user.id
+            session,
+            membership_id=membership_id,
+            current_user_id=current_user.id,
         )
         if not existing_membership:
             raise HTTPException(

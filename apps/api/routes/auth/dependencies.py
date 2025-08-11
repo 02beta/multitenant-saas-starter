@@ -1,4 +1,4 @@
-"""Auth endpoints dependencies."""
+"""Auth routes dependencies."""
 
 # flake8: noqa: F401
 from typing import Optional
@@ -15,7 +15,9 @@ from sqlmodel import Session
 security = HTTPBearer()
 
 
-async def get_auth_service(session: Session = Depends(get_session)) -> AuthService:
+async def get_auth_service(
+    session: Session = Depends(get_session),
+) -> AuthService:
     """Create auth service with configured provider."""
     provider_config = {
         "api_url": settings.supabase_api_url,
@@ -24,7 +26,9 @@ async def get_auth_service(session: Session = Depends(get_session)) -> AuthServi
         "jwt_secret": settings.auth_jwt_secret,
     }
 
-    provider = AuthProviderRegistry.create_provider(settings.auth_provider, provider_config)
+    provider = AuthProviderRegistry.create_provider(
+        settings.auth_provider, provider_config
+    )
 
     return AuthService(provider, session)
 

@@ -1,4 +1,4 @@
-"""Organizations endpoints."""
+"""Organizations routes."""
 
 from .router import router
 

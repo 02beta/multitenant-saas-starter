@@ -17,23 +17,27 @@ class SupabaseConfig(BaseSettings):
     # Authentication configuration
     auth_provider: str = Field(
         default="supabase",
-        description="Authentication provider to use (supabase, auth0, clerk, custom)",
+        description="Authentication provider is set to `supabase` do not change this "
+        "value if using supabase as the auth provider.",
     )
 
     # Supabase configuration
     supabase_api_url: str = Field(
-        default="",
-        description="Supabase API URL",
+        default="http://localhost:54321",
+        description="Supabase API URL, defaults to the local supabase api url",
     )
     auth_jwt_secret: str = Field(
-        default="",
-        description="Supabase JWT secret for token validation",
+        default="super-secret-jwt-token-with-at-least-32-characters",
+        description="Supabase JWT secret for token validation, defaults to supabase "
+        "local default value",
     )
     supabase_public_key: str = Field(
         default="",
-        description="Supabase anonymous key",
+        description="Supabase publishable key (new version of anon key), "
+        "defaults to supabase local default value for public anon key.",
     )
     supabase_secret_key: str = Field(
         default="",
-        description="Supabase service role key",
+        description="Supabase secret key (new version of service role key), "
+        "defaults to supabase local default value for secret key.",
     )
