@@ -1,6 +1,6 @@
 {
   "name": "@workspace/supabase-auth",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Supabase auth library for the project",
   "private": true,
   "scripts": {

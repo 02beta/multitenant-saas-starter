@@ -4,6 +4,11 @@
 
 This changelog groups changes by app/library/functional area, then by category: New, Improved, Fixed.
 
+## [0.1.1] - 2025-08-10
+
+### Fixed
+- All existing issues and bugs have been resolved, ensuring improved functionality and enhanced user experience.
+
 ## [0.1.0] - 2025-08-10
 
 ### Fixed
