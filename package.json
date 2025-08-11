@@ -1,7 +1,7 @@
 {
   "name": "multitenant-saas-starter",
   "description": "Template for a monorepo with nextjs v15, tailwindcss v4, shadcn ui, turbo and pnpm",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "build": "turbo build",
