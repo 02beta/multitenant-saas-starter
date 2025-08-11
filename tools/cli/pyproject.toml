@@ -1,12 +1,14 @@
 [project]
 name = "cli"
-version = "0.0.0"
-description = "CLI tools for the project"
+version = "0.1.1"
+description = "02Beta monorepo CLI tool for development, workspace, database, and release management"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "typer>=0.12.5",
     "rich>=13.9.4",
+    "jq>=1.10.0",
+    "requests>=2.32.4",
 ]
 
 [project.scripts]

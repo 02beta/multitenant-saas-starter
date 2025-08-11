@@ -1,7 +1,7 @@
 # Multi-stage build for better caching and smaller final image
-FROM python:3.11-slim as builder
+FROM python:3.11-slim AS builder
 
-# Set working directory
+# Set working directory4
 ENV APP_HOME=/app
 WORKDIR $APP_HOME
 
@@ -18,30 +18,29 @@ RUN echo "🔧 Installing system dependencies for building..." && \
 RUN echo "📦 Installing uv package manager..." && \
     curl -LsSf https://astral.sh/uv/install.sh | sh && \
     echo "✅ uv package manager installed successfully!"
-ENV PATH="/root/.cargo/bin:$PATH"
+
+# Add uv to PATH for current shell session
+ENV PATH="/root/.local/bin:$PATH"
 
 # Copy the entire monorepo structure to maintain workspace dependencies
 RUN echo "📂 Copying monorepo structure..."
 COPY . .
 RUN echo "✅ Monorepo structure copied successfully!"
 
-# Install dependencies and create venv from monorepo root
-RUN echo "🔄 Syncing dependencies with uv..." && \
-    uv sync && \
-    echo "✅ Dependencies synced successfully!"
+# Install dependencies only for the API project and create lock/venv if needed
+RUN echo "🔄 Syncing API dependencies with uv..." && \
+    cd apps/api && \
+    /root/.local/bin/uv sync --frozen --no-dev && \
+    echo "✅ API dependencies synced successfully!"
 
-# Export requirements.txt from the venv
-RUN echo "📝 Exporting requirements.txt..." && \
-    uv pip freeze > apps/api/requirements.txt && \
-    echo "✅ Requirements exported successfully!"
-
-# Copy libs directory to maintain import paths
-RUN echo "📚 Copying libs directory..." && \
-    cp -r libs apps/api/ && \
-    echo "✅ Libs directory copied successfully!"
+# Export API requirements.txt from the API project
+RUN echo "📝 Exporting API requirements.txt..." && \
+    cd apps/api && \
+    /root/.local/bin/uv export --no-hashes --no-dev --format requirements-txt --output-file requirements.txt && \
+    echo "✅ API requirements exported successfully!"
 
 # Production stage
-FROM python:3.11-slim as production
+FROM python:3.11-slim AS production
 
 # Set working directory
 ENV APP_HOME=/app
@@ -64,27 +63,22 @@ RUN echo "🔧 Installing runtime system dependencies..." && \
 RUN echo "📦 Installing uv for production..." && \
     curl -LsSf https://astral.sh/uv/install.sh | sh && \
     echo "✅ uv installed for production successfully!"
-ENV PATH="/root/.cargo/bin:$PATH"
+
+# Add uv to PATH for production
+ENV PATH="/root/.local/bin:$PATH"
 
 # Copy the entire monorepo from builder stage
 RUN echo "📂 Copying monorepo from builder stage..."
 COPY --from=builder /app .
 RUN echo "✅ Monorepo copied from builder stage successfully!"
 
-# Install Python dependencies using uv (not pip)
-RUN echo "🐍 Installing Python dependencies..." && \
-    cd apps/api && \
-    uv pip install --no-cache-dir -r requirements.txt && \
-    echo "🗄️  Installing database drivers..." && \
-    uv pip install --no-cache-dir \
-        psycopg2-binary \
-        asyncpg \
-        sqlalchemy[asyncio] \
-        alembic && \
-# Copy virtual environment from builder stage
-RUN echo "🐍 Copying virtual environment from builder stage..." && \
-    cp -r /app/.venv .venv && \
-    echo "✅ Virtual environment copied successfully!"
+# Copy virtual environment from builder stage and use it
+# RUN echo "🐍 Copying virtual environment from builder stage..." && \
+#     cp -r /app/.venv /app/venv && \
+#     echo "✅ Virtual environment copied successfully!"
+
+# Use the virtual environment from the builder stage
+ENV PATH="/app/.venv/bin:$PATH"
 
 # Create a non-root user
 RUN echo "👤 Creating non-root user..." && \

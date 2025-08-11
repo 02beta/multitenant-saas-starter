@@ -304,33 +304,6 @@ bump_version() {
     print_info "New version: $new_version"
     echo "$new_version"
 }
-# Function to update package.json files
-update_package_json_files() {
-    local new_version=$1
-
-    print_info "Updating package.json files..."
-
-    # Use git ls-files to find tracked package.json files, respecting .gitignore
-    git ls-files '*.json' | grep 'package\.json$' | while read -r file; do
-        print_info "Updating $file"
-
-        # Use node to update the version in package.json
-        node -e "
-            const fs = require('fs');
-            const path = '$file';
-            try {
-                const pkg = JSON.parse(fs.readFileSync(path, 'utf8'));
-                pkg.version = '$new_version';
-                fs.writeFileSync(path, JSON.stringify(pkg, null, 2) + '\n');
-                console.log('Updated version in ' + path);
-            } catch (error) {
-                console.error('Error updating ' + path + ':', error.message);
-            }
-        "
-    done
-
-    print_success "Updated all package.json files"
-}
 
 # Function to update pyproject.toml files
 update_pyproject_toml_files() {
@@ -417,7 +390,7 @@ run_precommit() {
     for app_dir in apps/*/; do
         if [ -d "$app_dir" ] && [ -f "$app_dir/package.json" ]; then
             print_info "Running precommit for $app_dir"
-            (cd "$app_dir" && pnpm run precommit 2>/dev/null || true)
+            (cd "$app_dir" && pnpm run precommit 2>/dev/null) || true
         fi
     done
 

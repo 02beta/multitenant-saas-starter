@@ -1,5 +1,7 @@
 # Full-Stack Multi-Tenant SaaS Starter
 
+![Multi-Tenant SaaS Starter](./public/og-image.png)
+
 The ultimate modern SaaS boilerplate to get you from idea to production in record time.
 Built with a carefully curated tech stack using the latest stable versions, this Turborepo-powered template eliminates months of setup and configuration so you can focus on building features that matter.
 
@@ -138,3 +140,49 @@ turbo format --filter [name_of_app]
 ```bash
 turbo test --filter [name_of_app]
 ```
+
+## 🚀 Release Management
+
+This repo includes a CLI to automate releases: version bumps, changelog,
+PR creation, and GitHub releases.
+
+Requirements:
+
+- GitHub CLI (`gh`) authenticated. Non-interactive auth via
+  `GITHUB_PERSONAL_ACCESS_TOKEN` is supported.
+- `jq` installed (used for optional AI release notes generation).
+- Optional: `OPENAI_API_KEY` or a local `ollama` model for AI-generated
+  release notes (falls back to `git log` formatting if not available).
+
+Commands:
+
+```bash
+# Create a PR for a patch release: bump patch → notes → changelog → commit → tag → push → PR to main
+uv run cli release create-patch-pr
+
+# Minor release PR
+uv run cli release create-minor-pr
+
+# Major release PR
+uv run cli release create-major-pr
+
+# Create a GitHub release from the current root version
+# You will be prompted whether this is a production or pre-production release.
+# Pre-production appends "-pre" to the tag (e.g., v1.2.3-pre), marks it as a prerelease,
+# and titles it "Release v1.2.3 (Pre-production)".
+uv run cli release create-github-release
+
+# Version bump only (no commit/push); updates package.json and pyproject.toml
+uv run cli release bump-patch
+uv run cli release bump-minor
+uv run cli release bump-major
+
+# Sync all versions to root version without bumping
+uv run cli release sync-versions
+```
+
+Notes:
+
+- The GitHub release tag is derived from the root `package.json` version
+  (the pnpm workspace root). For pre-production, `-pre` is appended to the
+  tag and the release is marked as a prerelease.
