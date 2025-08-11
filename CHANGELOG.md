@@ -4,6 +4,12 @@
 
 This changelog groups changes by app/library/functional area, then by category: New, Improved, Fixed.
 
+## [0.1.0] - 2025-08-10
+
+### Fixed
+- Corrected the configuration of the Turbo-JSON environment variable to improve stability and reliability.
+- Comprehensive fixes have been implemented across the software to enhance overall functionality and performance.
+
 ## [0.0.2] - 2025-08-10
 
 ### Added

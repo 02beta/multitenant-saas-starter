@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "supabase-auth"
-version = "0.0.2"
+version = "0.1.0"
 description = "Supabase authentication provider for the core auth system"
 authors = [
     {name = "Mac Anderson", email = "mac@macanderson.com"}
