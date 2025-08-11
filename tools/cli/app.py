@@ -11,8 +11,10 @@ from rich.console import Console
 
 app = typer.Typer(
     name="cli",
-    help="CLI tools for the multitenant SaaS starter project",
+    help="Workspace CLI for managing the development, database, and release of the 02Beta Multi-Tenant SaaS Starter.",
     add_completion=False,
+    no_args_is_help=True,
+    rich_markup_mode="rich",
 )
 
 console = Console()
