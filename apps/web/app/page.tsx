@@ -1,4 +1,5 @@
-import { Button } from "@workspace/ui/components/ui/button"
+import { Button } from "@workspace/ui/components/ui/button";
+import { AxiomDemo } from "@/components/axiom-demo";
 
 export default function Page() {
   return (
@@ -6,7 +7,8 @@ export default function Page() {
       <div className="flex flex-col items-center justify-center gap-4">
         <h1 className="text-2xl font-bold">Hello World</h1>
         <Button size="sm">Button</Button>
+        <AxiomDemo />
       </div>
     </div>
-  )
+  );
 }
