@@ -7,19 +7,23 @@ This changelog groups changes by app/library/functional area, then by category: 
 ## [0.0.2] - 2025-08-10
 
 ### Added
+
 - Introduced a new `dependabot.yml` file to manage project dependencies automatically.
 - Created a dedicated directory for storing images including the addition of an OG-image.
 
 ### Changed
+
 - Refined the `Dockerfile` in the `apps/api` directory for better configuration.
 - Altered `.github/dependabot.yml` to optimize the management of dependencies.
 
 ### Fixed
+
 - Resolved deployment issues of the API on Vercel by rectifying the installation script.
 - Amended the `Dockerfile` for enhanced deployment of the API on fly.io.
 - Implemented various other fixes to improve overall performance.
 
 ### Updates
+
 - Updated `scripts/release.sh` for an enhanced script execution process.
 - Pull requests #4, #3, and #2 were merged from '02beta/preview' and '02beta/main' to incorporate their changes.
 
@@ -105,3 +109,11 @@ This changelog groups changes by app/library/functional area, then by category: 
 
 - **New**
   - Introduced this `CHANGELOG.md` and initial release notes for the preview branch.
+
+## [0.0.1] - 2025-08-09
+
+No changes. Initial release.
+
+## [0.0.0] - 2025-08-08
+
+Project created.

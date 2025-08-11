@@ -206,20 +206,27 @@ uv run cli release --help
 - Bumps versions in all `package.json` and `pyproject.toml` files.
 - Generates release notes from git history (auto AI when available).
 - Updates `CHANGELOG.md` (Keep a Changelog format).
-- Commits, tags (`vX.Y.Z`), pushes, and creates a GitHub release.
-- Runs per-app `pnpm run precommit` under `apps/*` before release.
+- Commits, tags (`vX.Y.Z`), pushes, and creates a pull request to `main`.
+- A separate command is provided to create the GitHub release
+  (`create-github-release`).
 
 ### Commands
 
 ```bash
-# Patch release: precommit → bump patch → notes → changelog → commit → tag → push → GH release
-uv run cli release release-patch
+# Create a PR for a patch release: bump patch → notes → changelog → commit → tag → push → PR to main
+uv run cli release create-patch-pr
 
-# Minor release
-uv run cli release release-minor
+# Minor release PR
+uv run cli release create-minor-pr
 
-# Major release
-uv run cli release release-major
+# Major release PR
+uv run cli release create-major-pr
+
+# Create a GitHub release from the current root version
+# You will be prompted whether this is a production or pre-production release.
+# Pre-production appends "-pre" to the tag (e.g., v1.2.3-pre), marks the release as prerelease,
+# and titles it "Release v1.2.3 (Pre-production)".
+uv run cli release create-github-release
 
 # Version bump only (no commit/push); updates package.json and pyproject.toml
 uv run cli release bump-patch
@@ -265,10 +272,16 @@ Create and link a new Supabase cloud project:
 uv run cli db create-new-project
 ```
 
-Run a patch release:
+Run a patch release PR:
 
 ```bash
-uv run cli release release-patch
+uv run cli release create-patch-pr
+```
+
+Create a GitHub release interactively from the current version in the root `package.json`:
+
+```bash
+uv run cli release create-github-release
 ```
 
 ## Getting Help
@@ -297,7 +310,7 @@ You can make CLI usage even shorter by using the helper script and/or an alias:
 python scripts/cli.py --help
 python scripts/cli.py db init
 python scripts/cli.py workspace dev
-python scripts/cli.py release release-patch
+python scripts/cli.py release create-patch-pr
 ```
 
 1. Enable the alias via direnv. The provided `.envrc` defines:

@@ -5,13 +5,15 @@ This module provides CLI commands for managing releases, version bumps,
 changelog updates, and GitHub releases.
 
 Available commands:
-- bump-patch:    Bump patch version only (no commit)
-- bump-minor:    Bump minor version only (no commit)
-- bump-major:    Bump major version only (no commit)
-- sync-versions: Sync all package.json and pyproject.toml versions to root version
-- release-patch: Run precommit, bump patch version, generate release notes, commit, push, and create GitHub release
-- release-minor: Run precommit, bump minor version, generate release notes, commit, push, and create GitHub release
-- release-major: Run precommit, bump major version, generate release notes, commit, push, and create GitHub release
+- bump-patch:       Bump patch version only (no commit)
+- bump-minor:       Bump minor version only (no commit)
+- bump-major:       Bump major version only (no commit)
+- sync-versions:    Sync all package.json and pyproject.toml versions to root version
+- create-patch-pr:  Bump patch version, generate release notes, commit, push, and create a GitHub release PR to main
+- create-minor-pr:  Bump minor version, generate release notes, commit, push, and create a GitHub release PR to main
+- create-major-pr:  Bump major version, generate release notes, commit, push, and create a GitHub release PR to main
+- create-github-release: Create a GitHub release from the current root
+  version (prompts for production or pre-production)
 """
 
 import datetime
@@ -442,55 +444,117 @@ def update_changelog(version, release_notes):
     logging.info("CHANGELOG.md updated.")
 
 
-def create_github_release(version, release_notes):
-    """Create a GitHub release using gh CLI."""
-    logging.info(f"Creating GitHub release v{version}...")
+def create_github_release(
+    tag: str,
+    title: str,
+    release_notes: str,
+    *,
+    prerelease: bool = False,
+):
+    """Create a GitHub release using gh CLI.
+
+    Parameters:
+    tag: The tag name to use for the release (e.g., "v1.2.3" or "v1.2.3-pre").
+    title: The title of the release.
+    release_notes: The release notes body content.
+    prerelease: Whether this release should be marked as a prerelease.
+    """
+    logging.info(f"Creating GitHub release {tag} (prerelease={prerelease})...")
     if not authenticate_github_cli():
         raise typer.Exit(1)
     with tempfile.NamedTemporaryFile("w", delete=False) as tf:
         tf.write(release_notes)
         tf.flush()
-        run([
+        args = [
             "gh",
             "release",
             "create",
-            f"v{version}",
+            tag,
             "--title",
-            f"Release v{version}",
+            title,
             "--notes-file",
             tf.name,
-            "--latest",
-        ])
-    msg = Text(f"GitHub release created: v{version}", style="green")
+        ]
+        if prerelease:
+            args.append("--prerelease")
+        else:
+            args.append("--latest")
+        run(args)
+    msg = Text(f"GitHub release created: {tag}", style="green")
     console.print(Panel(msg, title="GitHub Release", style="green"))
-    logging.info(f"GitHub release created: v{version}")
+    logging.info(f"GitHub release created: {tag}")
 
 
-def run_precommit():
-    """Run precommit tasks for all apps."""
-    logging.info("Running precommit tasks for all apps...")
-    apps_dir = Path("apps")
-    if not apps_dir.exists():
-        logging.info("No 'apps' directory found, skipping precommit.")
-        return
-    for app_dir in apps_dir.iterdir():
-        if app_dir.is_dir() and (app_dir / "package.json").exists():
-            msg = Text(f"Running precommit for {app_dir}", style="blue")
-            console.print(Panel(msg, title="Precommit", style="blue"))
-            logging.info(f"Running precommit for {app_dir}")
-            try:
-                run(
-                    ["pnpm", "run", "precommit"], check=False, cwd=str(app_dir)
-                )
-            except Exception as e:
-                logging.warning(f"Precommit failed for {app_dir}: {e}")
-    msg = Text("Precommit tasks completed", style="green")
-    console.print(Panel(msg, title="Precommit", style="green"))
-    logging.info("Precommit tasks completed.")
+def get_current_branch():
+    """Get the current git branch name."""
+    result = run(
+        ["git", "rev-parse", "--abbrev-ref", "HEAD"], capture_output=True
+    )
+    branch = result.stdout.strip()
+    logging.info(f"Current git branch: {branch}")
+    return branch
 
 
-def commit_and_push(version_type, new_version):
-    """Commit and push changes, create tag."""
+def fetch_and_pull(branch):
+    """Fetch and pull the latest changes for the given branch."""
+    logging.info("Fetching latest changes from remote...")
+    run(["git", "fetch"])
+    logging.info(
+        f"Pulling latest changes for branch '{branch}' from origin..."
+    )
+    run(["git", "pull", "origin", branch])
+
+
+def create_release_branch_and_checkout(new_version):
+    """If on main, create and checkout a release branch."""
+    current_branch = get_current_branch()
+    if current_branch == "main":
+        release_branch = f"release-v{new_version}"
+        logging.info(
+            f"On 'main' branch. Creating and checking out '{release_branch}'..."
+        )
+        run(["git", "checkout", "-b", release_branch])
+        return release_branch
+    return current_branch
+
+
+def push_branch(branch):
+    """Push the branch to origin."""
+    logging.info(f"Pushing branch '{branch}' to origin...")
+    run(["git", "push", "-u", "origin", branch])
+
+
+def create_pull_request(branch, new_version, release_notes):
+    """Create a pull request to main using gh CLI."""
+    if not authenticate_github_cli():
+        raise typer.Exit(1)
+    pr_title = f"Release v{new_version}"
+    with tempfile.NamedTemporaryFile("w", delete=False) as tf:
+        tf.write(release_notes)
+        tf.flush()
+        logging.info(f"Creating pull request from '{branch}' to 'main'...")
+        run([
+            "gh",
+            "pr",
+            "create",
+            "--base",
+            "main",
+            "--head",
+            branch,
+            "--title",
+            pr_title,
+            "--body-file",
+            tf.name,
+        ])
+    msg = Text(
+        f"Pull request created for release v{new_version}", style="green"
+    )
+    console.print(Panel(msg, title="GitHub PR", style="green"))
+    logging.info(f"Pull request created for release v{new_version}")
+
+
+def commit_and_push(version_type, new_version, branch):
+    """Commit and push changes, create tag (but do not push tag yet)."""
     logging.info("Committing and pushing changes...")
     run(["git", "add", "."])
     run([
@@ -500,13 +564,15 @@ def commit_and_push(version_type, new_version):
         f"chore: release:{version_type} - bump to v{new_version}",
     ])
     run(["git", "tag", f"v{new_version}"])
-    run(["git", "push"])
-    run(["git", "push", "--tags"])
+    push_branch(branch)
     msg = Text(
-        f"Changes committed and pushed with tag v{new_version}", style="green"
+        f"Changes committed and pushed to branch '{branch}' with tag v{new_version}",
+        style="green",
     )
     console.print(Panel(msg, title="Git", style="green"))
-    logging.info(f"Changes committed and pushed with tag v{new_version}")
+    logging.info(
+        f"Changes committed and pushed to branch '{branch}' with tag v{new_version}"
+    )
 
 
 def sync_versions():
@@ -530,6 +596,19 @@ def sync_versions():
     msg = Text("All versions synced", style="green")
     console.print(Panel(msg, title="Sync Versions", style="green"))
     logging.info("All versions synced.")
+
+
+def fail_if_uncommitted_changes():
+    """Fail if there are any uncommitted changes in git."""
+    result = run(["git", "status", "--porcelain"], capture_output=True)
+    if result.stdout.strip():
+        msg = Text(
+            "Uncommitted changes detected! Please commit or stash all changes before running a release command.",
+            style="bold red",
+        )
+        console.print(Panel(msg, title="Uncommitted Changes", style="red"))
+        logging.error("Uncommitted changes detected. Aborting release.")
+        raise typer.Exit(1)
 
 
 @app.command("bump-patch")
@@ -581,8 +660,8 @@ def _release(version_type: str):
     """Run the release process for the specified version type.
 
     This function ensures all versions are synchronized before and after
-    bumping, runs precommit checks, generates release notes, updates
-    changelogs, commits, pushes, and creates a GitHub release.
+    bumping, generates release notes, updates changelogs, commits, pushes,
+    and creates a GitHub release PR to main. Fails if any files are uncommitted.
     """
     msg = Text(
         f"Starting {version_type} release process...", style="bold blue"
@@ -590,14 +669,26 @@ def _release(version_type: str):
     console.print(Panel(msg, title="Release", style="blue"))
     logging.info(f"Starting {version_type} release process...")
 
+    # Fail if there are any uncommitted changes
+    fail_if_uncommitted_changes()
+
     # Ensure all versions are synchronized before bumping
     logging.info("Synchronizing versions before version bump...")
     sync_versions()
 
     install_dependencies()
-    run_precommit()
+
+    # Always fetch and pull before making changes
+    current_branch = get_current_branch()
+    fetch_and_pull(current_branch)
 
     new_version = bump_version(version_type)
+
+    # If on main, create a release branch and switch to it
+    branch = create_release_branch_and_checkout(new_version)
+
+    # After switching branch, fetch and pull again to ensure up-to-date
+    fetch_and_pull(branch)
 
     # Ensure all versions are synchronized after bumping
     logging.info("Synchronizing versions after version bump...")
@@ -608,41 +699,83 @@ def _release(version_type: str):
     update_package_json_files(new_version)
     update_pyproject_toml_files(new_version)
     update_changelog(new_version, release_notes)
-    commit_and_push(version_type, new_version)
-    create_github_release(new_version, release_notes)
+    commit_and_push(version_type, new_version, branch)
+
+    # Always create a PR to main for the release
+    create_pull_request(branch, new_version, release_notes)
 
     msg = Text(
-        f"{version_type.capitalize()} release completed: v{new_version}",
+        f"{version_type.capitalize()} release PR created: v{new_version}",
         style="bold green",
     )
-    console.print(Panel(msg, title="Release Complete", style="green"))
+    console.print(Panel(msg, title="Release PR Created", style="green"))
     logging.info(
-        f"{version_type.capitalize()} release completed: v{new_version}"
+        f"{version_type.capitalize()} release PR created: v{new_version}"
     )
 
 
-@app.command("release-patch")
-def release_patch():
-    """Run precommit, bump patch version, generate release notes, commit, push,
-    and create GitHub release."""
-    logging.info("Running release-patch command...")
+@app.command("create-patch-pr")
+def create_patch_pr():
+    """Bump patch version, generate release notes, commit, push,
+    and create GitHub release PR to main."""
+    logging.info("Running create-patch-pr command...")
     _release("patch")
 
 
-@app.command("release-minor")
-def release_minor():
-    """Run precommit, bump minor version, generate release notes, commit, push,
-    and create GitHub release."""
-    logging.info("Running release-minor command...")
+@app.command("create-minor-pr")
+def create_minor_pr():
+    """Bump minor version, generate release notes, commit, push,
+    and create GitHub release PR to main."""
+    logging.info("Running create-minor-pr command...")
     _release("minor")
 
 
-@app.command("release-major")
-def release_major():
-    """Run precommit, bump major version, generate release notes, commit, push,
-    and create GitHub release."""
-    logging.info("Running release-major command...")
+@app.command("create-major-pr")
+def create_major_pr():
+    """Bump major version, generate release notes, commit, push,
+    and create GitHub release PR to main."""
+    logging.info("Running create-major-pr command...")
     _release("major")
+
+
+@app.command("create-github-release")
+def create_github_release_cmd():
+    """Create a GitHub release from the current root version.
+
+    Prompts whether this is a production or pre-production release. If
+    pre-production, appends "-pre" to the tag and marks the release as a
+    prerelease, and the title indicates pre-production.
+    """
+    logging.info("Running create-github-release command...")
+    install_dependencies()
+
+    version = get_current_version()
+    display_text = Text(f"Detected root version: {version}", style="bold blue")
+    console.print(Panel(display_text, title="Version", style="blue"))
+
+    is_production = typer.confirm(
+        "Is this a production release?", default=True
+    )
+
+    tag = f"v{version}" if is_production else f"v{version}-pre"
+    title = (
+        f"Release v{version}"
+        if is_production
+        else f"Release v{version} (Pre-production)"
+    )
+
+    last_tag = get_last_release_tag()
+    release_version_label = version if is_production else f"{version}-pre"
+    release_notes = generate_release_notes(
+        last_tag, "HEAD", release_version_label
+    )
+
+    create_github_release(
+        tag=tag,
+        title=title,
+        release_notes=release_notes,
+        prerelease=(not is_production),
+    )
 
 
 if __name__ == "__main__":
