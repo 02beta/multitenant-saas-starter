@@ -525,10 +525,75 @@ def push_branch(branch):
 
 
 def create_pull_request(branch, new_version, release_notes):
-    """Create a pull request to main using gh CLI."""
+    """Create a pull request to main using gh CLI.
+
+    If a PR from the given head branch to main already exists, this function
+    will not attempt to create a new one and will instead display the
+    existing PR URL.
+    """
     if not authenticate_github_cli():
         raise typer.Exit(1)
     pr_title = f"Release v{new_version}"
+    # Check if a PR already exists for this branch targeting main
+    try:
+        result = run(
+            [
+                "gh",
+                "pr",
+                "list",
+                "--base",
+                "main",
+                "--head",
+                branch,
+                "--state",
+                "open",
+                "--json",
+                "number,url,title",
+            ],
+            capture_output=True,
+        )
+        existing = json.loads(result.stdout or "[]")
+        if existing:
+            pr = existing[0]
+            pr_number = str(pr.get("number"))
+            url = pr.get("url", "")
+            msg = Text(
+                (
+                    "PR already exists for branch '"
+                    f"{branch}' → main. Updating title/body...\n{url}"
+                ),
+                style="yellow",
+            )
+            console.print(Panel(msg, title="GitHub PR", style="yellow"))
+            logging.info(
+                "PR already exists; updating existing PR title/body "
+                f"(#{pr_number})."
+            )
+
+            # Update the existing PR title and body with the latest notes
+            with tempfile.NamedTemporaryFile("w", delete=False) as tf:
+                tf.write(release_notes)
+                tf.flush()
+                run([
+                    "gh",
+                    "pr",
+                    "edit",
+                    pr_number,
+                    "--title",
+                    pr_title,
+                    "--body-file",
+                    tf.name,
+                ])
+
+            done_msg = Text(
+                f"Updated existing PR #{pr_number}: {url}", style="green"
+            )
+            console.print(Panel(done_msg, title="GitHub PR", style="green"))
+            logging.info(f"Updated existing PR #{pr_number}: {url}")
+            return
+    except Exception as e:
+        # Non-fatal; proceed to attempt PR creation
+        logging.warning(f"Unable to check for existing PRs: {e}")
     with tempfile.NamedTemporaryFile("w", delete=False) as tf:
         tf.write(release_notes)
         tf.flush()
