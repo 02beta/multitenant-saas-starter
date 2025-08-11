@@ -1,0 +1,22 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": [
+        "NEXT_PUBLIC_SITE_URL",
+        "NEXT_PUBLIC_TITLE_TAG",
+        "NEXT_PUBLIC_SUPABASE_PUBLIC_KEY",
+        "NEXT_PUBLIC_SUPABASE_API_URL"
+      ]
+    },
+    "dev": {
+      "env": [
+        "NEXT_PUBLIC_SITE_URL",
+        "NEXT_PUBLIC_TITLE_TAG",
+        "NEXT_PUBLIC_SUPABASE_PUBLIC_KEY",
+        "NEXT_PUBLIC_SUPABASE_API_URL"
+      ]
+    }
+  }
+}
