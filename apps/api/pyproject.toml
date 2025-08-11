@@ -19,20 +19,20 @@ dev = [
 ]
 
 [project.scripts]
-install = "pip install -r requirements.txt"
-dev = "fastapi dev"
-start = "fastapi start"
-lint = "ruff check ."
-lint-fix = "ruff check --fix ."
+install = "uv pip install -r requirements.txt"
+dev = "uv run fastapi dev"
+start = "uv run fastapi start"
+lint = "uv run ruff check ."
+lint-fix = "uv run ruff check --fix ."
 clean = "rm -rf __pycache__ .pytest_cache .ruff_cache dist build *.egg-info .turbo"
-format = "ruff format ."
+format = "uv run ruff format ."
 
 [tool.uv.sources]
 core = { workspace = true }
 supabase-auth = { workspace = true }
 
 [tool.ruff]
-line-length = 120
+line-length = 79
 
 [tool.ruff.lint]
 ignore = ["F841"]

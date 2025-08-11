@@ -5,12 +5,14 @@
   "private": true,
   "scripts": {
     "dev": "pnpm run dev:kill && next dev --turbopack",
-    "dev:kill": "lsof -ti:3000-3010 | xargs kill -9 2>/dev/null || true && pkill -f 'next' || true",
+    "dev:kill": "uv run cli dev dev-stop",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "typecheck": "tsc --noEmit"
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "precommit": "pnpm run lint:fix && pnpm run format"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
