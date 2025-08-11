@@ -74,5 +74,9 @@
   "python.analysis.extraPaths": [
     "${workspaceFolder}/libs/db/src",
     "${workspaceFolder}/apps/api/src"
+  ],
+  "cursorpyright.analysis.extraPaths": [
+    "${workspaceFolder}/libs/db/src",
+    "${workspaceFolder}/apps/api/src"
   ]
 }

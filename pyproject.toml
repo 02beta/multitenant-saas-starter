@@ -6,3 +6,9 @@ members = [
     "tools/cli",
     "libs/supabase-auth"
 ]
+
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.lint]
+ignore = ["F841"]
