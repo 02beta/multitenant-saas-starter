@@ -1,4 +1,4 @@
-"""Users endpoints."""
+"""Users routes."""
 
 from .router import router
 

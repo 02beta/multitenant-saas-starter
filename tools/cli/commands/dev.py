@@ -82,7 +82,9 @@ def clean_workspace() -> None:
     if not cleaned_items:
         console.print("✅ Workspace already clean")
     else:
-        console.print(f"✅ [bold green]Cleaned {len(cleaned_items)} items[/bold green]")
+        console.print(
+            f"✅ [bold green]Cleaned {len(cleaned_items)} items[/bold green]"
+        )
 
 
 def install_dependencies() -> None:
@@ -92,7 +94,9 @@ def install_dependencies() -> None:
     # Run pnpm install
     console.print("📦 Running pnpm install...")
     try:
-        subprocess.run(["pnpm", "install"], check=True, capture_output=True, text=True)
+        subprocess.run(
+            ["pnpm", "install"], check=True, capture_output=True, text=True
+        )
         console.print("✅ pnpm install completed successfully")
     except subprocess.CalledProcessError as e:
         console.print(f"[red]Error running pnpm install: {e}[/red]")
@@ -102,13 +106,17 @@ def install_dependencies() -> None:
             console.print(f"[red]stderr: {e.stderr}[/red]")
         raise typer.Exit(1)
     except FileNotFoundError:
-        console.print("[red]Error: pnpm not found. Please install pnpm first.[/red]")
+        console.print(
+            "[red]Error: pnpm not found. Please install pnpm first.[/red]"
+        )
         raise typer.Exit(1)
 
     # Run uv sync
     console.print("📦 Running uv sync...")
     try:
-        subprocess.run(["uv", "sync"], check=True, capture_output=True, text=True)
+        subprocess.run(
+            ["uv", "sync"], check=True, capture_output=True, text=True
+        )
         console.print("✅ uv sync completed successfully")
     except subprocess.CalledProcessError as e:
         console.print(f"[red]Error running uv sync: {e}[/red]")
@@ -118,7 +126,9 @@ def install_dependencies() -> None:
             console.print(f"[red]stderr: {e.stderr}[/red]")
         raise typer.Exit(1)
     except FileNotFoundError:
-        console.print("[red]Error: uv not found. Please install uv first.[/red]")
+        console.print(
+            "[red]Error: uv not found. Please install uv first.[/red]"
+        )
         raise typer.Exit(1)
 
 
@@ -152,12 +162,16 @@ def setup_app_env_files() -> list[Path]:
     created_files = []
 
     if not apps_dir.exists():
-        console.print(f"⚠️  [yellow]Warning: {apps_dir} directory not found[/yellow]")
+        console.print(
+            f"⚠️  [yellow]Warning: {apps_dir} directory not found[/yellow]"
+        )
         return created_files
 
     # Find all app directories
     app_dirs = [
-        d for d in apps_dir.iterdir() if d.is_dir() and not d.name.startswith(".")
+        d
+        for d in apps_dir.iterdir()
+        if d.is_dir() and not d.name.startswith(".")
     ]
 
     if not app_dirs:
@@ -205,17 +219,23 @@ def init():
     console.print("📊 [bold blue]Setting up database...[/bold blue]")
     try:
         db_init()
-        console.print("✅ [bold green]Database initialization completed[/bold green]")
+        console.print(
+            "✅ [bold green]Database initialization completed[/bold green]"
+        )
     except Exception as e:
         console.print(f"[red]Error during database initialization: {e}[/red]")
         raise typer.Exit(1)
 
     # Setup environment files for all apps
-    console.print("📄 [bold blue]Setting up app environment files...[/bold blue]")
+    console.print(
+        "📄 [bold blue]Setting up app environment files...[/bold blue]"
+    )
     created_files = setup_app_env_files()
 
     # Summary
-    console.print("✅ [bold green]Workspace initialization complete![/bold green]")
+    console.print(
+        "✅ [bold green]Workspace initialization complete![/bold green]"
+    )
 
     summary_text = "📁 Files created/updated:\n"
     summary_text += "   - Cleaned workspace artifacts\n"
@@ -240,7 +260,9 @@ def init():
 @app.command()
 def set_vars():
     """Ensure all apps have proper environment files derived from examples."""
-    console.print("📄 [bold blue]Setting up app environment files...[/bold blue]")
+    console.print(
+        "📄 [bold blue]Setting up app environment files...[/bold blue]"
+    )
 
     created_files = setup_app_env_files()
 
@@ -259,7 +281,9 @@ def set_vars():
 @app.command()
 def dev():
     """Start development environment with Supabase and Turbo dev."""
-    console.print("🚀 [bold blue]Starting development environment...[/bold blue]")
+    console.print(
+        "🚀 [bold blue]Starting development environment...[/bold blue]"
+    )
 
     # Check if Supabase is running, start if not
     if not is_supabase_running():
@@ -268,7 +292,9 @@ def dev():
         )
         try:
             db_start()
-            console.print("✅ [bold green]Supabase started successfully[/bold green]")
+            console.print(
+                "✅ [bold green]Supabase started successfully[/bold green]"
+            )
         except Exception as e:
             console.print(f"[red]Error starting Supabase: {e}[/red]")
             raise typer.Exit(1)
@@ -276,38 +302,50 @@ def dev():
         console.print("✅ Supabase is already running")
 
     # Start Turbo dev
-    console.print("🔄 [bold blue]Starting Turbo development server...[/bold blue]")
+    console.print(
+        "🔄 [bold blue]Starting Turbo development server...[/bold blue]"
+    )
     try:
         subprocess.run(["pnpm", "turbo", "dev"], check=True)
     except subprocess.CalledProcessError as e:
         console.print(f"[red]Error running turbo dev: {e}[/red]")
         raise typer.Exit(1)
     except FileNotFoundError:
-        console.print("[red]Error: pnpm not found. Please install pnpm first.[/red]")
+        console.print(
+            "[red]Error: pnpm not found. Please install pnpm first.[/red]"
+        )
         raise typer.Exit(1)
     except KeyboardInterrupt:
-        console.print("\n🛑 [yellow]Development server stopped by user[/yellow]")
+        console.print(
+            "\n🛑 [yellow]Development server stopped by user[/yellow]"
+        )
         raise typer.Exit(0)
 
 
 @app.command()
 def dev_stop():
     """Stop development environment and Supabase."""
-    console.print("🛑 [bold blue]Stopping development environment...[/bold blue]")
+    console.print(
+        "🛑 [bold blue]Stopping development environment...[/bold blue]"
+    )
 
     # Stop Supabase if running
     if is_supabase_running():
         console.print("📊 [bold blue]Stopping Supabase...[/bold blue]")
         try:
             db_stop()
-            console.print("✅ [bold green]Supabase stopped successfully[/bold green]")
+            console.print(
+                "✅ [bold green]Supabase stopped successfully[/bold green]"
+            )
         except Exception as e:
             console.print(f"[red]Error stopping Supabase: {e}[/red]")
             raise typer.Exit(1)
     else:
         console.print("✅ Supabase is not running")
 
-    console.print("✅ [bold green]Development environment stopped[/bold green]")
+    console.print(
+        "✅ [bold green]Development environment stopped[/bold green]"
+    )
 
 
 if __name__ == "__main__":

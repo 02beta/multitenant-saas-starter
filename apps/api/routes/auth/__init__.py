@@ -1,4 +1,4 @@
-"""Authentication endpoints."""
+"""Authentication routes."""
 
 from .router import router
 

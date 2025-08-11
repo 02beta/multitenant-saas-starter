@@ -28,6 +28,13 @@ from pathlib import Path
 import typer
 from rich.console import Console
 from rich.panel import Panel
+from rich.progress import (
+    BarColumn,
+    Progress,
+    SpinnerColumn,
+    TextColumn,
+    TimeElapsedColumn,
+)
 from rich.text import Text
 
 __all__ = [
@@ -812,35 +819,82 @@ def create_github_release_cmd():
     prerelease, and the title indicates pre-production.
     """
     logging.info("Running create-github-release command...")
-    install_dependencies()
+    # Progress UI for logical activity groups
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("{task.description}"),
+        BarColumn(),
+        TextColumn("{task.percentage:>3.0f}%"),
+        TimeElapsedColumn(),
+    ) as progress:
+        # 1) Dependencies
+        deps_task = progress.add_task(
+            "[green]Checking dependencies...[/]", total=1
+        )
+        install_dependencies()
+        progress.update(deps_task, advance=1)
 
-    version = get_current_version()
-    display_text = Text(f"Detected root version: {version}", style="bold blue")
-    console.print(Panel(display_text, title="Version", style="blue"))
+        # 2) Detect version
+        version_task = progress.add_task(
+            "[cyan]Detecting version...[/]", total=1
+        )
+        version = get_current_version()
+        progress.update(version_task, advance=1)
+        display_text = Text(
+            f"Detected root version: {version}", style="bold blue"
+        )
+        console.print(Panel(display_text, title="Version", style="blue"))
 
-    is_production = typer.confirm(
-        "Is this a production release?", default=True
-    )
+        # 3) Choose release type
+        choose_task = progress.add_task(
+            "[magenta]Selecting release type...[/]", total=1
+        )
+        is_production = typer.confirm(
+            "Is this a production release?", default=True
+        )
+        progress.update(choose_task, advance=1)
 
-    tag = f"v{version}" if is_production else f"v{version}-pre"
-    title = (
-        f"Release v{version}"
-        if is_production
-        else f"Release v{version} (Pre-production)"
-    )
+        # 4) Prepare labels
+        label_task = progress.add_task(
+            "[yellow]Preparing release metadata...[/]", total=1
+        )
+        tag = f"v{version}" if is_production else f"v{version}-pre"
+        title = (
+            f"Release v{version}"
+            if is_production
+            else f"Release v{version} (Pre-production)"
+        )
+        release_version_label = version if is_production else f"{version}-pre"
+        progress.update(label_task, advance=1)
 
-    last_tag = get_last_release_tag()
-    release_version_label = version if is_production else f"{version}-pre"
-    release_notes = generate_release_notes(
-        last_tag, "HEAD", release_version_label
-    )
+        # 5) Generate release notes
+        notes_task = progress.add_task(
+            "[blue]Generating release notes...[/]", total=1
+        )
+        last_tag = get_last_release_tag()
+        release_notes = generate_release_notes(
+            last_tag, "HEAD", release_version_label
+        )
+        progress.update(notes_task, advance=1)
 
-    create_github_release(
-        tag=tag,
-        title=title,
-        release_notes=release_notes,
-        prerelease=(not is_production),
-    )
+        # 6) Authenticate (idempotent; may already be authed)
+        auth_task = progress.add_task(
+            "[green]Authenticating GitHub CLI...[/]", total=1
+        )
+        authenticate_github_cli()
+        progress.update(auth_task, advance=1)
+
+        # 7) Create release
+        create_task = progress.add_task(
+            "[green]Creating GitHub release...[/]", total=1
+        )
+        create_github_release(
+            tag=tag,
+            title=title,
+            release_notes=release_notes,
+            prerelease=(not is_production),
+        )
+        progress.update(create_task, advance=1)
 
 
 if __name__ == "__main__":

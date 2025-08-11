@@ -1,5 +1,6 @@
-"""FastAPI application with domain-driven endpoints."""
+"""FastAPI application with domain-driven routes."""
 
+import logging
 from contextlib import asynccontextmanager
 
 from core.common.exceptions import DomainException
@@ -7,7 +8,7 @@ from core.database import create_tables
 from fastapi import FastAPI
 
 from .config import settings
-from .endpoints import (
+from .routes import (
     auth_router,
     memberships_router,
     organizations_router,
@@ -20,6 +21,18 @@ from .utils import handle_domain_exception
 async def lifespan(app: FastAPI):
     """Manage application lifecycle events."""
     print("Starting up API...")
+
+    # Minimal logging setup (dataset: api-<ENVIRONMENT>)
+    try:
+        from core import setup_logging
+
+        setup_logging()
+        logging.getLogger(__name__).info("Logging initialized")
+    except Exception as ax_err:  # Soft-fail if not configured
+        logging.getLogger(__name__).warning(
+            "logging not initialized: %s", ax_err
+        )
+
     create_tables()
     print("Database tables created successfully")
     yield
@@ -48,7 +61,7 @@ async def domain_exception_handler(request, exc: DomainException):
     return handle_domain_exception(exc)
 
 
-# Root endpoints
+# Root routes
 @app.get("/")
 async def root():
     return {"message": "Multi-tenant SaaS API"}

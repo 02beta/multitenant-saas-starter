@@ -3,6 +3,7 @@ import { ThemeProvider } from "@workspace/ui/components/theme-provider";
 import "@workspace/ui/globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@workspace/ui/components/ui/sonner";
+import { AxiomWebVitals } from "next-axiom";
 
 const fontMono = localFont({
   src: "../public/fonts/aeonikmonovf.woff2",
@@ -33,6 +34,7 @@ export default function RootLayout({
         >
           <Providers>{children}</Providers>
           <Toaster />
+          <AxiomWebVitals />
         </ThemeProvider>
       </body>
     </html>

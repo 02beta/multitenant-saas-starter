@@ -21,7 +21,7 @@ dependencies = [
     "psycopg2-binary>=2.9.9",
     "asyncpg>=0.29.0",
     "pydantic-settings>=2.10.1",
-
+    "axiom-py>=0.9.0",
 ]
 
 [project.optional-dependencies]

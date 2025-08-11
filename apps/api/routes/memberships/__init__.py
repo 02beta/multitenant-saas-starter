@@ -1,4 +1,4 @@
-"""Memberships endpoints."""
+"""Memberships routes."""
 
 from .router import router
 

@@ -1,8 +1,8 @@
-"""Membership endpoints dependencies."""
+"""Membership routes dependencies."""
 
 from uuid import UUID
 
-from api.endpoints.auth.dependencies import get_current_user
+from api.routes.auth.dependencies import get_current_user
 from core.database import get_session
 from core.domains.memberships import (
     MembershipRepository,
@@ -30,10 +30,14 @@ async def require_owner_role(
         return True
 
     membership_service = get_membership_service()
-    membership = membership_service.get_user_membership(session, current_user.id, organization_id)
+    membership = membership_service.get_user_membership(
+        session, current_user.id, organization_id
+    )
 
     if not membership or membership.role != MembershipRole.OWNER:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Owner role required")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Owner role required"
+        )
     return True
 
 
@@ -47,7 +51,9 @@ async def require_editor_role(
         return True
 
     membership_service = get_membership_service()
-    membership = membership_service.get_user_membership(session, current_user.id, organization_id)
+    membership = membership_service.get_user_membership(
+        session, current_user.id, organization_id
+    )
 
     if not membership or membership.role not in [
         MembershipRole.OWNER,
