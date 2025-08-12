@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { log } from "next-axiom";
 
-export function AxiomDemo(): JSX.Element {
+export function AxiomDemo(): React.ReactElement {
   useEffect(() => {
     log.debug("new sign-in challenge", {
       customerId: 32423,
@@ -11,5 +11,5 @@ export function AxiomDemo(): JSX.Element {
     });
   }, []);
 
-  return null;
+  return <></>;
 }
