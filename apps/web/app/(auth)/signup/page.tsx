@@ -11,9 +11,10 @@ import {
 import { Button } from "@workspace/ui/components/ui/button";
 import { Input } from "@workspace/ui/components/ui/input";
 import { Label } from "@workspace/ui/components/ui/label";
-import { toast } from "@workspace/ui/hooks/use-toast";
+import { useToast } from "@workspace/ui/hooks";
 
 export default function SignupPage() {
+  const { toast } = useToast();
   const router = useRouter();
   const [form, setForm] = useState({
     email: "",
@@ -51,11 +52,7 @@ export default function SignupPage() {
       const slug = data.organization_slug || form.slug;
       router.replace(`/${slug}/dashboard`);
     } catch (err: any) {
-      toast({
-        title: "Signup failed",
-        description: err.message,
-        variant: "destructive",
-      });
+      toast(err.message, { variant: "error" });
     } finally {
       setLoading(false);
     }
