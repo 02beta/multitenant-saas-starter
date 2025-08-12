@@ -5,12 +5,21 @@ export const metadata: Metadata = {
   description: "Your organization dashboard.",
 };
 
-export default function DashboardPage({ params }: { params: { org: string } }) {
+interface DashboardPageProps {
+  params: {
+    org: string;
+  };
+}
+
+export default function DashboardPage(props: DashboardPageProps) {
+  const { params } = props;
+
   // In a real app, fetch profile using token
   const user = {
     full_name: "Ada Lovelace",
     avatar_url: "/images/logos/logo-light.png",
   };
+
   return (
     <div className="min-h-svh w-full flex items-center justify-center p-6">
       <div className="text-center space-y-2">
