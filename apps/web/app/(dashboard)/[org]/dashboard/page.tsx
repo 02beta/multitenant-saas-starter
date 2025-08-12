@@ -5,15 +5,15 @@ export const metadata: Metadata = {
   description: "Your organization dashboard.",
 };
 
-interface DashboardPageProps {
+type DashboardPageProps = {
   params: {
     org: string;
   };
-}
+};
 
-export default function DashboardPage(props: DashboardPageProps) {
-  const { params } = props;
-
+export default function DashboardPage({
+  params,
+}: DashboardPageProps): React.ReactElement {
   // In a real app, fetch profile using token
   const user = {
     full_name: "Ada Lovelace",
