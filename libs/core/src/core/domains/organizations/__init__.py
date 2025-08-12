@@ -1,6 +1,9 @@
 """Organizations domain exports."""
 
-from .exceptions import InvalidOrganizationSlugError, OrganizationAlreadyExistsError
+from .exceptions import (
+    InvalidOrganizationSlugError,
+    OrganizationAlreadyExistsError,
+)
 from .models import (
     Organization,
     OrganizationCreate,

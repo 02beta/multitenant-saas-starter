@@ -1,9 +1,11 @@
 import localFont from "next/font/local";
 import { ThemeProvider } from "@workspace/ui/components/theme-provider";
-import "@workspace/ui/globals.css";
+
 import { Providers } from "@/components/providers";
 import { Toaster } from "@workspace/ui/components/ui/sonner";
 import { AxiomWebVitals } from "next-axiom";
+
+import "@workspace/ui/globals.css";
 
 const fontMono = localFont({
   src: "../public/fonts/aeonikmonovf.woff2",

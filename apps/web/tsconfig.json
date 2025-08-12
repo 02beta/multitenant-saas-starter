@@ -1,9 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": [
-    "../../tsconfig.base.json",
-    "@workspace/typescript-config/nextjs.json"
-  ],
+  "extends": ["@workspace/typescript-config/nextjs.json"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
@@ -16,7 +13,9 @@
       "@workspace/ui/styles/*": ["../../libs/ui/src/styles/*"],
       "@workspace/ui/hooks/*": ["../../libs/ui/src/hooks/*"],
       "@workspace/eslint-config/*": ["../../libs/eslint-config/*"],
-      "@workspace/typescript-config/*": ["../../libs/typescript-config/*"]
+      "@workspace/typescript-config/*": ["../../libs/typescript-config/*"],
+      "@workspace/typescript-sdk": ["../../libs/typescript-sdk/src/index.ts"],
+      "@workspace/typescript-sdk/*": ["../../libs/typescript-sdk/src/*"]
     },
     "plugins": [
       {

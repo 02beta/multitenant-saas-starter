@@ -23,7 +23,9 @@ class OrganizationBase(SQLModel):
     logo_url: str | None = Field(default=None, max_length=512)
 
 
-class Organization(OrganizationBase, AuditFieldsMixin, SoftDeleteMixin, table=True):
+class Organization(
+    OrganizationBase, AuditFieldsMixin, SoftDeleteMixin, table=True
+):
     """Organization model for the core domain."""
 
     __tablename__ = "organizations"

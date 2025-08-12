@@ -25,7 +25,9 @@ class AuthProviderRegistry:
     ) -> AuthProvider:
         """Create provider instance."""
         if provider_name not in cls._providers:
-            print(f"Warning: Provider '{provider_name}' not registered, using stub")
+            print(
+                f"Warning: Provider '{provider_name}' not registered, using stub"
+            )
             return AuthProviderStub()
 
         factory = cls._providers[provider_name]

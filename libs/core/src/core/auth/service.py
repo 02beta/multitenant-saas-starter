@@ -8,11 +8,12 @@ from sqlmodel import Session, select
 
 from .exceptions import (
     OrganizationAccessDeniedError,
-    # UserNotFoundError
+    UserNotFoundError,
     SessionNotFoundError,
 )
 from .models import AuthResult, AuthSessionModel, AuthUser, AuthUserModel
 from .protocols import AuthProvider
+from typing import Tuple
 
 
 class AuthService:
@@ -34,7 +35,9 @@ class AuthService:
 
         # Validate organization access if specified
         if organization_id:
-            await self._validate_organization_access(local_user.id, organization_id)
+            await self._validate_organization_access(
+                local_user.id, organization_id
+            )
 
         # Create local session
         auth_session = await self._create_local_session(
@@ -120,7 +123,9 @@ class AuthService:
             # Get existing local user
             from core.domains.users import User
 
-            stmt = select(User).where(User.id == existing_auth_user.local_user_id)
+            stmt = select(User).where(
+                User.id == existing_auth_user.local_user_id
+            )
             local_user = self.session.exec(stmt).first()
             return local_user
 
@@ -160,7 +165,8 @@ class AuthService:
         # Get auth_user record
         stmt = select(AuthUserModel).where(
             AuthUserModel.provider_type == auth_result.user.provider_type,
-            AuthUserModel.provider_user_id == auth_result.user.provider_user_id,
+            AuthUserModel.provider_user_id
+            == auth_result.user.provider_user_id,
         )
         auth_user_record = self.session.exec(stmt).first()
 
@@ -208,9 +214,13 @@ class AuthService:
         if not membership:
             raise OrganizationAccessDeniedError(str(organization_id))
 
-    async def _get_auth_user_by_session(self, session: AuthSessionModel) -> AuthUser:
+    async def _get_auth_user_by_session(
+        self, session: AuthSessionModel
+    ) -> AuthUser:
         """Get AuthUser from session."""
-        stmt = select(AuthUserModel).where(AuthUserModel.id == session.auth_user_id)
+        stmt = select(AuthUserModel).where(
+            AuthUserModel.id == session.auth_user_id
+        )
         auth_user_record = self.session.exec(stmt).first()
 
         return AuthUser(
@@ -221,3 +231,118 @@ class AuthService:
             created_at=auth_user_record.created_at,
             updated_at=auth_user_record.updated_at,
         )
+
+    async def get_current_user(self, session: AuthSessionModel):
+        """Get current authenticated user."""
+        from core.domains.users import User
+
+        stmt = select(User).where(User.id == session.local_user_id)
+        user = self.session.exec(stmt).first()
+        if not user:
+            raise UserNotFoundError(str(session.local_user_id))
+        return user
+
+    async def create_user_with_organization(
+        self,
+        email: str,
+        password: str,
+        first_name: str,
+        last_name: str,
+        organization_name: Optional[str] = None,
+    ) -> Tuple[AuthUser, UUID, UUID]:
+        """Create user with organization and owner membership."""
+        # Create user in provider
+        user_data = {"first_name": first_name, "last_name": last_name}
+        auth_user = await self.provider.create_user(email, password, user_data)
+
+        # Create local user
+        from core.domains.users import User
+        from core.domains.organizations import Organization
+        from core.domains.memberships import (
+            Membership,
+            MembershipRole,
+            MembershipStatus,
+        )
+        from slugify import slugify
+
+        local_user = User(
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            password="",  # Managed by provider
+        )
+        self.session.add(local_user)
+        self.session.commit()
+        self.session.refresh(local_user)
+
+        # Create auth_user record
+        auth_user_record = AuthUserModel(
+            local_user_id=local_user.id,
+            provider_type=auth_user.provider_type,
+            provider_user_id=auth_user.provider_user_id,
+            provider_email=auth_user.email,
+            provider_metadata=auth_user.provider_metadata,
+        )
+        self.session.add(auth_user_record)
+
+        # Create organization
+        org_name = (
+            organization_name or f"{first_name} {last_name}'s Organization"
+        )
+        org_slug = slugify(org_name.lower())
+
+        # Ensure unique slug
+        base_slug = org_slug
+        counter = 1
+        while self.session.exec(
+            select(Organization).where(Organization.slug == org_slug)
+        ).first():
+            org_slug = f"{base_slug}-{counter}"
+            counter += 1
+
+        organization = Organization(
+            name=org_name,
+            slug=org_slug,
+            description=f"Organization for {first_name} {last_name}",
+        )
+        self.session.add(organization)
+        self.session.commit()
+        self.session.refresh(organization)
+
+        # Create owner membership
+        membership = Membership(
+            organization_id=organization.id,
+            user_id=local_user.id,
+            role=MembershipRole.OWNER,
+            status=MembershipStatus.ACTIVE,
+            accepted_at=datetime.utcnow(),
+        )
+        self.session.add(membership)
+        self.session.commit()
+
+        return auth_user, local_user.id, organization.id
+
+    async def send_password_reset(self, email: str) -> bool:
+        """Send password reset email."""
+        # This will be handled by Supabase
+        try:
+            # Check if user exists first
+            from core.domains.users import User
+
+            stmt = select(User).where(User.email == email)
+            user = self.session.exec(stmt).first()
+
+            if user:
+                # Supabase handles the actual email sending
+                await self.provider.send_password_reset(email)
+            # Always return True to prevent email enumeration
+            return True
+        except Exception:
+            return True
+
+    async def reset_password(self, token: str, new_password: str) -> bool:
+        """Reset user password."""
+        try:
+            return await self.provider.reset_password(token, new_password)
+        except Exception:
+            return False

@@ -1,6 +1,5 @@
 """FastAPI application with domain-driven routes."""
 
-import logging
 from contextlib import asynccontextmanager
 
 from core.common.exceptions import DomainException
@@ -24,14 +23,12 @@ async def lifespan(app: FastAPI):
 
     # Minimal logging setup (dataset: api-<ENVIRONMENT>)
     try:
-        from core import setup_logging
+        from core import core_logger, setup_logging
 
         setup_logging()
-        logging.getLogger(__name__).info("Logging initialized")
+        core_logger.info("Logging initialized")
     except Exception as ax_err:  # Soft-fail if not configured
-        logging.getLogger(__name__).warning(
-            "logging not initialized: %s", ax_err
-        )
+        core_logger.warning("logging not initialized: %s", ax_err)
 
     create_tables()
     print("Database tables created successfully")

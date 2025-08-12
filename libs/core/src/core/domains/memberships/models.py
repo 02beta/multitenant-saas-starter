@@ -23,9 +23,7 @@ class MembershipRole(IntEnum):
     """Role enum for memberships."""
 
     OWNER = 0  # can manage memberships for the organization and edit data associated witht the organization
-    EDITOR = (
-        1  # can edit data associated with the organization but not manage memberships
-    )
+    EDITOR = 1  # can edit data associated with the organization but not manage memberships
     VIEWER = 2  # can read data associated with the organization
 
 
@@ -77,7 +75,9 @@ class MembershipBase(SQLModel):
     )
 
 
-class Membership(MembershipBase, AuditFieldsMixin, SoftDeleteMixin, table=True):
+class Membership(
+    MembershipBase, AuditFieldsMixin, SoftDeleteMixin, table=True
+):
     """Membership model for the core domain."""
 
     __tablename__ = "memberships"

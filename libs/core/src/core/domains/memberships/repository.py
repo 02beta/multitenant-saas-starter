@@ -20,7 +20,9 @@ __all__ = [
 ]
 
 
-class MembershipRepository(CRUDBase[Membership, MembershipCreate, MembershipUpdate]):
+class MembershipRepository(
+    CRUDBase[Membership, MembershipCreate, MembershipUpdate]
+):
     """Repository for Membership domain operations."""
 
     def __init__(self):
@@ -283,7 +285,9 @@ class MembershipRepository(CRUDBase[Membership, MembershipCreate, MembershipUpda
         # Apply sorting
         if sort_by and hasattr(Membership, sort_by):
             order_field = getattr(Membership, sort_by)
-            stmt = stmt.order_by(order_field.desc() if sort_desc else order_field)
+            stmt = stmt.order_by(
+                order_field.desc() if sort_desc else order_field
+            )
 
         # Apply pagination
         stmt = stmt.offset(skip).limit(limit)

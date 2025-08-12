@@ -26,7 +26,9 @@ class MembershipNotFoundError(NotFoundError):
     """Raised when a membership relationship is not found."""
 
     def __init__(
-        self, organization_id: Optional[UUID] = None, user_id: Optional[UUID] = None
+        self,
+        organization_id: Optional[UUID] = None,
+        user_id: Optional[UUID] = None,
     ):
         """
         Initialize membership not found error.

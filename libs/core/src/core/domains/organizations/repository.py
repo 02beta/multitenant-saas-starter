@@ -18,7 +18,9 @@ class OrganizationRepository(
     def __init__(self):
         super().__init__(Organization)
 
-    def get_by_slug(self, session: Session, *, slug: str) -> Optional[Organization]:
+    def get_by_slug(
+        self, session: Session, *, slug: str
+    ) -> Optional[Organization]:
         """Get organization by slug."""
         stmt = select(Organization).where(
             and_(Organization.slug == slug, Organization.deleted_at.is_(None))

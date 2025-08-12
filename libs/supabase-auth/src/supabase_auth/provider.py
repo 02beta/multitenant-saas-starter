@@ -68,7 +68,11 @@ class SupabaseAuthProvider(AuthProvider):
         """Create user with Supabase."""
         try:
             response = self.client.auth.sign_up(
-                {"email": email, "password": password, "options": {"data": user_data}}
+                {
+                    "email": email,
+                    "password": password,
+                    "options": {"data": user_data},
+                }
             )
 
             return self._convert_user_to_auth_user(response.user)
@@ -97,7 +101,9 @@ class SupabaseAuthProvider(AuthProvider):
         except Exception:
             return None
 
-    async def update_user(self, user_id: str, user_data: Dict[str, Any]) -> AuthUser:
+    async def update_user(
+        self, user_id: str, user_data: Dict[str, Any]
+    ) -> AuthUser:
         """Update user in Supabase."""
         try:
             response = self.client.auth.update_user({"data": user_data})
@@ -114,7 +120,9 @@ class SupabaseAuthProvider(AuthProvider):
         except Exception:
             return False
 
-    async def logout(self, user_id: str, session_id: Optional[str] = None) -> bool:
+    async def logout(
+        self, user_id: str, session_id: Optional[str] = None
+    ) -> bool:
         """Logout user from Supabase."""
         try:
             self.client.auth.sign_out()
@@ -128,13 +136,17 @@ class SupabaseAuthProvider(AuthProvider):
         tokens = TokenPair(
             access_token=supabase_response.session.access_token,
             refresh_token=supabase_response.session.refresh_token,
-            expires_at=datetime.fromtimestamp(supabase_response.session.expires_at),
+            expires_at=datetime.fromtimestamp(
+                supabase_response.session.expires_at
+            ),
         )
 
         return AuthResult(
             user=user,
             tokens=tokens,
-            session_metadata={"supabase_session_id": str(supabase_response.session.id)},
+            session_metadata={
+                "supabase_session_id": str(supabase_response.session.id)
+            },
         )
 
     def _convert_user_to_auth_user(self, supabase_user) -> AuthUser:
@@ -154,3 +166,19 @@ class SupabaseAuthProvider(AuthProvider):
                 supabase_user.updated_at.replace("Z", "+00:00")
             ),
         )
+
+    async def send_password_reset(self, email: str) -> bool:
+        """Send password reset email via Supabase."""
+        try:
+            self.client.auth.reset_password_email(email)
+            return True
+        except Exception:
+            return False
+
+    async def reset_password(self, token: str, new_password: str) -> bool:
+        """Reset password with token."""
+        try:
+            self.client.auth.update_user({"password": new_password})
+            return True
+        except Exception:
+            return False

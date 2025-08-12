@@ -4,6 +4,7 @@
   "tasks": {
     "build": {
       "env": [
+        "KV_REST_API_TOKEN",
         "DATABASE_URL",
         "DATABASE_ASYNC_URL",
         "AUTH_JWT_SECRET",
@@ -15,6 +16,7 @@
     },
     "dev": {
       "env": [
+        "KV_REST_API_TOKEN",
         "DATABASE_URL",
         "DATABASE_ASYNC_URL",
         "AUTH_JWT_SECRET",

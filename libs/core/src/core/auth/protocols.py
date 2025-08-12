@@ -35,7 +35,9 @@ class AuthProvider(Protocol):
         """Get user by email address."""
         ...
 
-    async def update_user(self, user_id: str, user_data: Dict[str, Any]) -> AuthUser:
+    async def update_user(
+        self, user_id: str, user_data: Dict[str, Any]
+    ) -> AuthUser:
         """Update user data in the auth provider."""
         ...
 
@@ -43,8 +45,18 @@ class AuthProvider(Protocol):
         """Delete user from the auth provider."""
         ...
 
-    async def logout(self, user_id: str, session_id: Optional[str] = None) -> bool:
+    async def logout(
+        self, user_id: str, session_id: Optional[str] = None
+    ) -> bool:
         """Logout user and invalidate session."""
+        ...
+
+    async def send_password_reset(self, email: str) -> bool:
+        """Send password reset email to user."""
+        ...
+
+    async def reset_password(self, token: str, new_password: str) -> bool:
+        """Reset user password with token."""
         ...
 
 
@@ -71,11 +83,21 @@ class AuthProviderStub:
     async def get_user_by_email(self, email: str) -> Optional[AuthUser]:
         raise NotImplementedError("No authentication provider configured")
 
-    async def update_user(self, user_id: str, user_data: Dict[str, Any]) -> AuthUser:
+    async def update_user(
+        self, user_id: str, user_data: Dict[str, Any]
+    ) -> AuthUser:
         raise NotImplementedError("No authentication provider configured")
 
     async def delete_user(self, user_id: str) -> bool:
         raise NotImplementedError("No authentication provider configured")
 
-    async def logout(self, user_id: str, session_id: Optional[str] = None) -> bool:
+    async def logout(
+        self, user_id: str, session_id: Optional[str] = None
+    ) -> bool:
+        raise NotImplementedError("No authentication provider configured")
+
+    async def send_password_reset(self, email: str) -> bool:
+        raise NotImplementedError("No authentication provider configured")
+
+    async def reset_password(self, token: str, new_password: str) -> bool:
         raise NotImplementedError("No authentication provider configured")
