@@ -12,21 +12,19 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@workspace/ui/hooks/use-toast";
+import { apiUrl } from "@/lib";
 
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
   async function handleLogin(values: { email: string; password: string }) {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-        credentials: "include",
-      }
-    );
+    const response = await fetch(`${apiUrl}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+      credentials: "include",
+    });
 
     if (!response.ok) {
       const error = await response.json();
