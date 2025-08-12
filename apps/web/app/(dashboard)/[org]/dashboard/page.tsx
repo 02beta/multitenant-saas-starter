@@ -1,6 +1,5 @@
 import { getSubdomainData } from "@/lib/subdomains";
 import { Metadata } from "next";
-import { log, useLogger } from "next-axiom";
 
 export const metadata: Metadata = {
   title: "Dashboard | Multitenant SaaS Starter",
@@ -18,12 +17,10 @@ export default async function DashboardPage({
 }: {
   params: Promise<{ org: string }>;
 }): Promise<React.ReactElement> {
-  const log = useLogger({ source: "dashboard.tsx" });
   const { org } = await params;
   const subdomainData = await getSubdomainData(org);
 
   if (!subdomainData) {
-    log.error("Organization not found", { org });
     return <div>Organization not found</div>;
   }
 

@@ -1,8 +1,0 @@
-dist/
-node_modules/
-*.config.*
-*.config.js
-*.config.mjs
-pnpm-lock.yaml
-package-lock.json
-yarn.lock

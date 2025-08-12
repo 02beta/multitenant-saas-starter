@@ -1,5 +1,4 @@
 import { Button } from "@workspace/ui/components/ui/button";
-import { AxiomDemo } from "@/components/axiom-demo";
 import Link from "next/link";
 
 export default function Page() {
@@ -10,7 +9,6 @@ export default function Page() {
         <Button size="sm" asChild>
           <Link href="/login">Go to login</Link>
         </Button>
-        <AxiomDemo />
       </div>
     </div>
   );
