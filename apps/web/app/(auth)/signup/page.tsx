@@ -12,6 +12,7 @@ import { Button } from "@workspace/ui/components/ui/button";
 import { Input } from "@workspace/ui/components/ui/input";
 import { Label } from "@workspace/ui/components/ui/label";
 import { useToast } from "@workspace/ui/hooks";
+import { log } from "next-axiom";
 
 export default function SignupPage() {
   const { toast } = useToast();
@@ -51,8 +52,17 @@ export default function SignupPage() {
       localStorage.setItem("refresh_token", data.refresh_token ?? "");
       const slug = data.organization_slug || form.slug;
       router.replace(`/${slug}/dashboard`);
-    } catch (err: any) {
-      toast(err.message, { variant: "error" });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast(err.message, { variant: "error" });
+        log.error("signup failed", {
+          email: form.email,
+          error: err.message,
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        toast("An unknown error occurred", { variant: "error" });
+      }
     } finally {
       setLoading(false);
     }

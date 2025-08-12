@@ -5,7 +5,10 @@ from uuid import UUID
 
 from sqlmodel import Session
 
-from .exceptions import InvalidOrganizationSlugError, OrganizationAlreadyExistsError
+from .exceptions import (
+    InvalidOrganizationSlugError,
+    OrganizationAlreadyExistsError,
+)
 from .models import Organization, OrganizationCreate, OrganizationUpdate
 from .repository import OrganizationRepository
 
@@ -30,12 +33,16 @@ class OrganizationService:
             raise InvalidOrganizationSlugError(organization_data.slug)
 
         # Check if slug is available
-        existing = self.repository.get_by_slug(session, slug=organization_data.slug)
+        existing = self.repository.get_by_slug(
+            session, slug=organization_data.slug
+        )
         if existing:
             raise OrganizationAlreadyExistsError(organization_data.slug)
 
         # Create organization
-        organization = self.repository.create(session, obj_in=organization_data)
+        organization = self.repository.create(
+            session, obj_in=organization_data
+        )
 
         # The membership creation is handled by the memberships domain
         # This demonstrates proper domain separation
@@ -75,11 +82,15 @@ class OrganizationService:
                 raise InvalidOrganizationSlugError(update_data.slug)
 
             # Check if new slug is available (excluding current organization)
-            existing = self.repository.get_by_slug(session, slug=update_data.slug)
+            existing = self.repository.get_by_slug(
+                session, slug=update_data.slug
+            )
             if existing and existing.id != organization.id:
                 raise OrganizationAlreadyExistsError(update_data.slug)
 
-        return self.repository.update(session, db_obj=organization, obj_in=update_data)
+        return self.repository.update(
+            session, db_obj=organization, obj_in=update_data
+        )
 
     async def delete_organization(
         self, session: Session, *, organization_id: UUID, deleted_by_id: UUID

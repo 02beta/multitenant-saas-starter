@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { log } from "next-axiom";
+
 import {
   Card,
   CardContent,
@@ -21,9 +23,22 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    log.debug("login page loaded", {
+      page: "login",
+      timestamp: new Date().toISOString(),
+    });
+  }, []);
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+
+    log.info("login attempt", {
+      email: email,
+      timestamp: new Date().toISOString(),
+    });
+
     try {
       const res = await fetch(
         process.env.NEXT_PUBLIC_API_URL + "/v1/auth/login",
@@ -35,19 +50,38 @@ export default function LoginPage() {
       );
       if (!res.ok) throw new Error("Invalid credentials");
       const data = await res.json();
-      // Store tokens (demo: localStorage). For production, set HttpOnly cookies via route handler.
+
+      log.info("login successful", {
+        email: email,
+        organization_slug: data.organization_slug,
+        timestamp: new Date().toISOString(),
+      });
+
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("refresh_token", data.refresh_token ?? "");
 
-      // Optionally fetch organizations and redirect using slug
       const slug = data.organization_slug;
       if (slug) {
         router.replace(`/${slug}/dashboard`);
       } else {
         router.replace(`/dashboard`);
       }
-    } catch (err: any) {
-      toast(err.message, { variant: "error" });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast(err.message, { variant: "error" });
+        log.error("login failed", {
+          email: email,
+          error: err.message,
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        toast("An unknown error occurred", { variant: "error" });
+        log.error("login failed", {
+          email: email,
+          error: "An unknown error occurred",
+          timestamp: new Date().toISOString(),
+        });
+      }
     } finally {
       setLoading(false);
     }

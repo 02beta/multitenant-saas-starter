@@ -15,4 +15,8 @@ def create_supabase_provider(config: dict) -> SupabaseAuthProvider:
 # Auto-register the provider when this package is imported
 AuthProviderRegistry.register_provider("supabase", create_supabase_provider)
 
-__all__ = ["SupabaseAuthProvider", "SupabaseConfig", "create_supabase_provider"]
+__all__ = [
+    "SupabaseAuthProvider",
+    "SupabaseConfig",
+    "create_supabase_provider",
+]

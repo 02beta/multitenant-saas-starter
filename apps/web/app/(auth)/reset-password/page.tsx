@@ -29,8 +29,12 @@ export default function ResetPasswordPage() {
       // Here we just simulate success and redirect to login.
       toast("Password updated", { variant: "success" });
       router.replace("/login");
-    } catch (err: any) {
-      toast(err.message, { variant: "error" });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast(err.message, { variant: "error" });
+      } else {
+        toast("An unknown error occurred", { variant: "error" });
+      }
     } finally {
       setLoading(false);
     }

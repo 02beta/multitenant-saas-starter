@@ -259,7 +259,9 @@ class UserRepository(CRUDBase[User, UserCreate, UserUpdate]):
         # Apply sorting
         if sort_by and hasattr(User, sort_by):
             order_field = getattr(User, sort_by)
-            stmt = stmt.order_by(order_field.desc() if sort_desc else order_field)
+            stmt = stmt.order_by(
+                order_field.desc() if sort_desc else order_field
+            )
 
         # Apply pagination
         stmt = stmt.offset(skip).limit(limit)

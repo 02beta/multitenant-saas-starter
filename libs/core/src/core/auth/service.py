@@ -34,7 +34,9 @@ class AuthService:
 
         # Validate organization access if specified
         if organization_id:
-            await self._validate_organization_access(local_user.id, organization_id)
+            await self._validate_organization_access(
+                local_user.id, organization_id
+            )
 
         # Create local session
         auth_session = await self._create_local_session(
@@ -120,7 +122,9 @@ class AuthService:
             # Get existing local user
             from core.domains.users import User
 
-            stmt = select(User).where(User.id == existing_auth_user.local_user_id)
+            stmt = select(User).where(
+                User.id == existing_auth_user.local_user_id
+            )
             local_user = self.session.exec(stmt).first()
             return local_user
 
@@ -160,7 +164,8 @@ class AuthService:
         # Get auth_user record
         stmt = select(AuthUserModel).where(
             AuthUserModel.provider_type == auth_result.user.provider_type,
-            AuthUserModel.provider_user_id == auth_result.user.provider_user_id,
+            AuthUserModel.provider_user_id
+            == auth_result.user.provider_user_id,
         )
         auth_user_record = self.session.exec(stmt).first()
 
@@ -208,9 +213,13 @@ class AuthService:
         if not membership:
             raise OrganizationAccessDeniedError(str(organization_id))
 
-    async def _get_auth_user_by_session(self, session: AuthSessionModel) -> AuthUser:
+    async def _get_auth_user_by_session(
+        self, session: AuthSessionModel
+    ) -> AuthUser:
         """Get AuthUser from session."""
-        stmt = select(AuthUserModel).where(AuthUserModel.id == session.auth_user_id)
+        stmt = select(AuthUserModel).where(
+            AuthUserModel.id == session.auth_user_id
+        )
         auth_user_record = self.session.exec(stmt).first()
 
         return AuthUser(

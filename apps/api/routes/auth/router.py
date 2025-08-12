@@ -206,12 +206,14 @@ async def forgot_password(request: ForgotPasswordRequest):
         import supabase_auth
         from core.config import settings
 
-        provider = supabase_auth.create_supabase_provider({
-            "supabase_api_url": settings.supabase_api_url,
-            "supabase_public_key": settings.supabase_public_key,
-            "supabase_secret_key": settings.supabase_secret_key,
-            "auth_jwt_secret": settings.auth_jwt_secret,
-        })
+        provider = supabase_auth.create_supabase_provider(
+            {
+                "supabase_api_url": settings.supabase_api_url,
+                "supabase_public_key": settings.supabase_public_key,
+                "supabase_secret_key": settings.supabase_secret_key,
+                "auth_jwt_secret": settings.auth_jwt_secret,
+            }
+        )
 
         redirect_to = request.redirect_url
         if not redirect_to:

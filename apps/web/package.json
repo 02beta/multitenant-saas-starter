@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
+    "@upstash/redis": "^1.35.3",
+    "@workspace/logger": "workspace:*",
     "@workspace/ui": "workspace:*",
     "framer-motion": "^12.23.12",
     "lucide-react": "^0.475.0",

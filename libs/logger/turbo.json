@@ -1,0 +1,22 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": [
+        "NODE_ENV",
+        "AXIOM_TOKEN",
+        "NEXT_PUBLIC_AXIOM_DATASET",
+        "NEXT_PUBLIC_APP_NAME"
+      ]
+    },
+    "dev": {
+      "env": [
+        "AXIOM_TOKEN",
+        "NEXT_PUBLIC_AXIOM_DATASET",
+        "NODE_ENV",
+        "NEXT_PUBLIC_APP_NAME"
+      ]
+    }
+  }
+}

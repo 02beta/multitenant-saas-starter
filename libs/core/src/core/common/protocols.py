@@ -12,7 +12,9 @@ class AuditableModel(Protocol):
     created_at: datetime
     updated_at: Optional[datetime]
 
-    def set_audit_fields(self, updated_by_id: Optional[UUID] = None) -> None: ...
+    def set_audit_fields(
+        self, updated_by_id: Optional[UUID] = None
+    ) -> None: ...
 
 
 # Protocol for models with soft delete fields
@@ -38,7 +40,9 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: type[ModelType]):
         self.model = model
 
-    def create(self, session: Session, *, obj_in: CreateSchemaType) -> ModelType:
+    def create(
+        self, session: Session, *, obj_in: CreateSchemaType
+    ) -> ModelType:
         """Create new record."""
         if hasattr(obj_in, "model_dump"):
             create_data = obj_in.model_dump(exclude_unset=True)
@@ -46,7 +50,10 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             create_data = obj_in.dict(exclude_unset=True)
 
         # Set created_at if present in model
-        if hasattr(self.model, "created_at") and "created_at" not in create_data:
+        if (
+            hasattr(self.model, "created_at")
+            and "created_at" not in create_data
+        ):
             create_data["created_at"] = datetime.utcnow()
 
         db_obj = self.model(**create_data)
@@ -103,7 +110,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return db_obj
 
     def remove(
-        self, session: Session, *, id: UUID, deleted_by_id: Optional[UUID] = None
+        self,
+        session: Session,
+        *,
+        id: UUID,
+        deleted_by_id: Optional[UUID] = None,
     ) -> bool:
         """
         Remove record.
@@ -114,7 +125,9 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         if not obj:
             return False
 
-        if hasattr(obj, "soft_delete") and callable(getattr(obj, "soft_delete")):
+        if hasattr(obj, "soft_delete") and callable(
+            getattr(obj, "soft_delete")
+        ):
             obj.soft_delete(deleted_by_id)
             session.add(obj)
         else:

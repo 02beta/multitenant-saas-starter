@@ -210,20 +210,20 @@ max_frequency = "5s"
 # 4152127777 = "123456"
 
 # Configure logged in session timeouts.
-# [auth.sessions]
+[auth.sessions]
 # Force log out after the specified duration.
-# timebox = "24h"
+timebox = "24h"
 # Force log out if the user has been inactive longer than the specified duration.
-# inactivity_timeout = "8h"
+inactivity_timeout = "8h"
 
 # This hook runs before a new user is created and allows developers to reject the request based on the incoming user object.
-# [auth.hook.before_user_created]
-# enabled = true
+[auth.hook.before_user_created]
+enabled = false  # change this to true and update the uri to the name of the function you want to use
 # uri = "pg-functions://postgres/auth/before-user-created-hook"
 
 # This hook runs before a token is issued and allows you to add additional claims based on the authentication method used.
-# [auth.hook.custom_access_token]
-# enabled = true
+[auth.hook.custom_access_token]
+enabled = false # change this to true and update the uri to the name of the function you want to use
 # uri = "pg-functions://<database>/<schema>/<hook_name>"
 
 # Configure one of the supported SMS providers: `twilio`, `twilio_verify`, `messagebird`, `textlocal`, `vonage`.
@@ -281,7 +281,7 @@ enabled = false
 # Use Firebase Auth as a third-party provider alongside Supabase Auth.
 [auth.third_party.firebase]
 enabled = false
-# project_id = "my-firebase-project"
+# project_id = env(SUPABASE_AUTH_FIREBASE_PROJECT_ID)
 
 # Use Auth0 as a third-party provider alongside Supabase Auth.
 [auth.third_party.auth0]
@@ -299,7 +299,7 @@ enabled = false
 [auth.third_party.clerk]
 enabled = false
 # Obtain from https://clerk.com/setup/supabase
-# domain = "example.clerk.accounts.dev"
+domain = "env(SUPABASE_AUTH_CLERK_DOMAIN)"
 
 [edge_runtime]
 enabled = true
@@ -329,6 +329,6 @@ s3_host = "env(S3_HOST)"
 # Configures S3 bucket region, eg. us-east-1
 s3_region = "env(S3_REGION)"
 # Configures AWS_ACCESS_KEY_ID for S3 bucket
-s3_access_key = "env(S3_ACCESS_KEY)"
+s3_access_key = "env(S3_ACCESS_KEY_ID)"
 # Configures AWS_SECRET_ACCESS_KEY for S3 bucket
-s3_secret_key = "env(S3_SECRET_KEY)"
+s3_secret_key = "env(S3_SECRET_ACCESS_KEY)"

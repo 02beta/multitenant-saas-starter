@@ -1,23 +1,16 @@
-import js from "@eslint/js";
-import tseslint from "typescript-eslint";
-import prettier from "eslint-config-prettier";
+import { config as reactInternalConfig } from "@workspace/eslint-config/react-internal";
 
-export default tseslint.config(
-  js.configs.recommended,
-  ...tseslint.configs.recommended,
-  prettier,
+/** @type {import("eslint").Linter.Config} */
+export default [
+  ...reactInternalConfig,
   {
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
-      parser: tseslint.parser,
       parserOptions: {
         project: "./tsconfig.json",
         tsconfigRootDir: import.meta.dirname,
       },
-    },
-    plugins: {
-      "@typescript-eslint": tseslint.plugin,
     },
     rules: {
       // TypeScript specific rules
@@ -50,5 +43,5 @@ export default tseslint.config(
       "*.config.js",
       "*.config.mjs",
     ],
-  }
-);
+  },
+];

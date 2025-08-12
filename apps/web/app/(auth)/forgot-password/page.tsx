@@ -36,8 +36,12 @@ export default function ForgotPasswordPage() {
       toast("Email sent, check your inbox for a reset link.", {
         variant: "success",
       });
-    } catch (err: any) {
-      toast(err.message, { variant: "error" });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast(err.message, { variant: "error" });
+      } else {
+        toast("An unknown error occurred", { variant: "error" });
+      }
     } finally {
       setLoading(false);
     }

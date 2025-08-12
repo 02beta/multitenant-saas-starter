@@ -1,4 +1,6 @@
+import { getSubdomainData } from "@/lib/subdomains";
 import { Metadata } from "next";
+import { log, useLogger } from "next-axiom";
 
 export const metadata: Metadata = {
   title: "Dashboard | Multitenant SaaS Starter",
@@ -11,13 +13,25 @@ type DashboardPageProps = {
   };
 };
 
-export default function DashboardPage({
+export default async function DashboardPage({
   params,
-}: DashboardPageProps): React.ReactElement {
+}: {
+  params: Promise<{ org: string }>;
+}): Promise<React.ReactElement> {
+  const log = useLogger({ source: "dashboard.tsx" });
+  const { org } = await params;
+  const subdomainData = await getSubdomainData(org);
+
+  if (!subdomainData) {
+    log.error("Organization not found", { org });
+    return <div>Organization not found</div>;
+  }
+
   // In a real app, fetch profile using token
   const user = {
     full_name: "Ada Lovelace",
-    avatar_url: "/images/logos/logo-light.png",
+    avatar_url:
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=256&h=256&facepad=2",
   };
 
   return (
@@ -29,7 +43,7 @@ export default function DashboardPage({
           className="mx-auto size-16 rounded-full"
         />
         <h1 className="text-2xl font-bold">Hello {user.full_name}</h1>
-        <p className="text-muted-foreground">Organization: {params.org}</p>
+        <p className="text-muted-foreground">Organization: {org}</p>
       </div>
     </div>
   );

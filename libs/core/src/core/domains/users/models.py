@@ -102,10 +102,15 @@ class UserUpdate(SQLModel):
     """Schema for updating users."""
 
     email: Optional[str] = Field(
-        default=None, min_length=5, max_length=320, regex=r"^[^@]+@[^@]+\.[^@]+$"
+        default=None,
+        min_length=5,
+        max_length=320,
+        regex=r"^[^@]+@[^@]+\.[^@]+$",
     )
     password: Optional[str] = Field(default=None, min_length=8, max_length=128)
-    first_name: Optional[str] = Field(default=None, min_length=1, max_length=64)
+    first_name: Optional[str] = Field(
+        default=None, min_length=1, max_length=64
+    )
     last_name: Optional[str] = Field(default=None, min_length=1, max_length=64)
     is_active: Optional[bool] = Field(default=None)
     is_superuser: Optional[bool] = Field(default=None)

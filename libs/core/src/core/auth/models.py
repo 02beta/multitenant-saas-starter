@@ -65,7 +65,9 @@ class AuthUserModel(SQLModel, AuditFieldsMixin, SoftDeleteMixin, table=True):
     )
 
 
-class AuthSessionModel(SQLModel, AuditFieldsMixin, SoftDeleteMixin, table=True):
+class AuthSessionModel(
+    SQLModel, AuditFieldsMixin, SoftDeleteMixin, table=True
+):
     """Provider-agnostic auth session table."""
 
     __tablename__ = "auth_sessions"
