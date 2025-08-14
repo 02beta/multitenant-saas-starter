@@ -13,7 +13,8 @@ from .exceptions import (
     UserAlreadyExistsError,
     WeakPasswordError,
 )
-from .models import User, UserCreate, UserPublic, UserUpdate
+from .models import User
+from .schemas import UserCreate, UserPublic, UserUpdate
 from .repository import UserRepository
 
 

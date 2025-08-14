@@ -4,9 +4,17 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 import jwt
-from core.auth.exceptions import InvalidCredentialsError, InvalidTokenError
-from core.auth.models import AuthProviderType, AuthResult, AuthUser, TokenPair
-from core.auth.protocols import AuthProvider
+from core.domains.auth.exceptions import (
+    InvalidCredentialsError,
+    InvalidTokenError,
+)
+from core.domains.auth.protocols import AuthProvider
+from core.domains.auth.schemas import (
+    AuthProviderType,
+    AuthResult,
+    AuthUser,
+    TokenPair,
+)
 from supabase import Client, create_client
 
 from .config import SupabaseConfig
@@ -27,9 +35,10 @@ class SupabaseAuthProvider(AuthProvider):
     async def authenticate(self, email: str, password: str) -> AuthResult:
         """Authenticate with Supabase."""
         try:
-            response = self.client.auth.sign_in_with_password(
-                {"email": email, "password": password}
-            )
+            response = self.client.auth.sign_in_with_password({
+                "email": email,
+                "password": password,
+            })
 
             return self._convert_to_auth_result(response)
 
@@ -67,13 +76,11 @@ class SupabaseAuthProvider(AuthProvider):
     ) -> AuthUser:
         """Create user with Supabase."""
         try:
-            response = self.client.auth.sign_up(
-                {
-                    "email": email,
-                    "password": password,
-                    "options": {"data": user_data},
-                }
-            )
+            response = self.client.auth.sign_up({
+                "email": email,
+                "password": password,
+                "options": {"data": user_data},
+            })
 
             return self._convert_user_to_auth_user(response.user)
 

@@ -1,4 +1,6 @@
-import { getCurrentUser, getUserMemberships } from "@/lib/auth";
+"use server";
+
+import { getCurrentUser, getUserMemberships } from "@/lib/auth.server";
 import { redirect } from "next/navigation";
 
 interface Membership {

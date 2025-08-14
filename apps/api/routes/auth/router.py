@@ -3,22 +3,29 @@
 from typing import Optional
 from uuid import UUID
 
-from core.auth import AuthService, AuthSessionModel
-from core.auth.models import (
+from core.database import get_session
+from core.domains.auth import AuthService, AuthSessionModel
+from core.domains.auth.schemas import (
     ForgotPasswordRequest,
     LoginResponseExtended,
     ResetPasswordRequest,
     SignupRequest,
     SignupResponse,
 )
-from core.database import get_session
 from core.domains.memberships import (
     Membership,
     MembershipRole,
     MembershipStatus,
 )
 from core.domains.organizations import Organization
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import (
+    APIRouter,
+    Cookie,
+    Depends,
+    HTTPException,
+    Response,
+    status,
+)
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
@@ -45,17 +52,63 @@ class LoginResponse(BaseModel):
     user: dict
 
 
+def set_auth_cookies(
+    response: Response,
+    access_token: str,
+    refresh_token: Optional[str] = None,
+    access_token_expires: int = 3600,
+    refresh_token_expires: int = 60 * 60 * 24 * 30,
+) -> None:
+    """Set HTTP-only cookies for access and refresh tokens."""
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=access_token_expires,
+        path="/",
+    )
+    if refresh_token:
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            secure=True,
+            samesite="lax",
+            max_age=refresh_token_expires,
+            path="/",
+        )
+
+
+def clear_auth_cookies(response: Response) -> None:
+    """Clear authentication cookies."""
+    response.delete_cookie(key="access_token", path="/")
+    response.delete_cookie(key="refresh_token", path="/")
+
+
 @router.post("/login", response_model=LoginResponse)
 async def login(
     login_data: LoginRequest,
+    response: Response,
     auth_service: AuthService = Depends(get_auth_service),
 ):
-    """Login with provider-agnostic authentication."""
+    """Login with provider-agnostic authentication.
+
+    Sets HTTP-only cookies for access_token and refresh_token.
+    """
     try:
         auth_result = await auth_service.authenticate_user(
             email=login_data.email,
             password=login_data.password,
             organization_id=login_data.organization_id,
+        )
+
+        set_auth_cookies(
+            response,
+            access_token=auth_result.tokens.access_token,
+            refresh_token=auth_result.tokens.refresh_token,
+            access_token_expires=auth_result.tokens.expires_in or 3600,
         )
 
         return LoginResponse(
@@ -77,21 +130,43 @@ async def login(
 
 @router.post("/logout")
 async def logout(
+    response: Response,
     session: AuthSessionModel = Depends(get_current_session),
     auth_service: AuthService = Depends(get_auth_service),
 ):
-    """Logout and invalidate session."""
+    """Logout and invalidate session.
+
+    Clears authentication cookies.
+    """
     await auth_service.logout(session)
+    clear_auth_cookies(response)
     return {"message": "Logged out successfully"}
 
 
 @router.post("/refresh", response_model=LoginResponse)
 async def refresh_token(
-    refresh_token: str, auth_service: AuthService = Depends(get_auth_service)
+    response: Response,
+    refresh_token: Optional[str] = Cookie(default=None),
+    auth_service: AuthService = Depends(get_auth_service),
 ):
-    """Refresh access token."""
+    """Refresh access token.
+
+    Uses refresh_token from HTTP-only cookie if not provided in body.
+    Sets new tokens in cookies.
+    """
+    if not refresh_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing refresh token",
+        )
     try:
         auth_result = await auth_service.refresh_session(refresh_token)
+        set_auth_cookies(
+            response,
+            access_token=auth_result.tokens.access_token,
+            refresh_token=auth_result.tokens.refresh_token,
+            access_token_expires=auth_result.tokens.expires_in or 3600,
+        )
         return LoginResponse(
             access_token=auth_result.tokens.access_token,
             refresh_token=auth_result.tokens.refresh_token,
@@ -162,7 +237,10 @@ async def forgot_password(
     """Send password reset email."""
     await auth_service.send_password_reset(request_data.email)
     return {
-        "message": "If an account with that email exists, you will receive an email with a link to reset your password."
+        "message": (
+            "If an account with that email exists, you will receive an email "
+            "with a link to reset your password."
+        )
     }
 
 
@@ -221,19 +299,14 @@ async def get_current_user_extended(
         )
         org = db_session.exec(stmt).first()
         if org:
-            membership_list.append(
-                {
-                    "id": str(membership.id),
-                    "organization_id": str(org.id),
-                    "organization_name": org.name,
-                    "organization_slug": org.slug,
-                    "role": membership.role.value,
-                    "role_name": membership.role.name,
-                }
-            )
-
-    # Get session tokens
-    # auth_user = await auth_service._get_auth_user_by_session(session)
+            membership_list.append({
+                "id": str(membership.id),
+                "organization_id": str(org.id),
+                "organization_name": org.name,
+                "organization_slug": org.slug,
+                "role": membership.role.value,
+                "role_name": membership.role.name,
+            })
 
     return LoginResponseExtended(
         access_token=session.access_token,
@@ -271,16 +344,14 @@ async def get_user_organizations(
         )
         org = db_session.exec(stmt).first()
         if org:
-            organizations.append(
-                {
-                    "id": str(org.id),
-                    "name": org.name,
-                    "slug": org.slug,
-                    "role": membership.role.value,
-                    "role_name": membership.role.name,
-                    "is_owner": membership.role == MembershipRole.OWNER,
-                }
-            )
+            organizations.append({
+                "id": str(org.id),
+                "name": org.name,
+                "slug": org.slug,
+                "role": membership.role.value,
+                "role_name": membership.role.name,
+                "is_owner": membership.role == MembershipRole.OWNER,
+            })
 
     return {"organizations": organizations}
 
@@ -288,11 +359,15 @@ async def get_user_organizations(
 @router.post("/switch-organization")
 async def switch_organization(
     organization_id: UUID,
+    response: Response,
     current_user=Depends(get_current_user),
     session: AuthSessionModel = Depends(get_current_session),
     db_session: Session = Depends(get_session),
 ):
-    """Switch to a different organization."""
+    """Switch to a different organization.
+
+    Updates the session and sets the organization_id in the session cookie.
+    """
     # Verify membership
     stmt = select(Membership).where(
         Membership.user_id == current_user.id,

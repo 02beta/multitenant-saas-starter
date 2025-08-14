@@ -7,7 +7,8 @@ from sqlmodel import Session, and_, select
 
 from core.common.protocols import CRUDBase
 
-from .models import Organization, OrganizationCreate, OrganizationUpdate
+from .models import Organization
+from .schemas import OrganizationCreate, OrganizationUpdate
 
 
 class OrganizationRepository(

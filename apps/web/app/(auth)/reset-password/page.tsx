@@ -12,6 +12,16 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@workspace/ui/hooks/use-toast";
 
+/**
+ * Note:
+ * We are NOT getting the value of the token from an HTTP-only cookie.
+ * The token is being read from the URL query string (?token=...).
+ * HTTP-only cookies cannot be accessed from client-side JavaScript.
+ * If the backend sets the reset token as an HTTP-only cookie, it would
+ * not be accessible here. This code expects the token to be present
+ * in the URL as a query parameter.
+ */
+
 function ResetPasswordPageContent() {
   const { toast } = useToast();
   const router = useRouter();
@@ -35,6 +45,7 @@ function ResetPasswordPageContent() {
           token,
           password: values.password,
         }),
+        // credentials: "include" // Not needed for token in body/query
       }
     );
 

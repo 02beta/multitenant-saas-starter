@@ -18,10 +18,12 @@ from .exceptions import (
 )
 from .models import (
     Membership,
-    MembershipCreate,
-    MembershipPublic,
     MembershipRole,
     MembershipStatus,
+)
+from .schemas import (
+    MembershipCreate,
+    MembershipPublic,
     MembershipUpdate,
 )
 from .repository import MembershipRepository

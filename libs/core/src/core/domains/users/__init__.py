@@ -6,13 +6,16 @@ from .exceptions import (
     UserNotFoundError,
     WeakPasswordError,
 )
-from .models import User, UserCreate, UserPublic, UserUpdate
+from .models import User
+from .schemas import UserBase, UserCreate, UserPublic, UserUpdate
 from .repository import UserRepository
 from .services import PasswordService, UserService
 
 __all__ = [
-    # Models and schemas
+    # Models
     "User",
+    # Schemas
+    "UserBase",
     "UserCreate",
     "UserUpdate",
     "UserPublic",

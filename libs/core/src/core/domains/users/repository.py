@@ -7,7 +7,8 @@ from uuid import UUID
 from core.common.protocols import CRUDBase
 from sqlmodel import Session, and_, or_, select
 
-from .models import User, UserCreate, UserUpdate
+from .models import User
+from .schemas import UserCreate, UserUpdate
 
 
 class UserRepository(CRUDBase[User, UserCreate, UserUpdate]):

@@ -9,7 +9,8 @@ from .exceptions import (
     InvalidOrganizationSlugError,
     OrganizationAlreadyExistsError,
 )
-from .models import Organization, OrganizationCreate, OrganizationUpdate
+from .models import Organization
+from .schemas import OrganizationCreate, OrganizationUpdate
 from .repository import OrganizationRepository
 
 

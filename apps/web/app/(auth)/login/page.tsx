@@ -12,31 +12,35 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@workspace/ui/hooks/use-toast";
-import { apiUrl } from "@/lib";
+import { apiUrl } from "@/lib/constants";
 
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
+  /**
+   * Handle login form submission.
+   *
+   * Sends credentials to the API, which should set HTTP-only cookies
+   * for access and refresh tokens via the Set-Cookie header.
+   * No tokens are stored in localStorage.
+   */
   async function handleLogin(values: { email: string; password: string }) {
     const response = await fetch(`${apiUrl}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
-      credentials: "include",
+      credentials: "include", // Ensure cookies are sent/received
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || "Login failed");
-    }
-
-    const data = await response.json();
-
-    // Store token
-    localStorage.setItem("access_token", data.access_token);
-    if (data.refresh_token) {
-      localStorage.setItem("refresh_token", data.refresh_token);
+      let error;
+      try {
+        error = await response.json();
+      } catch {
+        error = {};
+      }
+      throw new Error(error?.detail || "Login failed");
     }
 
     toast("Login successful!", {

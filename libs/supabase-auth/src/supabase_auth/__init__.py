@@ -1,6 +1,6 @@
 """Supabase authentication provider."""
 
-from core.auth.factory import AuthProviderRegistry
+from core.domains.auth.factory import AuthProviderRegistry
 
 from .config import SupabaseConfig
 from .provider import SupabaseAuthProvider

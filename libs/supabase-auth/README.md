@@ -13,7 +13,7 @@ pip install supabase-auth
 ```python
 import supabase_auth  # Auto-registers the provider
 
-from core.auth.factory import AuthProviderRegistry
+from core.domains.auth.factory import AuthProviderRegistry
 from core.config import settings
 
 # Create provider

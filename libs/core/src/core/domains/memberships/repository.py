@@ -9,9 +9,11 @@ from core.common.protocols import CRUDBase
 
 from .models import (
     Membership,
-    MembershipCreate,
     MembershipRole,
     MembershipStatus,
+)
+from .schemas import (
+    MembershipCreate,
     MembershipUpdate,
 )
 
