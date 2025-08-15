@@ -124,10 +124,6 @@ class SupabaseAuthProvider(AuthProvider):
         """Create user with Supabase."""
         try:
             logger.info("Creating user via Supabase (email=%s)", email)
-            # The supabase-py sign_up method expects options to be a dict, but
-            # the context error suggests a context manager is being passed or
-            # used incorrectly. Let's ensure we are not using a context manager
-            # and that the call is correct.
             response = self.client.auth.sign_up(
                 email=email, password=password, options={"data": user_data}
             )
