@@ -49,7 +49,7 @@ wheels = [
 
 [[package]]
 name = "api"
-version = "0.1.1"
+version = "0.2.0"
 source = { virtual = "apps/api" }
 dependencies = [
     { name = "axiom-py" },
@@ -294,7 +294,7 @@ wheels = [
 
 [[package]]
 name = "cli"
-version = "0.1.1"
+version = "0.2.0"
 source = { editable = "tools/cli" }
 dependencies = [
     { name = "jq" },
@@ -337,7 +337,7 @@ wheels = [
 
 [[package]]
 name = "core"
-version = "0.1.1"
+version = "0.2.0"
 source = { editable = "libs/core" }
 dependencies = [
     { name = "alembic" },
@@ -1552,7 +1552,7 @@ wheels = [
 
 [[package]]
 name = "supabase-auth-provider"
-version = "0.1.1"
+version = "0.2.0"
 source = { editable = "libs/supabase-auth-provider" }
 dependencies = [
     { name = "axiom-py" },

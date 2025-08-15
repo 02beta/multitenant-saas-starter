@@ -2,7 +2,6 @@
 
 from uuid import UUID
 
-from api.routes.auth.dependencies import get_current_user
 from core.database import get_session
 from core.domains.users import (
     PasswordService,
@@ -12,6 +11,8 @@ from core.domains.users import (
 )
 from fastapi import Depends, HTTPException, status
 from sqlmodel import Session
+
+from ...routes.auth.dependencies import get_current_user
 
 
 def get_user_repository() -> UserRepository:

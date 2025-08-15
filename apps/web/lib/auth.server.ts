@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
 
 /**
  * Retrieve the current user from the API using the access token cookie.
