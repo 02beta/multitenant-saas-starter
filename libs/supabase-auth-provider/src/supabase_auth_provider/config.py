@@ -32,12 +32,13 @@ class SupabaseConfig(BaseSettings):
         "local default value",
     )
     supabase_public_key: str = Field(
-        default="",
         description="Supabase publishable key (new version of anon key), "
         "defaults to supabase local default value for public anon key.",
     )
     supabase_secret_key: str = Field(
-        default="",
         description="Supabase secret key (new version of service role key), "
         "defaults to supabase local default value for secret key.",
     )
+
+
+settings = SupabaseConfig()

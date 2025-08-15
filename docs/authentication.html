@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Authentication System Documentation</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+/* From extension svsool.markdown-memo */
+@font-face {
+  font-family: 'fontello';
+  src: url('../font/fontello.eot?7840610');
+  src: url('../font/fontello.eot?7840610#iefix') format('embedded-opentype'),
+       url('../font/fontello.woff2?7840610') format('woff2'),
+       url('../font/fontello.woff?7840610') format('woff'),
+       url('../font/fontello.ttf?7840610') format('truetype'),
+       url('../font/fontello.svg?7840610#fontello') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+/* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
+/* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
+/*
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: 'fontello';
+    src: url('../font/fontello.svg?7840610#fontello') format('svg');
+  }
+}
+*/
+ 
+ [class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: never;
+ 
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+ 
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+ 
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+ 
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+ 
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+ 
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+ 
+  /* Uncomment for 3D effect */
+  /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
+}
+ 
+.icon-link:before { content: '\e800'; } /* '' */
+.memo-markdown-embed {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 5px 20px 15px 20px;
+  margin: 0 20px;
+  position: relative;
+}
+
+.memo-markdown-embed-title {
+  height: 36px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 26px;
+  line-height: 42px;
+  top: 5px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  text-align: center;
+  font-weight: 900;
+}
+
+.memo-markdown-embed-link {
+  position: absolute;
+  top: 6px;
+  right: 12px;
+  cursor: pointer;
+}
+
+.memo-markdown-embed-link i {
+  font-size: 18px;
+  color: #535353;
+}
+
+.memo-markdown-embed-link:hover i {
+  color: #000000;
+}
+
+.vscode-dark .memo-markdown-embed-link:hover i {
+  color: #ffffff;
+}
+
+.memo-markdown-embed-content {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.memo-invalid-link {
+  color: #cc0013 !important;
+  cursor: not-allowed;
+}
+
+.memo-cyclic-link-warning {
+  text-align: center;
+}
+
+</style>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="authentication-system-documentation">Authentication System Documentation</h1>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#current-implementation-supabase">Current Implementation: Supabase</a></li>
+<li><a href="#authentication-flows">Authentication Flows</a></li>
+<li><a href="#database-schema">Database Schema</a></li>
+<li><a href="#frontend-integration">Frontend Integration</a></li>
+<li><a href="#api-endpoints">API Endpoints</a></li>
+<li><a href="#creating-custom-auth-providers">Creating Custom Auth Providers</a></li>
+<li><a href="#example-clerk-integration">Example: Clerk Integration</a></li>
+<li><a href="#example-custom-auth-system">Example: Custom Auth System</a></li>
+<li><a href="#suggested-improvements">Suggested Improvements</a></li>
+</ol>
+<h2 id="overview">Overview</h2>
+<p>The multitenant-saas-starter implements a <strong>provider-agnostic authentication system</strong> that abstracts authentication providers behind a common protocol. This design enables seamless switching between different authentication providers (Supabase, Auth0, Clerk, custom implementations) without modifying core application logic.</p>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>Provider Abstraction</strong>: Clean separation between authentication logic and provider implementations</li>
+<li><strong>Multi-tenancy Support</strong>: Organization-based access control with role-based permissions</li>
+<li><strong>Session Management</strong>: Secure token handling with HTTP-only cookies</li>
+<li><strong>Type Safety</strong>: Full TypeScript and Pydantic validation throughout</li>
+<li><strong>Extensibility</strong>: Easy addition of new authentication providers</li>
+</ul>
+<h2 id="architecture">Architecture</h2>
+<h3 id="system-components">System Components</h3>
+<pre><code class="language-mermaid">graph TB
+    subgraph &quot;Frontend (Next.js)&quot;
+        UI[UI Components]
+        MW[Middleware]
+        AC[Auth Client]
+    end
+
+    subgraph &quot;API Layer (FastAPI)&quot;
+        AR[Auth Routes]
+        AD[Auth Dependencies]
+        AS[Auth Service]
+    end
+
+    subgraph &quot;Core Library&quot;
+        AP[AuthProvider Protocol]
+        APR[AuthProvider Registry]
+        AM[Auth Models]
+    end
+
+    subgraph &quot;Provider Implementations&quot;
+        SP[Supabase Provider]
+        CP[Clerk Provider]
+        CSP[Custom Provider]
+    end
+
+    subgraph &quot;Database&quot;
+        UT[Users Table]
+        AUT[Auth Users Table]
+        ST[Sessions Table]
+        OT[Organizations Table]
+        MT[Memberships Table]
+    end
+
+    UI --&gt; MW
+    MW --&gt; AC
+    AC --&gt; AR
+    AR --&gt; AD
+    AD --&gt; AS
+    AS --&gt; APR
+    APR --&gt; AP
+    SP -.-&gt; AP
+    CP -.-&gt; AP
+    CSP -.-&gt; AP
+    AS --&gt; AM
+    AM --&gt; UT
+    AM --&gt; AUT
+    AM --&gt; ST
+    AM --&gt; OT
+    AM --&gt; MT
+</code></pre>
+<h3 id="provider-protocol">Provider Protocol</h3>
+<p>The system defines an <code>AuthProvider</code> protocol that all authentication providers must implement:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> Protocol, <span class="hljs-type">Dict</span>, <span class="hljs-type">Any</span>, <span class="hljs-type">Optional</span>
+<span class="hljs-keyword">from</span> core.domains.auth.schemas <span class="hljs-keyword">import</span> AuthResult, AuthUser, TokenPair
+
+<span class="hljs-meta">@runtime_checkable</span>
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">AuthProvider</span>(<span class="hljs-title class_ inherited__">Protocol</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Protocol defining the interface for authentication providers.&quot;&quot;&quot;</span>
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">authenticate</span>(<span class="hljs-params">self, email: <span class="hljs-built_in">str</span>, password: <span class="hljs-built_in">str</span></span>) -&gt; AuthResult:
+        <span class="hljs-string">&quot;&quot;&quot;Authenticate user with credentials.&quot;&quot;&quot;</span>
+        ...
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">validate_token</span>(<span class="hljs-params">self, token: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>]:
+        <span class="hljs-string">&quot;&quot;&quot;Validate an access token.&quot;&quot;&quot;</span>
+        ...
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">refresh_token</span>(<span class="hljs-params">self, refresh_token: <span class="hljs-built_in">str</span></span>) -&gt; TokenPair:
+        <span class="hljs-string">&quot;&quot;&quot;Refresh authentication tokens.&quot;&quot;&quot;</span>
+        ...
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">create_user</span>(<span class="hljs-params">
+        self, email: <span class="hljs-built_in">str</span>, password: <span class="hljs-built_in">str</span>, user_data: <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>]
+    </span>) -&gt; AuthUser:
+        <span class="hljs-string">&quot;&quot;&quot;Create a new user.&quot;&quot;&quot;</span>
+        ...
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_user_by_id</span>(<span class="hljs-params">self, user_id: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-type">Optional</span>[AuthUser]:
+        <span class="hljs-string">&quot;&quot;&quot;Retrieve user by provider ID.&quot;&quot;&quot;</span>
+        ...
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_user_by_email</span>(<span class="hljs-params">self, email: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-type">Optional</span>[AuthUser]:
+        <span class="hljs-string">&quot;&quot;&quot;Retrieve user by email.&quot;&quot;&quot;</span>
+        ...
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">update_user</span>(<span class="hljs-params">
+        self, user_id: <span class="hljs-built_in">str</span>, user_data: <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>]
+    </span>) -&gt; AuthUser:
+        <span class="hljs-string">&quot;&quot;&quot;Update user information.&quot;&quot;&quot;</span>
+        ...
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">delete_user</span>(<span class="hljs-params">self, user_id: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">bool</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Delete a user.&quot;&quot;&quot;</span>
+        ...
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">logout</span>(<span class="hljs-params">
+        self, user_id: <span class="hljs-built_in">str</span>, session_id: <span class="hljs-type">Optional</span>[<span class="hljs-built_in">str</span>] = <span class="hljs-literal">None</span>
+    </span>) -&gt; <span class="hljs-built_in">bool</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Logout user and invalidate session.&quot;&quot;&quot;</span>
+        ...
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">send_password_reset</span>(<span class="hljs-params">self, email: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">bool</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Send password reset email.&quot;&quot;&quot;</span>
+        ...
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">reset_password</span>(<span class="hljs-params">self, token: <span class="hljs-built_in">str</span>, new_password: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">bool</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Reset password with token.&quot;&quot;&quot;</span>
+        ...
+</code></pre>
+<h3 id="provider-registry">Provider Registry</h3>
+<p>The <code>AuthProviderRegistry</code> manages provider registration and instantiation:</p>
+<pre><code class="language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">AuthProviderRegistry</span>:
+    <span class="hljs-string">&quot;&quot;&quot;Registry for authentication providers.&quot;&quot;&quot;</span>
+
+    _providers: <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Callable</span>[..., AuthProvider]] = {}
+
+<span class="hljs-meta">    @classmethod</span>
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">register_provider</span>(<span class="hljs-params">
+        cls, name: <span class="hljs-built_in">str</span>, provider_factory: <span class="hljs-type">Callable</span>[..., AuthProvider]
+    </span>) -&gt; <span class="hljs-literal">None</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Register a new authentication provider.&quot;&quot;&quot;</span>
+        cls._providers[name] = provider_factory
+
+<span class="hljs-meta">    @classmethod</span>
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">create_provider</span>(<span class="hljs-params">
+        cls, provider_name: <span class="hljs-built_in">str</span>, config: <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>]
+    </span>) -&gt; AuthProvider:
+        <span class="hljs-string">&quot;&quot;&quot;Create an instance of the specified provider.&quot;&quot;&quot;</span>
+        <span class="hljs-keyword">if</span> provider_name <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> cls._providers:
+            <span class="hljs-keyword">return</span> AuthProviderStub()  <span class="hljs-comment"># Fallback for unregistered providers</span>
+        <span class="hljs-keyword">return</span> cls._providers[provider_name](config)
+</code></pre>
+<h2 id="current-implementation-supabase">Current Implementation: Supabase</h2>
+<h3 id="configuration">Configuration</h3>
+<p>The Supabase provider requires the following environment variables:</p>
+<pre><code class="language-env"># Authentication Provider Selection
+AUTH_PROVIDER=supabase
+
+# Supabase Configuration
+SUPABASE_API_URL=http://localhost:54321
+SUPABASE_PUBLIC_KEY=your-anon-key
+SUPABASE_SECRET_KEY=your-service-role-key
+AUTH_JWT_SECRET=your-jwt-secret
+</code></pre>
+<h3 id="provider-implementation">Provider Implementation</h3>
+<p>Located at <code>libs/supabase-auth/src/supabase_auth/provider.py</code>:</p>
+<pre><code class="language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">SupabaseAuthProvider</span>(<span class="hljs-title class_ inherited__">AuthProvider</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Supabase implementation of AuthProvider protocol.&quot;&quot;&quot;</span>
+
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, config: SupabaseConfig</span>):
+        self.config = config
+        <span class="hljs-comment"># User-facing client with anon key</span>
+        self.client = create_client(
+            config.supabase_api_url,
+            config.supabase_public_key
+        )
+        <span class="hljs-comment"># Admin client with service role key</span>
+        self.admin_client = create_client(
+            config.supabase_api_url,
+            config.supabase_secret_key
+        )
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">authenticate</span>(<span class="hljs-params">self, email: <span class="hljs-built_in">str</span>, password: <span class="hljs-built_in">str</span></span>) -&gt; AuthResult:
+        <span class="hljs-string">&quot;&quot;&quot;Authenticate with Supabase.&quot;&quot;&quot;</span>
+        response = self.client.auth.sign_in_with_password({
+            <span class="hljs-string">&quot;email&quot;</span>: email,
+            <span class="hljs-string">&quot;password&quot;</span>: password,
+        })
+
+        <span class="hljs-keyword">return</span> AuthResult(
+            user=self._map_supabase_user(response.user),
+            tokens=TokenPair(
+                access_token=response.session.access_token,
+                refresh_token=response.session.refresh_token,
+                expires_at=datetime.fromtimestamp(response.session.expires_at)
+            )
+        )
+</code></pre>
+<h3 id="auto-registration">Auto-Registration</h3>
+<p>The provider self-registers when the package is imported:</p>
+<pre><code class="language-python"><span class="hljs-comment"># libs/supabase-auth/src/supabase_auth/__init__.py</span>
+<span class="hljs-keyword">from</span> core.domains.auth.factory <span class="hljs-keyword">import</span> AuthProviderRegistry
+<span class="hljs-keyword">from</span> .provider <span class="hljs-keyword">import</span> SupabaseAuthProvider
+<span class="hljs-keyword">from</span> .config <span class="hljs-keyword">import</span> SupabaseConfig
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">create_supabase_provider</span>(<span class="hljs-params">config: <span class="hljs-built_in">dict</span></span>) -&gt; SupabaseAuthProvider:
+    supabase_config = SupabaseConfig(**config)
+    <span class="hljs-keyword">return</span> SupabaseAuthProvider(supabase_config)
+
+<span class="hljs-comment"># Auto-register on import</span>
+AuthProviderRegistry.register_provider(<span class="hljs-string">&quot;supabase&quot;</span>, create_supabase_provider)
+</code></pre>
+<h2 id="authentication-flows">Authentication Flows</h2>
+<h3 id="user-registration-flow">User Registration Flow</h3>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant API as FastAPI
+    participant AS as AuthService
+    participant P as Provider
+    participant DB as Database
+
+    U-&gt;&gt;F: Submit registration form
+    F-&gt;&gt;API: POST /auth/signup
+    API-&gt;&gt;AS: create_user_with_organization()
+    AS-&gt;&gt;P: create_user(email, password)
+    P--&gt;&gt;AS: AuthUser
+    AS-&gt;&gt;DB: Create local User record
+    AS-&gt;&gt;DB: Create Organization
+    AS-&gt;&gt;DB: Create Membership (OWNER)
+    AS-&gt;&gt;DB: Create AuthUser link
+    AS-&gt;&gt;DB: Create AuthSession
+    AS--&gt;&gt;API: SignupResponse
+    API-&gt;&gt;API: Set HTTP-only cookies
+    API--&gt;&gt;F: User data + tokens
+    F-&gt;&gt;F: Store tokens in localStorage
+    F-&gt;&gt;U: Redirect to dashboard
+</code></pre>
+<h3 id="login-flow">Login Flow</h3>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant API as FastAPI
+    participant AS as AuthService
+    participant P as Provider
+    participant DB as Database
+
+    U-&gt;&gt;F: Submit login form
+    F-&gt;&gt;API: POST /auth/login
+    API-&gt;&gt;AS: authenticate_user()
+    AS-&gt;&gt;P: authenticate(email, password)
+    P--&gt;&gt;AS: AuthResult
+    AS-&gt;&gt;DB: Sync user data
+    AS-&gt;&gt;DB: Validate org membership
+    AS-&gt;&gt;DB: Create/update session
+    AS--&gt;&gt;API: AuthResult
+    API-&gt;&gt;API: Set HTTP-only cookies
+    API--&gt;&gt;F: User data + tokens
+    F-&gt;&gt;F: Store tokens
+    F-&gt;&gt;U: Redirect to dashboard
+</code></pre>
+<h3 id="token-validation-flow">Token Validation Flow</h3>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant F as Frontend
+    participant MW as Middleware
+    participant API as FastAPI
+    participant AS as AuthService
+    participant P as Provider
+    participant DB as Database
+
+    F-&gt;&gt;MW: Request with token
+    MW-&gt;&gt;MW: Extract token from cookie
+    MW-&gt;&gt;API: Forward request + token
+    API-&gt;&gt;AS: validate_session(token)
+    AS-&gt;&gt;DB: Check local session
+    AS-&gt;&gt;P: validate_token(token)
+    P--&gt;&gt;AS: Token valid/invalid
+    AS-&gt;&gt;DB: Update session status
+    AS--&gt;&gt;API: Session data
+    API--&gt;&gt;F: Protected resource
+</code></pre>
+<h2 id="database-schema">Database Schema</h2>
+<h3 id="entity-relationship-diagram">Entity Relationship Diagram</h3>
+<pre><code class="language-mermaid">erDiagram
+    Users ||--o{ AuthUsers : &quot;has&quot;
+    Users ||--o{ Memberships : &quot;has&quot;
+    Users ||--o{ AuthSessions : &quot;has&quot;
+    Organizations ||--o{ Memberships : &quot;contains&quot;
+    Organizations ||--o{ AuthSessions : &quot;context&quot;
+    AuthUsers ||--o{ AuthSessions : &quot;creates&quot;
+
+    Users {
+        uuid id PK
+        string email UK
+        string first_name
+        string last_name
+        bool is_active
+        bool is_superuser
+        datetime created_at
+        datetime updated_at
+    }
+
+    AuthUsers {
+        uuid id PK
+        uuid local_user_id FK
+        string provider_type
+        string provider_user_id
+        string provider_email
+        json provider_metadata
+        datetime created_at
+        datetime updated_at
+    }
+
+    AuthSessions {
+        uuid id PK
+        uuid local_user_id FK
+        uuid auth_user_id FK
+        uuid organization_id FK
+        string access_token
+        string refresh_token
+        datetime expires_at
+        bool is_active
+        datetime created_at
+        datetime updated_at
+    }
+
+    Organizations {
+        uuid id PK
+        string name
+        string slug UK
+        json settings
+        datetime created_at
+        datetime updated_at
+    }
+
+    Memberships {
+        uuid id PK
+        uuid organization_id FK
+        uuid user_id FK
+        string role
+        string status
+        datetime created_at
+        datetime updated_at
+    }
+</code></pre>
+<h3 id="schema-definitions">Schema Definitions</h3>
+<pre><code class="language-sql"><span class="hljs-comment">-- identity schema: Authentication and user data</span>
+<span class="hljs-keyword">CREATE</span> SCHEMA IF <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">EXISTS</span> <span class="hljs-keyword">identity</span>;
+
+<span class="hljs-comment">-- org schema: Multi-tenant organization data</span>
+<span class="hljs-keyword">CREATE</span> SCHEMA IF <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">EXISTS</span> org;
+
+<span class="hljs-comment">-- Users table (identity schema)</span>
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> identity.users (
+    id UUID <span class="hljs-keyword">PRIMARY</span> KEY <span class="hljs-keyword">DEFAULT</span> gen_random_uuid(),
+    email <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">320</span>) <span class="hljs-keyword">UNIQUE</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,
+    first_name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,
+    last_name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,
+    is_active <span class="hljs-type">BOOLEAN</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-literal">true</span>,
+    is_superuser <span class="hljs-type">BOOLEAN</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-literal">false</span>,
+    created_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,
+    updated_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,
+    deleted_at <span class="hljs-type">TIMESTAMP</span>
+);
+
+<span class="hljs-comment">-- Auth Users linking table (identity schema)</span>
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> identity.auth_users (
+    id UUID <span class="hljs-keyword">PRIMARY</span> KEY <span class="hljs-keyword">DEFAULT</span> gen_random_uuid(),
+    local_user_id UUID <span class="hljs-keyword">REFERENCES</span> identity.users(id),
+    provider_type <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">50</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,
+    provider_user_id <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,
+    provider_email <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">320</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,
+    provider_metadata JSONB <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;{}&#x27;</span>,
+    created_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,
+    updated_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,
+    deleted_at <span class="hljs-type">TIMESTAMP</span>,
+    <span class="hljs-keyword">UNIQUE</span>(provider_type, provider_user_id)
+);
+
+<span class="hljs-comment">-- Auth Sessions table (identity schema)</span>
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> identity.auth_sessions (
+    id UUID <span class="hljs-keyword">PRIMARY</span> KEY <span class="hljs-keyword">DEFAULT</span> gen_random_uuid(),
+    local_user_id UUID <span class="hljs-keyword">REFERENCES</span> identity.users(id),
+    auth_user_id UUID <span class="hljs-keyword">REFERENCES</span> identity.auth_users(id),
+    organization_id UUID <span class="hljs-keyword">REFERENCES</span> org.organizations(id),
+    access_token TEXT <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,
+    refresh_token TEXT,
+    expires_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,
+    is_active <span class="hljs-type">BOOLEAN</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-literal">true</span>,
+    created_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,
+    updated_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,
+    deleted_at <span class="hljs-type">TIMESTAMP</span>
+);
+
+<span class="hljs-comment">-- Organizations table (org schema)</span>
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> org.organizations (
+    id UUID <span class="hljs-keyword">PRIMARY</span> KEY <span class="hljs-keyword">DEFAULT</span> gen_random_uuid(),
+    name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,
+    slug <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">UNIQUE</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,
+    settings JSONB <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;{}&#x27;</span>,
+    created_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,
+    updated_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,
+    deleted_at <span class="hljs-type">TIMESTAMP</span>
+);
+
+<span class="hljs-comment">-- Memberships table (org schema)</span>
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> org.memberships (
+    id UUID <span class="hljs-keyword">PRIMARY</span> KEY <span class="hljs-keyword">DEFAULT</span> gen_random_uuid(),
+    organization_id UUID <span class="hljs-keyword">REFERENCES</span> org.organizations(id),
+    user_id UUID <span class="hljs-keyword">REFERENCES</span> identity.users(id),
+    role <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">50</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,
+    status <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">50</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,
+    created_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,
+    updated_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,
+    deleted_at <span class="hljs-type">TIMESTAMP</span>,
+    <span class="hljs-keyword">UNIQUE</span>(organization_id, user_id)
+);
+</code></pre>
+<h2 id="frontend-integration">Frontend Integration</h2>
+<h3 id="middleware-configuration">Middleware Configuration</h3>
+<p>The Next.js middleware handles route protection:</p>
+<pre><code class="language-typescript"><span class="hljs-comment">// apps/web/middleware.ts</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">middleware</span>(<span class="hljs-params">request: NextRequest</span>) {
+  <span class="hljs-keyword">const</span> token = request.<span class="hljs-property">cookies</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;access_token&#x27;</span>)?.<span class="hljs-property">value</span>
+  <span class="hljs-keyword">const</span> pathname = request.<span class="hljs-property">nextUrl</span>.<span class="hljs-property">pathname</span>
+
+  <span class="hljs-comment">// Public asset bypass</span>
+  <span class="hljs-keyword">const</span> isPublicAsset = <span class="hljs-regexp">/\.[a-zA-Z0-9]+$/</span>.<span class="hljs-title function_">test</span>(pathname)
+  <span class="hljs-keyword">if</span> (isPublicAsset) <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">next</span>()
+
+  <span class="hljs-comment">// Auth page detection</span>
+  <span class="hljs-keyword">const</span> isAuthPage = [
+    <span class="hljs-string">&#x27;/login&#x27;</span>,
+    <span class="hljs-string">&#x27;/signup&#x27;</span>,
+    <span class="hljs-string">&#x27;/forgot-password&#x27;</span>,
+    <span class="hljs-string">&#x27;/reset-password&#x27;</span>
+  ].<span class="hljs-title function_">includes</span>(pathname)
+
+  <span class="hljs-comment">// Redirect unauthenticated users to login</span>
+  <span class="hljs-keyword">if</span> (!token &amp;&amp; !isAuthPage &amp;&amp; pathname !== <span class="hljs-string">&#x27;/&#x27;</span>) {
+    <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">redirect</span>(<span class="hljs-keyword">new</span> <span class="hljs-title function_">URL</span>(<span class="hljs-string">&#x27;/login&#x27;</span>, request.<span class="hljs-property">url</span>))
+  }
+
+  <span class="hljs-comment">// Redirect authenticated users away from auth pages</span>
+  <span class="hljs-keyword">if</span> (token &amp;&amp; isAuthPage) {
+    <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">redirect</span>(<span class="hljs-keyword">new</span> <span class="hljs-title function_">URL</span>(<span class="hljs-string">&#x27;/dashboard&#x27;</span>, request.<span class="hljs-property">url</span>))
+  }
+
+  <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">next</span>()
+}
+</code></pre>
+<h3 id="client-side-authentication">Client-Side Authentication</h3>
+<pre><code class="language-typescript"><span class="hljs-comment">// apps/web/lib/auth.client.ts</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">getAccessToken</span>(<span class="hljs-params"></span>): <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span> {
+  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-variable language_">window</span> === <span class="hljs-string">&#x27;undefined&#x27;</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
+
+  <span class="hljs-comment">// Primary: localStorage</span>
+  <span class="hljs-keyword">const</span> token = <span class="hljs-variable language_">window</span>.<span class="hljs-property">localStorage</span>.<span class="hljs-title function_">getItem</span>(<span class="hljs-string">&#x27;access_token&#x27;</span>)
+  <span class="hljs-keyword">if</span> (token) <span class="hljs-keyword">return</span> token
+
+  <span class="hljs-comment">// Fallback: cookies</span>
+  <span class="hljs-keyword">const</span> match = <span class="hljs-variable language_">document</span>.<span class="hljs-property">cookie</span>.<span class="hljs-title function_">match</span>(<span class="hljs-regexp">/(?:^|; )access_token=([^;]*)/</span>)
+  <span class="hljs-keyword">return</span> match ? <span class="hljs-built_in">decodeURIComponent</span>(match[<span class="hljs-number">1</span>] || <span class="hljs-string">&#x27;&#x27;</span>) : <span class="hljs-literal">null</span>
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">getCurrentUserClient</span>(<span class="hljs-params"></span>): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-built_in">any</span> | <span class="hljs-literal">null</span>&gt; {
+  <span class="hljs-keyword">const</span> token = <span class="hljs-title function_">getAccessToken</span>()
+  <span class="hljs-keyword">if</span> (!token) <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
+
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">`<span class="hljs-subst">${API_URL}</span>/auth/me/extended`</span>, {
+    <span class="hljs-attr">headers</span>: { <span class="hljs-title class_">Authorization</span>: <span class="hljs-string">`Bearer <span class="hljs-subst">${token}</span>`</span> }
+  })
+
+  <span class="hljs-keyword">return</span> response.<span class="hljs-property">ok</span> ? <span class="hljs-keyword">await</span> response.<span class="hljs-title function_">json</span>() : <span class="hljs-literal">null</span>
+}
+</code></pre>
+<h3 id="server-side-authentication">Server-Side Authentication</h3>
+<pre><code class="language-typescript"><span class="hljs-comment">// apps/web/lib/auth.server.ts</span>
+<span class="hljs-keyword">import</span> { cookies } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;next/headers&#x27;</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">getCurrentUserServer</span>(<span class="hljs-params"></span>): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-built_in">any</span> | <span class="hljs-literal">null</span>&gt; {
+  <span class="hljs-keyword">const</span> cookieStore = <span class="hljs-title function_">cookies</span>()
+  <span class="hljs-keyword">const</span> token = cookieStore.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;access_token&#x27;</span>)?.<span class="hljs-property">value</span>
+
+  <span class="hljs-keyword">if</span> (!token) <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
+
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">`<span class="hljs-subst">${API_URL}</span>/auth/me/extended`</span>, {
+    <span class="hljs-attr">headers</span>: { <span class="hljs-title class_">Authorization</span>: <span class="hljs-string">`Bearer <span class="hljs-subst">${token}</span>`</span> }
+  })
+
+  <span class="hljs-keyword">return</span> response.<span class="hljs-property">ok</span> ? <span class="hljs-keyword">await</span> response.<span class="hljs-title function_">json</span>() : <span class="hljs-literal">null</span>
+}
+</code></pre>
+<h2 id="api-endpoints">API Endpoints</h2>
+<h3 id="authentication-routes">Authentication Routes</h3>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Method</th>
+<th>Description</th>
+<th>Request Body</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/auth/login</code></td>
+<td>POST</td>
+<td>User authentication</td>
+<td><code>{email, password, organization_id?}</code></td>
+<td>User data + tokens</td>
+</tr>
+<tr>
+<td><code>/auth/logout</code></td>
+<td>POST</td>
+<td>Session invalidation</td>
+<td>-</td>
+<td>Success status</td>
+</tr>
+<tr>
+<td><code>/auth/refresh</code></td>
+<td>POST</td>
+<td>Token refresh</td>
+<td><code>{refresh_token}</code></td>
+<td>New tokens</td>
+</tr>
+<tr>
+<td><code>/auth/me</code></td>
+<td>GET</td>
+<td>Current user</td>
+<td>-</td>
+<td>User profile</td>
+</tr>
+<tr>
+<td><code>/auth/me/extended</code></td>
+<td>GET</td>
+<td>User with org data</td>
+<td>-</td>
+<td>User + org + memberships</td>
+</tr>
+<tr>
+<td><code>/auth/signup</code></td>
+<td>POST</td>
+<td>User registration</td>
+<td><code>{email, password, first_name, last_name, organization_name?}</code></td>
+<td>User data + tokens</td>
+</tr>
+<tr>
+<td><code>/auth/forgot-password</code></td>
+<td>POST</td>
+<td>Password reset request</td>
+<td><code>{email}</code></td>
+<td>Success status</td>
+</tr>
+<tr>
+<td><code>/auth/reset-password</code></td>
+<td>POST</td>
+<td>Password reset</td>
+<td><code>{token, new_password}</code></td>
+<td>Success status</td>
+</tr>
+<tr>
+<td><code>/auth/organizations</code></td>
+<td>GET</td>
+<td>User's organizations</td>
+<td>-</td>
+<td>Organization list</td>
+</tr>
+<tr>
+<td><code>/auth/switch-organization</code></td>
+<td>POST</td>
+<td>Change org context</td>
+<td><code>{organization_id}</code></td>
+<td>Updated session</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-api-calls">Example API Calls</h3>
+<pre><code class="language-typescript"><span class="hljs-comment">// Login</span>
+<span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">`<span class="hljs-subst">${API_URL}</span>/auth/login`</span>, {
+  <span class="hljs-attr">method</span>: <span class="hljs-string">&#x27;POST&#x27;</span>,
+  <span class="hljs-attr">headers</span>: { <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;application/json&#x27;</span> },
+  <span class="hljs-attr">body</span>: <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>({ email, password }),
+  <span class="hljs-attr">credentials</span>: <span class="hljs-string">&#x27;include&#x27;</span> <span class="hljs-comment">// Important for cookies</span>
+})
+
+<span class="hljs-comment">// Get current user with organization</span>
+<span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">`<span class="hljs-subst">${API_URL}</span>/auth/me/extended`</span>, {
+  <span class="hljs-attr">headers</span>: { <span class="hljs-title class_">Authorization</span>: <span class="hljs-string">`Bearer <span class="hljs-subst">${token}</span>`</span> }
+})
+
+<span class="hljs-comment">// Switch organization</span>
+<span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">`<span class="hljs-subst">${API_URL}</span>/auth/switch-organization`</span>, {
+  <span class="hljs-attr">method</span>: <span class="hljs-string">&#x27;POST&#x27;</span>,
+  <span class="hljs-attr">headers</span>: {
+    <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;application/json&#x27;</span>,
+    <span class="hljs-title class_">Authorization</span>: <span class="hljs-string">`Bearer <span class="hljs-subst">${token}</span>`</span>
+  },
+  <span class="hljs-attr">body</span>: <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>({ organization_id })
+})
+</code></pre>
+<h2 id="creating-custom-auth-providers">Creating Custom Auth Providers</h2>
+<h3 id="step-1-create-provider-package">Step 1: Create Provider Package</h3>
+<p>Create a new package in <code>libs/</code> directory:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">mkdir</span> -p libs/custom-auth/src/custom_auth
+</code></pre>
+<h3 id="step-2-define-configuration">Step 2: Define Configuration</h3>
+<pre><code class="language-python"><span class="hljs-comment"># libs/custom-auth/src/custom_auth/config.py</span>
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel, Field
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">CustomAuthConfig</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Configuration for custom auth provider.&quot;&quot;&quot;</span>
+    api_url: <span class="hljs-built_in">str</span> = Field(..., description=<span class="hljs-string">&quot;Custom auth API URL&quot;</span>)
+    api_key: <span class="hljs-built_in">str</span> = Field(..., description=<span class="hljs-string">&quot;API key for authentication&quot;</span>)
+    api_secret: <span class="hljs-built_in">str</span> = Field(..., description=<span class="hljs-string">&quot;API secret&quot;</span>)
+    jwt_algorithm: <span class="hljs-built_in">str</span> = Field(default=<span class="hljs-string">&quot;HS256&quot;</span>)
+    token_expiry: <span class="hljs-built_in">int</span> = Field(default=<span class="hljs-number">3600</span>, description=<span class="hljs-string">&quot;Token expiry in seconds&quot;</span>)
+</code></pre>
+<h3 id="step-3-implement-provider">Step 3: Implement Provider</h3>
+<pre><code class="language-python"><span class="hljs-comment"># libs/custom-auth/src/custom_auth/provider.py</span>
+<span class="hljs-keyword">import</span> hashlib
+<span class="hljs-keyword">import</span> jwt
+<span class="hljs-keyword">import</span> secrets
+<span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime, timedelta
+<span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Dict</span>, <span class="hljs-type">Any</span>, <span class="hljs-type">Optional</span>
+<span class="hljs-keyword">from</span> core.domains.auth.protocols <span class="hljs-keyword">import</span> AuthProvider
+<span class="hljs-keyword">from</span> core.domains.auth.schemas <span class="hljs-keyword">import</span> AuthResult, AuthUser, TokenPair
+<span class="hljs-keyword">from</span> .config <span class="hljs-keyword">import</span> CustomAuthConfig
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">CustomAuthProvider</span>(<span class="hljs-title class_ inherited__">AuthProvider</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Custom authentication provider implementation.&quot;&quot;&quot;</span>
+
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, config: CustomAuthConfig</span>):
+        self.config = config
+        self.users_db: <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>]] = {}  <span class="hljs-comment"># In-memory user store</span>
+        self.sessions: <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>]] = {}  <span class="hljs-comment"># In-memory sessions</span>
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">authenticate</span>(<span class="hljs-params">self, email: <span class="hljs-built_in">str</span>, password: <span class="hljs-built_in">str</span></span>) -&gt; AuthResult:
+        <span class="hljs-string">&quot;&quot;&quot;Authenticate user with custom logic.&quot;&quot;&quot;</span>
+        <span class="hljs-comment"># Hash password for comparison</span>
+        password_hash = self._hash_password(password)
+
+        <span class="hljs-comment"># Find user in database</span>
+        user = self.users_db.get(email)
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> user <span class="hljs-keyword">or</span> user[<span class="hljs-string">&#x27;password_hash&#x27;</span>] != password_hash:
+            <span class="hljs-keyword">raise</span> InvalidCredentialsError(<span class="hljs-string">&quot;Invalid email or password&quot;</span>)
+
+        <span class="hljs-comment"># Generate tokens</span>
+        access_token = self._generate_token(user[<span class="hljs-string">&#x27;id&#x27;</span>], <span class="hljs-string">&#x27;access&#x27;</span>)
+        refresh_token = self._generate_token(user[<span class="hljs-string">&#x27;id&#x27;</span>], <span class="hljs-string">&#x27;refresh&#x27;</span>)
+        expires_at = datetime.utcnow() + timedelta(seconds=self.config.token_expiry)
+
+        <span class="hljs-comment"># Store session</span>
+        self.sessions[access_token] = {
+            <span class="hljs-string">&#x27;user_id&#x27;</span>: user[<span class="hljs-string">&#x27;id&#x27;</span>],
+            <span class="hljs-string">&#x27;email&#x27;</span>: email,
+            <span class="hljs-string">&#x27;expires_at&#x27;</span>: expires_at
+        }
+
+        <span class="hljs-keyword">return</span> AuthResult(
+            user=AuthUser(
+                provider_user_id=user[<span class="hljs-string">&#x27;id&#x27;</span>],
+                email=email,
+                provider_type=<span class="hljs-string">&quot;custom&quot;</span>,
+                provider_metadata={<span class="hljs-string">&#x27;custom_field&#x27;</span>: user.get(<span class="hljs-string">&#x27;custom_field&#x27;</span>)}
+            ),
+            tokens=TokenPair(
+                access_token=access_token,
+                refresh_token=refresh_token,
+                expires_at=expires_at
+            )
+        )
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">validate_token</span>(<span class="hljs-params">self, token: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>]:
+        <span class="hljs-string">&quot;&quot;&quot;Validate access token.&quot;&quot;&quot;</span>
+        <span class="hljs-keyword">try</span>:
+            payload = jwt.decode(
+                token,
+                self.config.api_secret,
+                algorithms=[self.config.jwt_algorithm]
+            )
+
+            <span class="hljs-comment"># Check if session exists and is valid</span>
+            session = self.sessions.get(token)
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> session <span class="hljs-keyword">or</span> session[<span class="hljs-string">&#x27;expires_at&#x27;</span>] &lt; datetime.utcnow():
+                <span class="hljs-keyword">raise</span> InvalidTokenError(<span class="hljs-string">&quot;Token expired or invalid&quot;</span>)
+
+            <span class="hljs-keyword">return</span> {
+                <span class="hljs-string">&#x27;user_id&#x27;</span>: payload[<span class="hljs-string">&#x27;user_id&#x27;</span>],
+                <span class="hljs-string">&#x27;email&#x27;</span>: session[<span class="hljs-string">&#x27;email&#x27;</span>],
+                <span class="hljs-string">&#x27;type&#x27;</span>: payload[<span class="hljs-string">&#x27;type&#x27;</span>]
+            }
+        <span class="hljs-keyword">except</span> jwt.InvalidTokenError:
+            <span class="hljs-keyword">raise</span> InvalidTokenError(<span class="hljs-string">&quot;Invalid token&quot;</span>)
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">create_user</span>(<span class="hljs-params">
+        self, email: <span class="hljs-built_in">str</span>, password: <span class="hljs-built_in">str</span>, user_data: <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>]
+    </span>) -&gt; AuthUser:
+        <span class="hljs-string">&quot;&quot;&quot;Create a new user.&quot;&quot;&quot;</span>
+        <span class="hljs-keyword">if</span> email <span class="hljs-keyword">in</span> self.users_db:
+            <span class="hljs-keyword">raise</span> UserAlreadyExistsError(<span class="hljs-string">f&quot;User <span class="hljs-subst">{email}</span> already exists&quot;</span>)
+
+        user_id = secrets.token_urlsafe(<span class="hljs-number">16</span>)
+        password_hash = self._hash_password(password)
+
+        self.users_db[email] = {
+            <span class="hljs-string">&#x27;id&#x27;</span>: user_id,
+            <span class="hljs-string">&#x27;email&#x27;</span>: email,
+            <span class="hljs-string">&#x27;password_hash&#x27;</span>: password_hash,
+            **user_data
+        }
+
+        <span class="hljs-keyword">return</span> AuthUser(
+            provider_user_id=user_id,
+            email=email,
+            provider_type=<span class="hljs-string">&quot;custom&quot;</span>,
+            provider_metadata=user_data
+        )
+
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_hash_password</span>(<span class="hljs-params">self, password: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Hash password using SHA256.&quot;&quot;&quot;</span>
+        <span class="hljs-keyword">return</span> hashlib.sha256(
+            <span class="hljs-string">f&quot;<span class="hljs-subst">{password}</span><span class="hljs-subst">{self.config.api_secret}</span>&quot;</span>.encode()
+        ).hexdigest()
+
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_generate_token</span>(<span class="hljs-params">self, user_id: <span class="hljs-built_in">str</span>, token_type: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Generate JWT token.&quot;&quot;&quot;</span>
+        payload = {
+            <span class="hljs-string">&#x27;user_id&#x27;</span>: user_id,
+            <span class="hljs-string">&#x27;type&#x27;</span>: token_type,
+            <span class="hljs-string">&#x27;exp&#x27;</span>: datetime.utcnow() + timedelta(seconds=self.config.token_expiry)
+        }
+        <span class="hljs-keyword">return</span> jwt.encode(
+            payload,
+            self.config.api_secret,
+            algorithm=self.config.jwt_algorithm
+        )
+
+    <span class="hljs-comment"># Implement remaining protocol methods...</span>
+</code></pre>
+<h3 id="step-4-register-provider">Step 4: Register Provider</h3>
+<pre><code class="language-python"><span class="hljs-comment"># libs/custom-auth/src/custom_auth/__init__.py</span>
+<span class="hljs-keyword">from</span> core.domains.auth.factory <span class="hljs-keyword">import</span> AuthProviderRegistry
+<span class="hljs-keyword">from</span> .provider <span class="hljs-keyword">import</span> CustomAuthProvider
+<span class="hljs-keyword">from</span> .config <span class="hljs-keyword">import</span> CustomAuthConfig
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">create_custom_provider</span>(<span class="hljs-params">config: <span class="hljs-built_in">dict</span></span>) -&gt; CustomAuthProvider:
+    custom_config = CustomAuthConfig(**config)
+    <span class="hljs-keyword">return</span> CustomAuthProvider(custom_config)
+
+<span class="hljs-comment"># Auto-register when imported</span>
+AuthProviderRegistry.register_provider(<span class="hljs-string">&quot;custom&quot;</span>, create_custom_provider)
+</code></pre>
+<h3 id="step-5-update-configuration">Step 5: Update Configuration</h3>
+<pre><code class="language-python"><span class="hljs-comment"># apps/api/config/settings.py</span>
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">Settings</span>(<span class="hljs-title class_ inherited__">BaseSettings</span>):
+    <span class="hljs-comment"># Change provider</span>
+    auth_provider: <span class="hljs-built_in">str</span> = Field(default=<span class="hljs-string">&quot;custom&quot;</span>)
+
+    <span class="hljs-comment"># Add custom provider settings</span>
+    custom_auth_api_url: <span class="hljs-built_in">str</span> = Field(default=<span class="hljs-string">&quot;&quot;</span>)
+    custom_auth_api_key: <span class="hljs-built_in">str</span> = Field(default=<span class="hljs-string">&quot;&quot;</span>)
+    custom_auth_api_secret: <span class="hljs-built_in">str</span> = Field(default=<span class="hljs-string">&quot;&quot;</span>)
+</code></pre>
+<h3 id="step-6-import-provider">Step 6: Import Provider</h3>
+<pre><code class="language-python"><span class="hljs-comment"># apps/api/routes/auth/dependencies.py</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_auth_service</span>(<span class="hljs-params">session: Session = Depends(<span class="hljs-params">get_session</span>)</span>) -&gt; AuthService:
+    <span class="hljs-comment"># Import to trigger registration</span>
+    <span class="hljs-keyword">if</span> settings.auth_provider == <span class="hljs-string">&quot;custom&quot;</span>:
+        <span class="hljs-keyword">import</span> custom_auth  <span class="hljs-comment"># noqa: F401</span>
+
+    <span class="hljs-comment"># Rest of the code remains the same...</span>
+</code></pre>
+<h2 id="example-clerk-integration">Example: Clerk Integration</h2>
+<h3 id="step-1-create-clerk-provider-package">Step 1: Create Clerk Provider Package</h3>
+<pre><code class="language-bash"><span class="hljs-built_in">mkdir</span> -p libs/clerk-auth/src/clerk_auth
+</code></pre>
+<h3 id="step-2-install-clerk-sdk">Step 2: Install Clerk SDK</h3>
+<pre><code class="language-bash"><span class="hljs-built_in">cd</span> libs/clerk-auth
+uv add clerk-backend-api
+</code></pre>
+<h3 id="step-3-implement-clerk-provider">Step 3: Implement Clerk Provider</h3>
+<pre><code class="language-python"><span class="hljs-comment"># libs/clerk-auth/src/clerk_auth/provider.py</span>
+<span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Dict</span>, <span class="hljs-type">Any</span>, <span class="hljs-type">Optional</span>
+<span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime
+<span class="hljs-keyword">from</span> clerk_backend_api <span class="hljs-keyword">import</span> Clerk
+<span class="hljs-keyword">from</span> clerk_backend_api.models <span class="hljs-keyword">import</span> User <span class="hljs-keyword">as</span> ClerkUser
+<span class="hljs-keyword">from</span> core.domains.auth.protocols <span class="hljs-keyword">import</span> AuthProvider
+<span class="hljs-keyword">from</span> core.domains.auth.schemas <span class="hljs-keyword">import</span> AuthResult, AuthUser, TokenPair
+<span class="hljs-keyword">from</span> core.domains.auth.exceptions <span class="hljs-keyword">import</span> InvalidCredentialsError
+<span class="hljs-keyword">from</span> .config <span class="hljs-keyword">import</span> ClerkConfig
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">ClerkAuthProvider</span>(<span class="hljs-title class_ inherited__">AuthProvider</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Clerk authentication provider implementation.&quot;&quot;&quot;</span>
+
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, config: ClerkConfig</span>):
+        self.config = config
+        self.clerk = Clerk(bearer_auth=config.secret_key)
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">authenticate</span>(<span class="hljs-params">self, email: <span class="hljs-built_in">str</span>, password: <span class="hljs-built_in">str</span></span>) -&gt; AuthResult:
+        <span class="hljs-string">&quot;&quot;&quot;Authenticate with Clerk.&quot;&quot;&quot;</span>
+        <span class="hljs-keyword">try</span>:
+            <span class="hljs-comment"># Create a session with email/password</span>
+            session = self.clerk.sessions.create_session(
+                identifier=email,
+                password=password
+            )
+
+            <span class="hljs-comment"># Get user details</span>
+            user = self.clerk.users.get(user_id=session.user_id)
+
+            <span class="hljs-keyword">return</span> AuthResult(
+                user=AuthUser(
+                    provider_user_id=user.<span class="hljs-built_in">id</span>,
+                    email=user.email_addresses[<span class="hljs-number">0</span>].email_address,
+                    provider_type=<span class="hljs-string">&quot;clerk&quot;</span>,
+                    provider_metadata={
+                        <span class="hljs-string">&#x27;first_name&#x27;</span>: user.first_name,
+                        <span class="hljs-string">&#x27;last_name&#x27;</span>: user.last_name,
+                        <span class="hljs-string">&#x27;image_url&#x27;</span>: user.image_url
+                    }
+                ),
+                tokens=TokenPair(
+                    access_token=session.last_active_token.jwt,
+                    refresh_token=<span class="hljs-literal">None</span>,  <span class="hljs-comment"># Clerk handles refresh internally</span>
+                    expires_at=datetime.fromtimestamp(
+                        session.last_active_token.exp
+                    )
+                )
+            )
+        <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+            <span class="hljs-keyword">raise</span> InvalidCredentialsError(<span class="hljs-string">f&quot;Authentication failed: <span class="hljs-subst">{<span class="hljs-built_in">str</span>(e)}</span>&quot;</span>)
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">validate_token</span>(<span class="hljs-params">self, token: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>]:
+        <span class="hljs-string">&quot;&quot;&quot;Validate Clerk session token.&quot;&quot;&quot;</span>
+        <span class="hljs-keyword">try</span>:
+            <span class="hljs-comment"># Verify the JWT token with Clerk</span>
+            claims = self.clerk.verify_token(token)
+
+            <span class="hljs-keyword">return</span> {
+                <span class="hljs-string">&#x27;user_id&#x27;</span>: claims[<span class="hljs-string">&#x27;sub&#x27;</span>],
+                <span class="hljs-string">&#x27;session_id&#x27;</span>: claims[<span class="hljs-string">&#x27;sid&#x27;</span>],
+                <span class="hljs-string">&#x27;email&#x27;</span>: claims.get(<span class="hljs-string">&#x27;email&#x27;</span>)
+            }
+        <span class="hljs-keyword">except</span> Exception:
+            <span class="hljs-keyword">raise</span> InvalidTokenError(<span class="hljs-string">&quot;Invalid or expired token&quot;</span>)
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">create_user</span>(<span class="hljs-params">
+        self, email: <span class="hljs-built_in">str</span>, password: <span class="hljs-built_in">str</span>, user_data: <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>]
+    </span>) -&gt; AuthUser:
+        <span class="hljs-string">&quot;&quot;&quot;Create user in Clerk.&quot;&quot;&quot;</span>
+        <span class="hljs-keyword">try</span>:
+            user = self.clerk.users.create(
+                email_addresses=[email],
+                password=password,
+                first_name=user_data.get(<span class="hljs-string">&#x27;first_name&#x27;</span>),
+                last_name=user_data.get(<span class="hljs-string">&#x27;last_name&#x27;</span>)
+            )
+
+            <span class="hljs-keyword">return</span> AuthUser(
+                provider_user_id=user.<span class="hljs-built_in">id</span>,
+                email=email,
+                provider_type=<span class="hljs-string">&quot;clerk&quot;</span>,
+                provider_metadata={
+                    <span class="hljs-string">&#x27;first_name&#x27;</span>: user.first_name,
+                    <span class="hljs-string">&#x27;last_name&#x27;</span>: user.last_name
+                }
+            )
+        <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+            <span class="hljs-keyword">raise</span> UserCreationError(<span class="hljs-string">f&quot;Failed to create user: <span class="hljs-subst">{<span class="hljs-built_in">str</span>(e)}</span>&quot;</span>)
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">send_password_reset</span>(<span class="hljs-params">self, email: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">bool</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Send password reset email via Clerk.&quot;&quot;&quot;</span>
+        <span class="hljs-keyword">try</span>:
+            <span class="hljs-comment"># Find user by email</span>
+            users = self.clerk.users.<span class="hljs-built_in">list</span>(email_addresses=[email])
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> users:
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+
+            <span class="hljs-comment"># Create password reset flow</span>
+            self.clerk.users.create_password_reset(
+                user_id=users[<span class="hljs-number">0</span>].<span class="hljs-built_in">id</span>
+            )
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span>
+        <span class="hljs-keyword">except</span> Exception:
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+
+    <span class="hljs-comment"># Implement remaining protocol methods...</span>
+</code></pre>
+<h3 id="step-4-configure-clerk">Step 4: Configure Clerk</h3>
+<pre><code class="language-python"><span class="hljs-comment"># libs/clerk-auth/src/clerk_auth/config.py</span>
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel, Field
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">ClerkConfig</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Configuration for Clerk auth provider.&quot;&quot;&quot;</span>
+    publishable_key: <span class="hljs-built_in">str</span> = Field(..., description=<span class="hljs-string">&quot;Clerk publishable key&quot;</span>)
+    secret_key: <span class="hljs-built_in">str</span> = Field(..., description=<span class="hljs-string">&quot;Clerk secret key&quot;</span>)
+    jwt_verification_key: <span class="hljs-built_in">str</span> = Field(..., description=<span class="hljs-string">&quot;JWT verification key&quot;</span>)
+    api_url: <span class="hljs-built_in">str</span> = Field(
+        default=<span class="hljs-string">&quot;https://api.clerk.com&quot;</span>,
+        description=<span class="hljs-string">&quot;Clerk API URL&quot;</span>
+    )
+</code></pre>
+<h3 id="step-5-register-clerk-provider">Step 5: Register Clerk Provider</h3>
+<pre><code class="language-python"><span class="hljs-comment"># libs/clerk-auth/src/clerk_auth/__init__.py</span>
+<span class="hljs-keyword">from</span> core.domains.auth.factory <span class="hljs-keyword">import</span> AuthProviderRegistry
+<span class="hljs-keyword">from</span> .provider <span class="hljs-keyword">import</span> ClerkAuthProvider
+<span class="hljs-keyword">from</span> .config <span class="hljs-keyword">import</span> ClerkConfig
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">create_clerk_provider</span>(<span class="hljs-params">config: <span class="hljs-built_in">dict</span></span>) -&gt; ClerkAuthProvider:
+    clerk_config = ClerkConfig(**config)
+    <span class="hljs-keyword">return</span> ClerkAuthProvider(clerk_config)
+
+<span class="hljs-comment"># Auto-register</span>
+AuthProviderRegistry.register_provider(<span class="hljs-string">&quot;clerk&quot;</span>, create_clerk_provider)
+</code></pre>
+<h3 id="step-6-frontend-clerk-integration">Step 6: Frontend Clerk Integration</h3>
+<pre><code class="language-typescript"><span class="hljs-comment">// apps/web/lib/clerk-client.ts</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">ClerkProvider</span>, useAuth } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@clerk/nextjs&#x27;</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">ClerkAuthProvider</span>(<span class="hljs-params">{ children }: { children: React.ReactNode }</span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">ClerkProvider</span>
+      <span class="hljs-attr">publishableKey</span>=<span class="hljs-string">{process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}</span>
+      <span class="hljs-attr">afterSignInUrl</span>=<span class="hljs-string">&#x27;/dashboard&#x27;</span>
+      <span class="hljs-attr">afterSignUpUrl</span>=<span class="hljs-string">&#x27;/onboarding&#x27;</span>
+    &gt;</span>
+      {children}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">ClerkProvider</span>&gt;</span></span>
+  )
+}
+
+<span class="hljs-comment">// Hook for accessing auth state</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">useClerkAuth</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> { isLoaded, userId, sessionId, getToken } = <span class="hljs-title function_">useAuth</span>()
+
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-attr">isAuthenticated</span>: !!userId,
+    userId,
+    sessionId,
+    <span class="hljs-attr">getAccessToken</span>: <span class="hljs-keyword">async</span> () =&gt; <span class="hljs-keyword">await</span> <span class="hljs-title function_">getToken</span>()
+  }
+}
+</code></pre>
+<h2 id="example-custom-auth-system">Example: Custom Auth System</h2>
+<h3 id="complete-implementation-example">Complete Implementation Example</h3>
+<p>Here's a full example of a custom authentication system with database persistence:</p>
+<pre><code class="language-python"><span class="hljs-comment"># libs/custom-auth/src/custom_auth/database.py</span>
+<span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> create_engine, Column, String, DateTime, Boolean
+<span class="hljs-keyword">from</span> sqlalchemy.ext.declarative <span class="hljs-keyword">import</span> declarative_base
+<span class="hljs-keyword">from</span> sqlalchemy.orm <span class="hljs-keyword">import</span> sessionmaker
+<span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime
+
+Base = declarative_base()
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">UserModel</span>(<span class="hljs-title class_ inherited__">Base</span>):
+    __tablename__ = <span class="hljs-string">&quot;custom_users&quot;</span>
+
+    <span class="hljs-built_in">id</span> = Column(String, primary_key=<span class="hljs-literal">True</span>)
+    email = Column(String, unique=<span class="hljs-literal">True</span>, nullable=<span class="hljs-literal">False</span>)
+    password_hash = Column(String, nullable=<span class="hljs-literal">False</span>)
+    first_name = Column(String)
+    last_name = Column(String)
+    is_active = Column(Boolean, default=<span class="hljs-literal">True</span>)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">SessionModel</span>(<span class="hljs-title class_ inherited__">Base</span>):
+    __tablename__ = <span class="hljs-string">&quot;custom_sessions&quot;</span>
+
+    <span class="hljs-built_in">id</span> = Column(String, primary_key=<span class="hljs-literal">True</span>)
+    user_id = Column(String, nullable=<span class="hljs-literal">False</span>)
+    access_token = Column(String, unique=<span class="hljs-literal">True</span>, nullable=<span class="hljs-literal">False</span>)
+    refresh_token = Column(String, unique=<span class="hljs-literal">True</span>)
+    expires_at = Column(DateTime, nullable=<span class="hljs-literal">False</span>)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+<span class="hljs-comment"># Database setup</span>
+engine = create_engine(<span class="hljs-string">&#x27;postgresql://user:pass@localhost/authdb&#x27;</span>)
+SessionLocal = sessionmaker(bind=engine)
+Base.metadata.create_all(engine)
+</code></pre>
+<pre><code class="language-python"><span class="hljs-comment"># libs/custom-auth/src/custom_auth/provider.py</span>
+<span class="hljs-keyword">import</span> bcrypt
+<span class="hljs-keyword">import</span> jwt
+<span class="hljs-keyword">import</span> secrets
+<span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime, timedelta
+<span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Dict</span>, <span class="hljs-type">Any</span>, <span class="hljs-type">Optional</span>
+<span class="hljs-keyword">from</span> sqlalchemy.orm <span class="hljs-keyword">import</span> Session
+<span class="hljs-keyword">from</span> core.domains.auth.protocols <span class="hljs-keyword">import</span> AuthProvider
+<span class="hljs-keyword">from</span> core.domains.auth.schemas <span class="hljs-keyword">import</span> AuthResult, AuthUser, TokenPair
+<span class="hljs-keyword">from</span> .database <span class="hljs-keyword">import</span> SessionLocal, UserModel, SessionModel
+<span class="hljs-keyword">from</span> .config <span class="hljs-keyword">import</span> CustomAuthConfig
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">CustomAuthProvider</span>(<span class="hljs-title class_ inherited__">AuthProvider</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Production-ready custom authentication provider.&quot;&quot;&quot;</span>
+
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, config: CustomAuthConfig</span>):
+        self.config = config
+        self.db: Session = SessionLocal()
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">authenticate</span>(<span class="hljs-params">self, email: <span class="hljs-built_in">str</span>, password: <span class="hljs-built_in">str</span></span>) -&gt; AuthResult:
+        <span class="hljs-string">&quot;&quot;&quot;Authenticate user with bcrypt password verification.&quot;&quot;&quot;</span>
+        <span class="hljs-comment"># Find user in database</span>
+        user = self.db.query(UserModel).filter_by(email=email).first()
+
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> user <span class="hljs-keyword">or</span> <span class="hljs-keyword">not</span> self._verify_password(password, user.password_hash):
+            <span class="hljs-keyword">raise</span> InvalidCredentialsError(<span class="hljs-string">&quot;Invalid email or password&quot;</span>)
+
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> user.is_active:
+            <span class="hljs-keyword">raise</span> UserInactiveError(<span class="hljs-string">&quot;User account is inactive&quot;</span>)
+
+        <span class="hljs-comment"># Generate tokens</span>
+        access_token = self._generate_token(user.<span class="hljs-built_in">id</span>, <span class="hljs-string">&#x27;access&#x27;</span>, hours=<span class="hljs-number">1</span>)
+        refresh_token = self._generate_token(user.<span class="hljs-built_in">id</span>, <span class="hljs-string">&#x27;refresh&#x27;</span>, days=<span class="hljs-number">30</span>)
+        expires_at = datetime.utcnow() + timedelta(hours=<span class="hljs-number">1</span>)
+
+        <span class="hljs-comment"># Store session</span>
+        session = SessionModel(
+            <span class="hljs-built_in">id</span>=secrets.token_urlsafe(<span class="hljs-number">16</span>),
+            user_id=user.<span class="hljs-built_in">id</span>,
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_at=expires_at
+        )
+        self.db.add(session)
+        self.db.commit()
+
+        <span class="hljs-keyword">return</span> AuthResult(
+            user=AuthUser(
+                provider_user_id=user.<span class="hljs-built_in">id</span>,
+                email=user.email,
+                provider_type=<span class="hljs-string">&quot;custom&quot;</span>,
+                provider_metadata={
+                    <span class="hljs-string">&#x27;first_name&#x27;</span>: user.first_name,
+                    <span class="hljs-string">&#x27;last_name&#x27;</span>: user.last_name
+                }
+            ),
+            tokens=TokenPair(
+                access_token=access_token,
+                refresh_token=refresh_token,
+                expires_at=expires_at
+            )
+        )
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">validate_token</span>(<span class="hljs-params">self, token: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>]:
+        <span class="hljs-string">&quot;&quot;&quot;Validate JWT token with database session check.&quot;&quot;&quot;</span>
+        <span class="hljs-keyword">try</span>:
+            <span class="hljs-comment"># Decode token</span>
+            payload = jwt.decode(
+                token,
+                self.config.jwt_secret,
+                algorithms=[<span class="hljs-string">&#x27;HS256&#x27;</span>]
+            )
+
+            <span class="hljs-comment"># Verify session exists and is valid</span>
+            session = self.db.query(SessionModel).filter_by(
+                access_token=token
+            ).first()
+
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> session <span class="hljs-keyword">or</span> session.expires_at &lt; datetime.utcnow():
+                <span class="hljs-keyword">raise</span> InvalidTokenError(<span class="hljs-string">&quot;Token expired or invalid&quot;</span>)
+
+            <span class="hljs-comment"># Get user info</span>
+            user = self.db.query(UserModel).filter_by(
+                <span class="hljs-built_in">id</span>=payload[<span class="hljs-string">&#x27;user_id&#x27;</span>]
+            ).first()
+
+            <span class="hljs-keyword">return</span> {
+                <span class="hljs-string">&#x27;user_id&#x27;</span>: user.<span class="hljs-built_in">id</span>,
+                <span class="hljs-string">&#x27;email&#x27;</span>: user.email,
+                <span class="hljs-string">&#x27;session_id&#x27;</span>: session.<span class="hljs-built_in">id</span>
+            }
+        <span class="hljs-keyword">except</span> jwt.InvalidTokenError:
+            <span class="hljs-keyword">raise</span> InvalidTokenError(<span class="hljs-string">&quot;Invalid token&quot;</span>)
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">refresh_token</span>(<span class="hljs-params">self, refresh_token: <span class="hljs-built_in">str</span></span>) -&gt; TokenPair:
+        <span class="hljs-string">&quot;&quot;&quot;Refresh access token using refresh token.&quot;&quot;&quot;</span>
+        <span class="hljs-keyword">try</span>:
+            <span class="hljs-comment"># Decode refresh token</span>
+            payload = jwt.decode(
+                refresh_token,
+                self.config.jwt_secret,
+                algorithms=[<span class="hljs-string">&#x27;HS256&#x27;</span>]
+            )
+
+            <span class="hljs-comment"># Find session</span>
+            session = self.db.query(SessionModel).filter_by(
+                refresh_token=refresh_token
+            ).first()
+
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> session:
+                <span class="hljs-keyword">raise</span> InvalidTokenError(<span class="hljs-string">&quot;Invalid refresh token&quot;</span>)
+
+            <span class="hljs-comment"># Generate new access token</span>
+            new_access_token = self._generate_token(
+                payload[<span class="hljs-string">&#x27;user_id&#x27;</span>], <span class="hljs-string">&#x27;access&#x27;</span>, hours=<span class="hljs-number">1</span>
+            )
+            new_expires_at = datetime.utcnow() + timedelta(hours=<span class="hljs-number">1</span>)
+
+            <span class="hljs-comment"># Update session</span>
+            session.access_token = new_access_token
+            session.expires_at = new_expires_at
+            self.db.commit()
+
+            <span class="hljs-keyword">return</span> TokenPair(
+                access_token=new_access_token,
+                refresh_token=refresh_token,
+                expires_at=new_expires_at
+            )
+        <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+            <span class="hljs-keyword">raise</span> InvalidTokenError(<span class="hljs-string">f&quot;Token refresh failed: <span class="hljs-subst">{<span class="hljs-built_in">str</span>(e)}</span>&quot;</span>)
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">create_user</span>(<span class="hljs-params">
+        self, email: <span class="hljs-built_in">str</span>, password: <span class="hljs-built_in">str</span>, user_data: <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>]
+    </span>) -&gt; AuthUser:
+        <span class="hljs-string">&quot;&quot;&quot;Create new user with bcrypt password hashing.&quot;&quot;&quot;</span>
+        <span class="hljs-comment"># Check if user exists</span>
+        existing = self.db.query(UserModel).filter_by(email=email).first()
+        <span class="hljs-keyword">if</span> existing:
+            <span class="hljs-keyword">raise</span> UserAlreadyExistsError(<span class="hljs-string">f&quot;User <span class="hljs-subst">{email}</span> already exists&quot;</span>)
+
+        <span class="hljs-comment"># Hash password</span>
+        password_hash = self._hash_password(password)
+
+        <span class="hljs-comment"># Create user</span>
+        user = UserModel(
+            <span class="hljs-built_in">id</span>=secrets.token_urlsafe(<span class="hljs-number">16</span>),
+            email=email,
+            password_hash=password_hash,
+            first_name=user_data.get(<span class="hljs-string">&#x27;first_name&#x27;</span>),
+            last_name=user_data.get(<span class="hljs-string">&#x27;last_name&#x27;</span>)
+        )
+        self.db.add(user)
+        self.db.commit()
+
+        <span class="hljs-keyword">return</span> AuthUser(
+            provider_user_id=user.<span class="hljs-built_in">id</span>,
+            email=user.email,
+            provider_type=<span class="hljs-string">&quot;custom&quot;</span>,
+            provider_metadata={
+                <span class="hljs-string">&#x27;first_name&#x27;</span>: user.first_name,
+                <span class="hljs-string">&#x27;last_name&#x27;</span>: user.last_name
+            }
+        )
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">logout</span>(<span class="hljs-params">
+        self, user_id: <span class="hljs-built_in">str</span>, session_id: <span class="hljs-type">Optional</span>[<span class="hljs-built_in">str</span>] = <span class="hljs-literal">None</span>
+    </span>) -&gt; <span class="hljs-built_in">bool</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Logout user by invalidating session.&quot;&quot;&quot;</span>
+        <span class="hljs-keyword">if</span> session_id:
+            <span class="hljs-comment"># Invalidate specific session</span>
+            session = self.db.query(SessionModel).filter_by(
+                <span class="hljs-built_in">id</span>=session_id
+            ).first()
+            <span class="hljs-keyword">if</span> session:
+                self.db.delete(session)
+        <span class="hljs-keyword">else</span>:
+            <span class="hljs-comment"># Invalidate all user sessions</span>
+            self.db.query(SessionModel).filter_by(
+                user_id=user_id
+            ).delete()
+
+        self.db.commit()
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span>
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">send_password_reset</span>(<span class="hljs-params">self, email: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">bool</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Send password reset email.&quot;&quot;&quot;</span>
+        user = self.db.query(UserModel).filter_by(email=email).first()
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> user:
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+
+        <span class="hljs-comment"># Generate reset token (valid for 1 hour)</span>
+        reset_token = self._generate_token(
+            user.<span class="hljs-built_in">id</span>, <span class="hljs-string">&#x27;password_reset&#x27;</span>, hours=<span class="hljs-number">1</span>
+        )
+
+        <span class="hljs-comment"># In production, send email with reset link</span>
+        <span class="hljs-comment"># For now, just log the token</span>
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Password reset token for <span class="hljs-subst">{email}</span>: <span class="hljs-subst">{reset_token}</span>&quot;</span>)
+
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span>
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">reset_password</span>(<span class="hljs-params">self, token: <span class="hljs-built_in">str</span>, new_password: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">bool</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Reset password using reset token.&quot;&quot;&quot;</span>
+        <span class="hljs-keyword">try</span>:
+            <span class="hljs-comment"># Decode reset token</span>
+            payload = jwt.decode(
+                token,
+                self.config.jwt_secret,
+                algorithms=[<span class="hljs-string">&#x27;HS256&#x27;</span>]
+            )
+
+            <span class="hljs-keyword">if</span> payload.get(<span class="hljs-string">&#x27;type&#x27;</span>) != <span class="hljs-string">&#x27;password_reset&#x27;</span>:
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+
+            <span class="hljs-comment"># Update user password</span>
+            user = self.db.query(UserModel).filter_by(
+                <span class="hljs-built_in">id</span>=payload[<span class="hljs-string">&#x27;user_id&#x27;</span>]
+            ).first()
+
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> user:
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+
+            user.password_hash = self._hash_password(new_password)
+            user.updated_at = datetime.utcnow()
+
+            <span class="hljs-comment"># Invalidate all existing sessions</span>
+            self.db.query(SessionModel).filter_by(
+                user_id=user.<span class="hljs-built_in">id</span>
+            ).delete()
+
+            self.db.commit()
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span>
+        <span class="hljs-keyword">except</span> Exception:
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_hash_password</span>(<span class="hljs-params">self, password: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Hash password using bcrypt.&quot;&quot;&quot;</span>
+        <span class="hljs-keyword">return</span> bcrypt.hashpw(
+            password.encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>),
+            bcrypt.gensalt()
+        ).decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)
+
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_verify_password</span>(<span class="hljs-params">self, password: <span class="hljs-built_in">str</span>, <span class="hljs-built_in">hash</span>: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">bool</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Verify password against bcrypt hash.&quot;&quot;&quot;</span>
+        <span class="hljs-keyword">return</span> bcrypt.checkpw(
+            password.encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>),
+            <span class="hljs-built_in">hash</span>.encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)
+        )
+
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_generate_token</span>(<span class="hljs-params">
+        self, user_id: <span class="hljs-built_in">str</span>, token_type: <span class="hljs-built_in">str</span>,
+        hours: <span class="hljs-built_in">int</span> = <span class="hljs-number">0</span>, days: <span class="hljs-built_in">int</span> = <span class="hljs-number">0</span>
+    </span>) -&gt; <span class="hljs-built_in">str</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Generate JWT token with expiration.&quot;&quot;&quot;</span>
+        expiration = datetime.utcnow() + timedelta(hours=hours, days=days)
+
+        payload = {
+            <span class="hljs-string">&#x27;user_id&#x27;</span>: user_id,
+            <span class="hljs-string">&#x27;type&#x27;</span>: token_type,
+            <span class="hljs-string">&#x27;exp&#x27;</span>: expiration,
+            <span class="hljs-string">&#x27;iat&#x27;</span>: datetime.utcnow()
+        }
+
+        <span class="hljs-keyword">return</span> jwt.encode(
+            payload,
+            self.config.jwt_secret,
+            algorithm=<span class="hljs-string">&#x27;HS256&#x27;</span>
+        )
+
+    <span class="hljs-comment"># Implement remaining methods...</span>
+</code></pre>
+<h3 id="security-best-practices">Security Best Practices</h3>
+<p>When implementing a custom auth system, follow these security practices:</p>
+<ol>
+<li><strong>Password Hashing</strong>: Always use bcrypt or argon2 for password hashing</li>
+<li><strong>Token Security</strong>: Use strong secrets and short expiration times</li>
+<li><strong>Rate Limiting</strong>: Implement rate limiting on authentication endpoints</li>
+<li><strong>Session Management</strong>: Properly invalidate sessions on logout</li>
+<li><strong>HTTPS Only</strong>: Always use HTTPS in production</li>
+<li><strong>Input Validation</strong>: Validate and sanitize all inputs</li>
+<li><strong>Audit Logging</strong>: Log all authentication events</li>
+<li><strong>2FA Support</strong>: Consider adding two-factor authentication</li>
+</ol>
+<h2 id="suggested-improvements">Suggested Improvements</h2>
+<p>After analyzing the authentication system, here are identified bugs and suggestions for improvement:</p>
+<h3 id="-bugs">🐛 Bugs</h3>
+<ol>
+<li>
+<p><strong>Token Storage Inconsistency</strong></p>
+<ul>
+<li><strong>Issue</strong>: Frontend stores tokens in both localStorage and cookies, leading to potential sync issues</li>
+<li><strong>Location</strong>: <code>apps/web/lib/auth.client.ts:94-107</code></li>
+<li><strong>Fix</strong>: Use a single source of truth (preferably HTTP-only cookies for security)</li>
+</ul>
+</li>
+<li>
+<p><strong>Missing Token Expiration Check</strong></p>
+<ul>
+<li><strong>Issue</strong>: Frontend doesn't check token expiration before making API calls</li>
+<li><strong>Location</strong>: <code>apps/web/lib/auth.client.ts</code></li>
+<li><strong>Fix</strong>: Add token expiration validation and automatic refresh logic</li>
+</ul>
+</li>
+<li>
+<p><strong>Race Condition in Session Creation</strong></p>
+<ul>
+<li><strong>Issue</strong>: Multiple simultaneous login attempts could create duplicate sessions</li>
+<li><strong>Location</strong>: <code>libs/core/src/core/domains/auth/service.py:43-46</code></li>
+<li><strong>Fix</strong>: Add database-level unique constraints and proper transaction handling</li>
+</ul>
+</li>
+<li>
+<p><strong>Middleware Bypass for Root Path</strong></p>
+<ul>
+<li><strong>Issue</strong>: Root path (<code>/</code>) is excluded from authentication checks</li>
+<li><strong>Location</strong>: <code>apps/web/middleware.ts:41</code></li>
+<li><strong>Fix</strong>: Include root path in authentication logic or make it explicitly public</li>
+</ul>
+</li>
+<li>
+<p><strong>Generic Exception Handling</strong></p>
+<ul>
+<li><strong>Issue</strong>: Provider validation catches all exceptions, not just auth-related ones</li>
+<li><strong>Location</strong>: <code>libs/core/src/core/domains/auth/service.py:65-70</code></li>
+<li><strong>Fix</strong>: Catch specific exception types and handle accordingly</li>
+</ul>
+</li>
+</ol>
+<h3 id="-security-improvements">🔧 Security Improvements</h3>
+<ol>
+<li>
+<p><strong>Add CSRF Protection</strong></p>
+<ul>
+<li>Implement CSRF tokens for state-changing operations</li>
+<li>Add double-submit cookie pattern for API requests</li>
+</ul>
+</li>
+<li>
+<p><strong>Implement Rate Limiting</strong></p>
+<ul>
+<li>Add rate limiting to authentication endpoints</li>
+<li>Use Redis or in-memory store for tracking attempts</li>
+</ul>
+</li>
+<li>
+<p><strong>Add Security Headers</strong></p>
+<ul>
+<li>Implement security headers (CSP, HSTS, X-Frame-Options)</li>
+<li>Add helmet.js for Next.js application</li>
+</ul>
+</li>
+<li>
+<p><strong>Token Rotation</strong></p>
+<ul>
+<li>Implement automatic token rotation on each use</li>
+<li>Add token blacklisting for invalidated tokens</li>
+</ul>
+</li>
+<li>
+<p><strong>Audit Logging</strong></p>
+<ul>
+<li>Add comprehensive audit logging for all auth events</li>
+<li>Include IP addresses, user agents, and timestamps</li>
+</ul>
+</li>
+</ol>
+<h3 id="-performance-improvements">🚀 Performance Improvements</h3>
+<ol>
+<li>
+<p><strong>Database Query Optimization</strong></p>
+<ul>
+<li>Add indexes on frequently queried columns (email, provider_user_id)</li>
+<li>Use select_related/prefetch_related for related data</li>
+</ul>
+</li>
+<li>
+<p><strong>Caching Strategy</strong></p>
+<ul>
+<li>Implement Redis caching for session validation</li>
+<li>Cache user permissions and organization memberships</li>
+</ul>
+</li>
+<li>
+<p><strong>Connection Pooling</strong></p>
+<ul>
+<li>Configure proper database connection pooling</li>
+<li>Add connection retry logic with exponential backoff</li>
+</ul>
+</li>
+</ol>
+<h3 id="-architectural-improvements">📦 Architectural Improvements</h3>
+<ol>
+<li>
+<p><strong>Add Provider Health Checks</strong></p>
+<pre><code class="language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">AuthProvider</span>(<span class="hljs-title class_ inherited__">Protocol</span>):
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">health_check</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">bool</span>:
+        <span class="hljs-string">&quot;&quot;&quot;Check if provider is operational.&quot;&quot;&quot;</span>
+        ...
+</code></pre>
+</li>
+<li>
+<p><strong>Implement Provider Fallback</strong></p>
+<pre><code class="language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">FallbackAuthProvider</span>(<span class="hljs-title class_ inherited__">AuthProvider</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Fallback to secondary provider if primary fails.&quot;&quot;&quot;</span>
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, primary: AuthProvider, secondary: AuthProvider</span>):
+        self.primary = primary
+        self.secondary = secondary
+</code></pre>
+</li>
+<li>
+<p><strong>Add Provider Metrics</strong></p>
+<ul>
+<li>Track authentication success/failure rates</li>
+<li>Monitor provider response times</li>
+<li>Alert on abnormal patterns</li>
+</ul>
+</li>
+<li>
+<p><strong>Standardize Error Responses</strong></p>
+<pre><code class="language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">AuthError</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):
+    code: <span class="hljs-built_in">str</span>
+    message: <span class="hljs-built_in">str</span>
+    details: <span class="hljs-type">Optional</span>[<span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>]]
+    timestamp: datetime
+</code></pre>
+</li>
+<li>
+<p><strong>Add Provider Webhooks</strong></p>
+<ul>
+<li>Support webhooks for user events (created, updated, deleted)</li>
+<li>Implement webhook signature verification</li>
+</ul>
+</li>
+</ol>
+<h3 id="-testing-improvements">🧪 Testing Improvements</h3>
+<ol>
+<li>
+<p><strong>Add Integration Tests</strong></p>
+<pre><code class="language-python"><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_full_auth_flow</span>():
+    <span class="hljs-comment"># Test registration -&gt; login -&gt; refresh -&gt; logout</span>
+    <span class="hljs-keyword">pass</span>
+</code></pre>
+</li>
+<li>
+<p><strong>Add Provider Mock</strong></p>
+<pre><code class="language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">MockAuthProvider</span>(<span class="hljs-title class_ inherited__">AuthProvider</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Mock provider for testing.&quot;&quot;&quot;</span>
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, users: <span class="hljs-type">List</span>[AuthUser]</span>):
+        self.users = users
+</code></pre>
+</li>
+<li>
+<p><strong>Add Load Testing</strong></p>
+<ul>
+<li>Test concurrent authentication attempts</li>
+<li>Benchmark token validation performance</li>
+</ul>
+</li>
+</ol>
+<h3 id="-documentation-improvements">📝 Documentation Improvements</h3>
+<ol>
+<li>
+<p><strong>Add API Documentation</strong></p>
+<ul>
+<li>Generate OpenAPI specs for auth endpoints</li>
+<li>Add request/response examples</li>
+</ul>
+</li>
+<li>
+<p><strong>Add Migration Guides</strong></p>
+<ul>
+<li>Document how to migrate from one provider to another</li>
+<li>Include data migration scripts</li>
+</ul>
+</li>
+<li>
+<p><strong>Add Troubleshooting Guide</strong></p>
+<ul>
+<li>Common error messages and solutions</li>
+<li>Debug logging configuration</li>
+</ul>
+</li>
+</ol>
+<h3 id="-feature-additions">🎯 Feature Additions</h3>
+<ol>
+<li>
+<p><strong>Multi-Factor Authentication (MFA)</strong></p>
+<pre><code class="language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">AuthProvider</span>(<span class="hljs-title class_ inherited__">Protocol</span>):
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">enable_mfa</span>(<span class="hljs-params">self, user_id: <span class="hljs-built_in">str</span>, method: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">bool</span>:
+        ...
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">verify_mfa</span>(<span class="hljs-params">self, user_id: <span class="hljs-built_in">str</span>, code: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">bool</span>:
+        ...
+</code></pre>
+</li>
+<li>
+<p><strong>Social Login Support</strong></p>
+<ul>
+<li>Add OAuth2 flow support</li>
+<li>Implement provider linking</li>
+</ul>
+</li>
+<li>
+<p><strong>Session Management UI</strong></p>
+<ul>
+<li>Show active sessions to users</li>
+<li>Allow session revocation</li>
+</ul>
+</li>
+<li>
+<p><strong>Password Policy Enforcement</strong></p>
+<ul>
+<li>Configurable password requirements</li>
+<li>Password history tracking</li>
+</ul>
+</li>
+<li>
+<p><strong>Account Recovery Options</strong></p>
+<ul>
+<li>Security questions</li>
+<li>Backup codes</li>
+<li>Recovery email addresses</li>
+</ul>
+</li>
+</ol>
+<h3 id="-monitoring-improvements">🔍 Monitoring Improvements</h3>
+<ol>
+<li>
+<p><strong>Add Observability</strong></p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> opentelemetry <span class="hljs-keyword">import</span> trace
+
+tracer = trace.get_tracer(__name__)
+
+<span class="hljs-meta">@tracer.start_as_current_span(<span class="hljs-params"><span class="hljs-string">&quot;authenticate_user&quot;</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">authenticate_user</span>(<span class="hljs-params">self, email: <span class="hljs-built_in">str</span>, password: <span class="hljs-built_in">str</span></span>):
+    <span class="hljs-comment"># Traced authentication logic</span>
+</code></pre>
+</li>
+<li>
+<p><strong>Add Metrics Collection</strong></p>
+<ul>
+<li>Authentication success/failure rates</li>
+<li>Average response times</li>
+<li>Token refresh patterns</li>
+</ul>
+</li>
+<li>
+<p><strong>Add Alerting</strong></p>
+<ul>
+<li>Alert on suspicious login patterns</li>
+<li>Notify on provider failures</li>
+<li>Monitor session anomalies</li>
+</ul>
+</li>
+</ol>
+<p>These improvements would significantly enhance the security, performance, and maintainability of the authentication system while maintaining its provider-agnostic architecture.</p>
+
+            <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+            
+        </body>
+        </html>
