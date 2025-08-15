@@ -57,7 +57,9 @@ async_engine = (
 )
 
 # Create session factories
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine, class_=Session
+)
 AsyncSessionLocal = (
     async_sessionmaker(
         async_engine, class_=AsyncSession, expire_on_commit=False

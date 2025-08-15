@@ -22,7 +22,7 @@ const resetPasswordSchema = z
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine(data => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });
@@ -50,7 +50,7 @@ export function ResetPasswordForm({ onSubmit }: ResetPasswordFormProps) {
       await onSubmit(values);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to reset password",
+        error instanceof Error ? error.message : "Failed to reset password"
       );
     } finally {
       setIsLoading(false);

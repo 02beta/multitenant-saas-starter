@@ -41,7 +41,7 @@ export function middleware(request: NextRequest) {
       pathname.startsWith("/images/") ||
       pathname.startsWith("/fonts/") ||
       pathname.startsWith("/public/")) &&
-    allowedExtensions.some((ext) => pathname.toLowerCase().endsWith(ext));
+    allowedExtensions.some(ext => pathname.toLowerCase().endsWith(ext));
 
   if (isPublicAsset) {
     return NextResponse.next();

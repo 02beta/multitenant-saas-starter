@@ -1,6 +1,6 @@
 """Shared mixins for all domains."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID
 
@@ -34,13 +34,13 @@ class AuditFieldsMixin:
     """Mixin for created_at and updated_at timestamps."""
 
     created_at: datetime = Field(
-        default_factory=datetime.utcnow,
+        default_factory=datetime.now,
         nullable=False,
         title="Created at",
         description="The date and time the record was created",
     )
     updated_at: Optional[datetime] = Field(
-        default=datetime.utcnow,
+        default_factory=datetime.now,
         nullable=False,
         title="Updated at",
         description="The date and time the record was last updated",
@@ -62,7 +62,7 @@ class AuditFieldsMixin:
 
     def set_audit_fields(self, updated_by_id: Optional[UUID] = None) -> None:
         """Update audit fields."""
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(timezone.utc)
         self.updated_by = updated_by_id
 
 
@@ -70,7 +70,7 @@ class SoftDeleteMixin:
     """Mixin for soft delete functionality."""
 
     deleted_at: Optional[datetime] = Field(
-        default=None,
+        default_factory=None,
         nullable=True,
         title="Deleted at",
         description="The date and time the record was deleted",
@@ -85,7 +85,7 @@ class SoftDeleteMixin:
 
     def soft_delete(self, deleted_by_id: Optional[UUID] = None) -> None:
         """Mark record as soft deleted."""
-        self.deleted_at = datetime.utcnow()
+        self.deleted_at = datetime.now(timezone.utc)
         self.deleted_by = deleted_by_id
 
     def restore(self) -> None:

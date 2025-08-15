@@ -70,7 +70,7 @@ export async function getUserMembershipsClient(): Promise<any[]> {
  * Returns an array of members, or an empty array if not authenticated or error.
  */
 export async function getOrganizationMembersClient(
-  organizationId: string,
+  organizationId: string
 ): Promise<any[]> {
   try {
     const response = await fetch(
@@ -80,7 +80,7 @@ export async function getOrganizationMembersClient(
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (!response.ok) {
@@ -96,7 +96,7 @@ export async function getOrganizationMembersClient(
               headers: {
                 "Content-Type": "application/json",
               },
-            },
+            }
           );
           if (retryResponse.ok) {
             return await retryResponse.json();

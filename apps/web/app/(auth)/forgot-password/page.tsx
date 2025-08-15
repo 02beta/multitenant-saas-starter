@@ -24,7 +24,7 @@ export default function ForgotPasswordPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
-      },
+      }
     );
 
     if (!response.ok) {
@@ -33,7 +33,7 @@ export default function ForgotPasswordPage() {
     }
 
     toast(
-      "If an account with that email exists, you will receive an email with a link to reset your password.",
+      "If an account with that email exists, you will receive an email with a link to reset your password."
     );
 
     router.push("/login");

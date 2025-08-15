@@ -43,7 +43,7 @@ export function ForgotPasswordForm({ onSubmit }: ForgotPasswordFormProps) {
       await onSubmit(values);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to send reset email",
+        error instanceof Error ? error.message : "Failed to send reset email"
       );
     } finally {
       setIsLoading(false);
