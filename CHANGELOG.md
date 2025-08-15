@@ -4,6 +4,43 @@
 
 This changelog groups changes by app/library/functional area, then by category: New, Improved, Fixed.
 
+## [0.3.0] - 2025-08-15
+
+### Added
+
+- Implemented precommit validation to the githooks for improving the quality of the commits.
+- Introduced new auth flows for signing in, signing up, and resetting forgotten passwords.
+- Migrated to a Supabase auth provider for enhanced and secure authentication.
+- Integrated Axiom into the web app, providing increased observability.
+- Added centralized logging to the core Python library package for better error tracking and resolution.
+- Added a rich progress bar in the CLI app for clearer task progression visibility.
+
+### Changed
+
+- Upgraded the project to the minor version 0.2.x.
+- Renamed the 'workspace' command to 'dev' in the CLI to streamline development commands.
+- Restored relative imports for better code maintainability.
+- Updated various files such as 'service.py' in the '/core/domains/auth/' path and 'login-form.tsx' components for improved performance.
+- Redirects are now more straightforward and intuitive with the new auth flows.
+
+### Fixed
+
+- Addressed the pre-commit check issue and enhanced the reliability of pre-committing process.
+- Resolved the issue with the integrated code formatter, Prettier.
+- Fixed bugs with the shape of arguments passed into Supabase auth APIs.
+- Addressed the security vulnerabilities found in the Python JOSE Cryptography library.
+- Updated startup scripts, replacing previous errors causing server failures.
+- Modified APIs and made server-side improvements, like creating required schemas prior to table creation upon server startup.
+- Reconfigured the VS code settings to better expose lock files.
+- Fixed discrepancies in 'project.json' files and 'pyproject' files, to be consistent with other app files.
+- Updated the CLI app and removed fully qualified module name imports for CLI files.
+- Corrected the 'cursor rule' for API routes due to change in directory name.
+
+### Removed
+
+- Removed unused public directories and files, such as the 'og-image' file, for better repository management.
+- Eliminated shell scripts in favor of using the command-line interface for a more seamless user experience.
+
 ## [0.1.1] - 2025-08-10
 
 ### Fixed

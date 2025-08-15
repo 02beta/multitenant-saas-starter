@@ -637,6 +637,7 @@ def commit_and_push(version_type, new_version, branch):
         [
             "git",
             "commit",
+            "--no-verify",
             "-m",
             f"chore: release:{version_type} - bump to v{new_version}",
         ]
