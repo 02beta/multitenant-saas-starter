@@ -63,7 +63,12 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["X-CSRF-Token", "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"],
+    expose_headers=[
+        "X-CSRF-Token",
+        "X-RateLimit-Limit",
+        "X-RateLimit-Remaining",
+        "X-RateLimit-Reset",
+    ],
 )
 
 # Add CSRF protection middleware
@@ -78,7 +83,7 @@ app.add_middleware(
         "/openapi.json",
         "/health",
         "/",
-    ]
+    ],
 )
 
 # Include domain endpoint routers

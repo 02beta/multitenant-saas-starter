@@ -46,7 +46,7 @@ function ResetPasswordPageContent() {
           password: values.password,
         }),
         // credentials: "include" // Not needed for token in body/query
-      }
+      },
     );
 
     if (!response.ok) {

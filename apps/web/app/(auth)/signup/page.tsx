@@ -36,7 +36,7 @@ export default function SignupPage() {
           email: values.email,
           password: values.password,
         }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -48,7 +48,7 @@ export default function SignupPage() {
       "Signup successful! Please check your email for a verification link.",
       {
         variant: "success",
-      }
+      },
     );
     router.push("/login");
   }

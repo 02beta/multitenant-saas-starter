@@ -101,9 +101,9 @@ class SupabaseAuthProvider(AuthProvider):
         """Refresh token with Supabase."""
         try:
             logger.info("Refreshing access token via Supabase")
-            response = self.client.auth.refresh_session({
-                "refresh_token": refresh_token
-            })
+            response = self.client.auth.refresh_session(
+                {"refresh_token": refresh_token}
+            )
 
             return TokenPair(
                 access_token=response.session.access_token,

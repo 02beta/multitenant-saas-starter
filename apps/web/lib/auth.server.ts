@@ -74,7 +74,7 @@ export async function getOrganizationMembers(organizationId: string) {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {

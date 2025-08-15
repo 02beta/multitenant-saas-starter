@@ -73,7 +73,7 @@ erDiagram
         timestamptz created_at
     }
 
-    %% Core Application Schema  
+    %% Core Application Schema
     projects {
         uuid id PK
         uuid organization_id FK
@@ -346,7 +346,7 @@ erDiagram
     identity_users ||--o{ org_team_memberships : "user_id"
     org_organizations ||--o{ org_invitations : "organization_id"
     identity_users ||--o{ org_invitations : "invited_by"
-    
+
     %% Stripe sync relationships
     org_organizations ||--|| stripe_customers : "organization_id"
     stripe_customers ||--o{ stripe_subscriptions : "customer_id"
@@ -358,13 +358,13 @@ erDiagram
     stripe_invoices ||--o{ stripe_payments : "invoice_id"
     stripe_customers ||--o{ stripe_payments : "customer_id"
     org_organizations ||--o{ stripe_payments : "organization_id"
-    
+
     %% Generic billing relationships
     org_organizations ||--o{ billing_accounts : "organization_id"
     billing_accounts ||--o{ billing_subscriptions : "billing_account_id"
     billing_plans ||--o{ billing_subscriptions : "billing_plan_id"
     org_organizations ||--o{ billing_subscriptions : "organization_id"
-    
+
     %% Application relationships
     org_organizations ||--o{ projects : "organization_id"
     identity_users ||--o{ projects : "created_by"

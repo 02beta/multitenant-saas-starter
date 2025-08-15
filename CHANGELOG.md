@@ -45,7 +45,6 @@ This changelog groups changes by app/library/functional area, then by category: 
 #### API (`apps/api`)
 
 - **New**
-
   - Fly.io `flyctl` integration in `.envrc` using `FLY_ACCESS_TOKEN` and `FLY_APP` for the `multitenant-saas-starter` app.
   - `.dockerignore` for API image builds to reduce build context and improve cache hits.
   - Production `Dockerfile` for API that:
@@ -58,7 +57,6 @@ This changelog groups changes by app/library/functional area, then by category: 
   - Deployment config: `fly.toml` for Fly.io API deployment.
 
 - **Improved**
-
   - Project layout:
     - Moved `apps/api/main.py` to `apps/api/app/main.py`
     - Consolidated config under `apps/api/app/config`
@@ -82,12 +80,10 @@ This changelog groups changes by app/library/functional area, then by category: 
 ### [0.0.2] Infra
 
 - **New**
-
   - Development Dockerfile for API: `infra/docker/Dockerfile.api.dev`.
   - Additional `.dockerignore` coverage to minimize production image context.
 
 - **Improved**
-
   - Production `apps/api/Dockerfile` refined for smaller, reproducible builds with better caching.
 
 - **Fixed**: None
@@ -95,12 +91,10 @@ This changelog groups changes by app/library/functional area, then by category: 
 ### [0.0.2] Tooling
 
 - **New**
-
   - Release notes generation workflow that writes to `CHANGELOG.md` at the repo root.
   - Scripts for linting, formatting, and deploying monorepo apps.
 
 - **Improved**
-
   - Updated existing lint and format scripts for consistency across packages.
 
 - **Fixed**: None
@@ -108,11 +102,9 @@ This changelog groups changes by app/library/functional area, then by category: 
 ### [0.0.2] Dependencies
 
 - **New**
-
   - Added `gunicorn@23` and `uvicorn` to API runtime and dev dependencies.
 
 - **Improved**
-
   - Requirements/lockfiles updated with pinned hashes; build system aligned with Hatch.
 
 - **Fixed**

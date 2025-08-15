@@ -477,32 +477,32 @@ The Next.js middleware handles route protection:
 ```typescript
 // apps/web/middleware.ts
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('access_token')?.value
-  const pathname = request.nextUrl.pathname
+  const token = request.cookies.get("access_token")?.value;
+  const pathname = request.nextUrl.pathname;
 
   // Public asset bypass
-  const isPublicAsset = /\.[a-zA-Z0-9]+$/.test(pathname)
-  if (isPublicAsset) return NextResponse.next()
+  const isPublicAsset = /\.[a-zA-Z0-9]+$/.test(pathname);
+  if (isPublicAsset) return NextResponse.next();
 
   // Auth page detection
   const isAuthPage = [
-    '/login',
-    '/signup',
-    '/forgot-password',
-    '/reset-password'
-  ].includes(pathname)
+    "/login",
+    "/signup",
+    "/forgot-password",
+    "/reset-password",
+  ].includes(pathname);
 
   // Redirect unauthenticated users to login
-  if (!token && !isAuthPage && pathname !== '/') {
-    return NextResponse.redirect(new URL('/login', request.url))
+  if (!token && !isAuthPage && pathname !== "/") {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // Redirect authenticated users away from auth pages
   if (token && isAuthPage) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  return NextResponse.next()
+  return NextResponse.next();
 }
 ```
 
@@ -511,26 +511,26 @@ export function middleware(request: NextRequest) {
 ```typescript
 // apps/web/lib/auth.client.ts
 function getAccessToken(): string | null {
-  if (typeof window === 'undefined') return null
+  if (typeof window === "undefined") return null;
 
   // Primary: localStorage
-  const token = window.localStorage.getItem('access_token')
-  if (token) return token
+  const token = window.localStorage.getItem("access_token");
+  if (token) return token;
 
   // Fallback: cookies
-  const match = document.cookie.match(/(?:^|; )access_token=([^;]*)/)
-  return match ? decodeURIComponent(match[1] || '') : null
+  const match = document.cookie.match(/(?:^|; )access_token=([^;]*)/);
+  return match ? decodeURIComponent(match[1] || "") : null;
 }
 
 export async function getCurrentUserClient(): Promise<any | null> {
-  const token = getAccessToken()
-  if (!token) return null
+  const token = getAccessToken();
+  if (!token) return null;
 
   const response = await fetch(`${API_URL}/auth/me/extended`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-  return response.ok ? await response.json() : null
+  return response.ok ? await response.json() : null;
 }
 ```
 
@@ -538,19 +538,19 @@ export async function getCurrentUserClient(): Promise<any | null> {
 
 ```typescript
 // apps/web/lib/auth.server.ts
-import { cookies } from 'next/headers'
+import { cookies } from "next/headers";
 
 export async function getCurrentUserServer(): Promise<any | null> {
-  const cookieStore = cookies()
-  const token = cookieStore.get('access_token')?.value
+  const cookieStore = cookies();
+  const token = cookieStore.get("access_token")?.value;
 
-  if (!token) return null
+  if (!token) return null;
 
   const response = await fetch(`${API_URL}/auth/me/extended`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-  return response.ok ? await response.json() : null
+  return response.ok ? await response.json() : null;
 }
 ```
 
@@ -576,26 +576,26 @@ export async function getCurrentUserServer(): Promise<any | null> {
 ```typescript
 // Login
 const response = await fetch(`${API_URL}/auth/login`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ email, password }),
-  credentials: 'include' // Important for cookies
-})
+  credentials: "include", // Important for cookies
+});
 
 // Get current user with organization
 const response = await fetch(`${API_URL}/auth/me/extended`, {
-  headers: { Authorization: `Bearer ${token}` }
-})
+  headers: { Authorization: `Bearer ${token}` },
+});
 
 // Switch organization
 const response = await fetch(`${API_URL}/auth/switch-organization`, {
-  method: 'POST',
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
   },
-  body: JSON.stringify({ organization_id })
-})
+  body: JSON.stringify({ organization_id }),
+});
 ```
 
 ## Creating Custom Auth Providers
@@ -1316,25 +1316,21 @@ After analyzing the authentication system, here are identified bugs and suggesti
 ### 🐛 Bugs
 
 1. **Token Storage Inconsistency**
-
    - **Issue**: Frontend stores tokens in both localStorage and cookies, leading to potential sync issues
    - **Location**: `apps/web/lib/auth.client.ts:94-107`
    - **Fix**: Use a single source of truth (preferably HTTP-only cookies for security)
 
 2. **Missing Token Expiration Check**
-
    - **Issue**: Frontend doesn't check token expiration before making API calls
    - **Location**: `apps/web/lib/auth.client.ts`
    - **Fix**: Add token expiration validation and automatic refresh logic
 
 3. **Race Condition in Session Creation**
-
    - **Issue**: Multiple simultaneous login attempts could create duplicate sessions
    - **Location**: `libs/core/src/core/domains/auth/service.py:43-46`
    - **Fix**: Add database-level unique constraints and proper transaction handling
 
 4. **Middleware Bypass for Root Path**
-
    - **Issue**: Root path (`/`) is excluded from authentication checks
    - **Location**: `apps/web/middleware.ts:41`
    - **Fix**: Include root path in authentication logic or make it explicitly public
@@ -1347,22 +1343,18 @@ After analyzing the authentication system, here are identified bugs and suggesti
 ### 🔧 Security Improvements
 
 1. **Add CSRF Protection**
-
    - Implement CSRF tokens for state-changing operations
    - Add double-submit cookie pattern for API requests
 
 2. **Implement Rate Limiting**
-
    - Add rate limiting to authentication endpoints
    - Use Redis or in-memory store for tracking attempts
 
 3. **Add Security Headers**
-
    - Implement security headers (CSP, HSTS, X-Frame-Options)
    - Add helmet.js for Next.js application
 
 4. **Token Rotation**
-
    - Implement automatic token rotation on each use
    - Add token blacklisting for invalidated tokens
 
@@ -1373,12 +1365,10 @@ After analyzing the authentication system, here are identified bugs and suggesti
 ### 🚀 Performance Improvements
 
 1. **Database Query Optimization**
-
    - Add indexes on frequently queried columns (email, provider_user_id)
    - Use select_related/prefetch_related for related data
 
 2. **Caching Strategy**
-
    - Implement Redis caching for session validation
    - Cache user permissions and organization memberships
 
@@ -1408,7 +1398,6 @@ After analyzing the authentication system, here are identified bugs and suggesti
    ```
 
 3. **Add Provider Metrics**
-
    - Track authentication success/failure rates
    - Monitor provider response times
    - Alert on abnormal patterns
@@ -1453,12 +1442,10 @@ After analyzing the authentication system, here are identified bugs and suggesti
 ### 📝 Documentation Improvements
 
 1. **Add API Documentation**
-
    - Generate OpenAPI specs for auth endpoints
    - Add request/response examples
 
 2. **Add Migration Guides**
-
    - Document how to migrate from one provider to another
    - Include data migration scripts
 
@@ -1479,17 +1466,14 @@ After analyzing the authentication system, here are identified bugs and suggesti
    ```
 
 2. **Social Login Support**
-
    - Add OAuth2 flow support
    - Implement provider linking
 
 3. **Session Management UI**
-
    - Show active sessions to users
    - Allow session revocation
 
 4. **Password Policy Enforcement**
-
    - Configurable password requirements
    - Password history tracking
 
@@ -1513,7 +1497,6 @@ After analyzing the authentication system, here are identified bugs and suggesti
    ```
 
 2. **Add Metrics Collection**
-
    - Authentication success/failure rates
    - Average response times
    - Token refresh patterns

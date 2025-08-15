@@ -9,6 +9,8 @@ dependencies = [
     "fastapi[standard]>=0.116.1",
     "pydantic-settings>=2.10.1",
     "axiom-py>=0.9.0",
+    "gunicorn>=23.0.0",
+    "uvicorn[standard]>=0.35.0",
 ]
 
 [project.optional-dependencies]
@@ -20,9 +22,8 @@ dev = [
 ]
 
 [project.scripts]
-install = "uv pip install -r requirements.txt"
-dev = "uv run fastapi dev"
-start = "uv run fastapi start"
+dev = "pnpm run dev:kill && cd ../.. && uv run python apps/api/dev.py"
+start = "pnpm run start:kill && cd ../.. && uv run python apps/api/start.py"
 lint = "uv run ruff check ."
 lint-fix = "uv run ruff check --fix ."
 clean = "rm -rf __pycache__ .pytest_cache .ruff_cache dist build *.egg-info .turbo"

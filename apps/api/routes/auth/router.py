@@ -299,14 +299,16 @@ async def get_current_user_extended(
         )
         org = db_session.exec(stmt).first()
         if org:
-            membership_list.append({
-                "id": str(membership.id),
-                "organization_id": str(org.id),
-                "organization_name": org.name,
-                "organization_slug": org.slug,
-                "role": membership.role.value,
-                "role_name": membership.role.name,
-            })
+            membership_list.append(
+                {
+                    "id": str(membership.id),
+                    "organization_id": str(org.id),
+                    "organization_name": org.name,
+                    "organization_slug": org.slug,
+                    "role": membership.role.value,
+                    "role_name": membership.role.name,
+                }
+            )
 
     return LoginResponseExtended(
         access_token=session.access_token,
@@ -344,14 +346,16 @@ async def get_user_organizations(
         )
         org = db_session.exec(stmt).first()
         if org:
-            organizations.append({
-                "id": str(org.id),
-                "name": org.name,
-                "slug": org.slug,
-                "role": membership.role.value,
-                "role_name": membership.role.name,
-                "is_owner": membership.role == MembershipRole.OWNER,
-            })
+            organizations.append(
+                {
+                    "id": str(org.id),
+                    "name": org.name,
+                    "slug": org.slug,
+                    "role": membership.role.value,
+                    "role_name": membership.role.name,
+                    "is_owner": membership.role == MembershipRole.OWNER,
+                }
+            )
 
     return {"organizations": organizations}
 

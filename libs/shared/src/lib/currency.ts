@@ -31,7 +31,7 @@ export function addCurrency(cents1: number, cents2: number): number {
  */
 export function applyDiscount(
   cents: number,
-  discountPercentage: number
+  discountPercentage: number,
 ): number {
   return cents - calculatePercentage(cents, discountPercentage);
 }
@@ -114,7 +114,7 @@ export function dollarsToCents(dollars: number): number {
 export function formatDollars(
   dollars: number,
   currency = "USD",
-  locale = "en-US"
+  locale = "en-US",
 ): string {
   return new Intl.NumberFormat(locale, {
     style: "currency",
@@ -132,7 +132,7 @@ export function formatDollars(
 export function formatPrice(
   cents: number,
   currency = "USD",
-  locale = "en-US"
+  locale = "en-US",
 ): string {
   return new Intl.NumberFormat(locale, {
     style: "currency",

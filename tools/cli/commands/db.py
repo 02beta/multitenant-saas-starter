@@ -34,13 +34,17 @@ def get_project_id() -> str:
     """Get project ID from Supabase config directory dynamically."""
     config_path = Path("infra/supabase/config.toml")
     if not config_path.exists():
-        console.print("[red]Error: Could not find infra/supabase/config.toml[/red]")
+        console.print(
+            "[red]Error: Could not find infra/supabase/config.toml[/red]"
+        )
         raise typer.Exit(1)
 
     try:
         with open(config_path, "r") as f:
             content = f.read()
-            match = re.search(r'^project_id\s*=\s*"([^"]*)"', content, re.MULTILINE)
+            match = re.search(
+                r'^project_id\s*=\s*"([^"]*)"', content, re.MULTILINE
+            )
             if match:
                 return match.group(1)
     except Exception as e:
@@ -112,7 +116,9 @@ def parse_database_url(db_url: str) -> dict[str, str]:
     match = re.match(pattern, db_url)
 
     if not match:
-        console.print(f"[red]Error: Could not parse database URL: {db_url}[/red]")
+        console.print(
+            f"[red]Error: Could not parse database URL: {db_url}[/red]"
+        )
         raise typer.Exit(1)
 
     return {
@@ -202,7 +208,9 @@ SUPABASE_CLOUD_REGION=us-west-1
             flags=re.MULTILINE,
         )
         config_file.write_text(updated_content)
-        console.print(f"✅ Updated project_id in {config_file} to: {monorepo_name}")
+        console.print(
+            f"✅ Updated project_id in {config_file} to: {monorepo_name}"
+        )
     else:
         console.print(f"⚠️  [yellow]Warning: {config_file} not found[/yellow]")
 
@@ -212,7 +220,9 @@ SUPABASE_CLOUD_REGION=us-west-1
     console.print("⚙️  [bold blue]Setting environment variables...[/bold blue]")
     set_vars()
 
-    console.print("✅ [bold green]Project initialization complete![/bold green]")
+    console.print(
+        "✅ [bold green]Project initialization complete![/bold green]"
+    )
     console.print(
         Panel(
             Text.from_markup(
@@ -231,7 +241,9 @@ SUPABASE_CLOUD_REGION=us-west-1
 @app.command()
 def create_new_project():
     """Create new Supabase project in cloud and link it."""
-    console.print("🚀 [bold blue]Creating new Supabase project in cloud...[/bold blue]")
+    console.print(
+        "🚀 [bold blue]Creating new Supabase project in cloud...[/bold blue]"
+    )
 
     # Check if Supabase CLI is installed
     try:
@@ -302,7 +314,9 @@ def create_new_project():
             raise typer.Exit(1)
 
         project_ref = project_ref_match.group(0)
-        console.print(f"✅ Project created successfully with reference: {project_ref}")
+        console.print(
+            f"✅ Project created successfully with reference: {project_ref}"
+        )
 
         # Add project reference to env file
         with open(supabase_env_file, "a") as f:
@@ -312,10 +326,19 @@ def create_new_project():
         # Link the project
         console.print("🔗 [bold blue]Linking project...[/bold blue]")
         run_command(
-            ["supabase", "link", "--project-ref", project_ref, "-p", db_password]
+            [
+                "supabase",
+                "link",
+                "--project-ref",
+                project_ref,
+                "-p",
+                db_password,
+            ]
         )
 
-        console.print("✅ [bold green]Project linked successfully![/bold green]")
+        console.print(
+            "✅ [bold green]Project linked successfully![/bold green]"
+        )
         console.print(
             Panel(
                 Text.from_markup(
@@ -362,7 +385,9 @@ def set_vars():
 
     # Get Supabase environment variables
     try:
-        result = run_command(["supabase", "status", "-o", "env"], capture_output=True)
+        result = run_command(
+            ["supabase", "status", "-o", "env"], capture_output=True
+        )
         env_output = result.stdout
     except subprocess.CalledProcessError:
         console.print("[red]Error getting Supabase status[/red]")
@@ -433,12 +458,16 @@ def set_vars():
     if new_vars:
         with open(env_file, "a") as f:
             f.write("\n# Supabase DO NOT EDIT (added by cli db set-vars)\n")
-            f.write("# ------------------------------------------------------------\n")
+            f.write(
+                "# ------------------------------------------------------------\n"
+            )
             for var in new_vars:
                 f.write(f"{var}\n")
 
         ensure_supabase_workdir()
-        console.print(f"✅ All missing Supabase env vars have been added to {env_file}")
+        console.print(
+            f"✅ All missing Supabase env vars have been added to {env_file}"
+        )
     else:
         console.print(
             f"All required Supabase env vars are already present in {env_file}"
@@ -462,12 +491,15 @@ def set_vars():
         api_vars_to_add = []
 
         if not any(
-            existing_line.startswith("DATABASE_URL=") for existing_line in api_lines
+            existing_line.startswith("DATABASE_URL=")
+            for existing_line in api_lines
         ):
             api_vars_to_add.append(f"DATABASE_URL={database_url_value}")
             console.print(f"Added: DATABASE_URL to {api_env_file}")
 
-        async_url = database_url_value.replace("postgresql:", "postgresql+asyncpg:")
+        async_url = database_url_value.replace(
+            "postgresql:", "postgresql+asyncpg:"
+        )
         if not any(
             existing_line.startswith("DATABASE_ASYNC_URL=")
             for existing_line in api_lines
@@ -508,7 +540,9 @@ def set_vars():
     ):
         with open(api_env_file, "a") as f:
             f.write(f"SUPABASE_PRODUCTION_DB_PASSWORD={prod_db_password}\n")
-        console.print(f"Added: SUPABASE_PRODUCTION_DB_PASSWORD to {api_env_file}")
+        console.print(
+            f"Added: SUPABASE_PRODUCTION_DB_PASSWORD to {api_env_file}"
+        )
 
     console.print(
         "✅ [bold green]Database environment variables have been synchronized across all files.[/bold green]"
@@ -529,7 +563,9 @@ def start():
     ensure_supabase_workdir()
 
     if is_supabase_running():
-        console.print("✅ [bold green]Supabase is already running.[/bold green]")
+        console.print(
+            "✅ [bold green]Supabase is already running.[/bold green]"
+        )
         return
 
     console.print("🔄 [bold blue]Starting Supabase...[/bold blue]")
@@ -583,10 +619,14 @@ def reset_db():
 
         if is_supabase_running():
             console.print("Stopping Supabase with reset...")
-            run_command(["supabase", "stop", "--project-id", project_id, "--reset"])
+            run_command(
+                ["supabase", "stop", "--project-id", project_id, "--reset"]
+            )
         else:
             console.print("Supabase is not running. Running reset anyway...")
-            run_command(["supabase", "stop", "--project-id", project_id, "--reset"])
+            run_command(
+                ["supabase", "stop", "--project-id", project_id, "--reset"]
+            )
 
         console.print("Supabase stopped and reset.")
 

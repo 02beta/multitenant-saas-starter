@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "pnpm run dev:kill && cd ../.. && uv run python apps/api/dev.py",
     "dev:kill": "lsof -t -i:8080 | xargs -r kill -9 || true",
+    "start": "cd ../.. && uv run python apps/api/start.py",
+    "start:kill": "lsof -t -i:8080 | xargs -r kill -9 || true",
     "lint": "uv run ruff check .",
     "lint:fix": "uv run ruff check --fix .",
     "clean": "rm -rf __pycache__ .pytest_cache .ruff_cache dist build *.egg-info .turbo",

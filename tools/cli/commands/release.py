@@ -345,9 +345,9 @@ Return only the markdown changelog entry, nothing else.
             import json as pyjson
 
             openai_prompt = prompt.replace('"', '\\"')
-            openai_prompt = pyjson.dumps([
-                {"role": "user", "content": openai_prompt}
-            ])
+            openai_prompt = pyjson.dumps(
+                [{"role": "user", "content": openai_prompt}]
+            )
             logging.info("Generating release notes using OpenAI CLI...")
             result = run(
                 [
@@ -581,16 +581,18 @@ def create_pull_request(branch, new_version, release_notes):
             with tempfile.NamedTemporaryFile("w", delete=False) as tf:
                 tf.write(release_notes)
                 tf.flush()
-                run([
-                    "gh",
-                    "pr",
-                    "edit",
-                    pr_number,
-                    "--title",
-                    pr_title,
-                    "--body-file",
-                    tf.name,
-                ])
+                run(
+                    [
+                        "gh",
+                        "pr",
+                        "edit",
+                        pr_number,
+                        "--title",
+                        pr_title,
+                        "--body-file",
+                        tf.name,
+                    ]
+                )
 
             done_msg = Text(
                 f"Updated existing PR #{pr_number}: {url}", style="green"
@@ -605,19 +607,21 @@ def create_pull_request(branch, new_version, release_notes):
         tf.write(release_notes)
         tf.flush()
         logging.info(f"Creating pull request from '{branch}' to 'main'...")
-        run([
-            "gh",
-            "pr",
-            "create",
-            "--base",
-            "main",
-            "--head",
-            branch,
-            "--title",
-            pr_title,
-            "--body-file",
-            tf.name,
-        ])
+        run(
+            [
+                "gh",
+                "pr",
+                "create",
+                "--base",
+                "main",
+                "--head",
+                branch,
+                "--title",
+                pr_title,
+                "--body-file",
+                tf.name,
+            ]
+        )
     msg = Text(
         f"Pull request created for release v{new_version}", style="green"
     )
@@ -629,12 +633,14 @@ def commit_and_push(version_type, new_version, branch):
     """Commit and push changes, create tag (but do not push tag yet)."""
     logging.info("Committing and pushing changes...")
     run(["git", "add", "."])
-    run([
-        "git",
-        "commit",
-        "-m",
-        f"chore: release:{version_type} - bump to v{new_version}",
-    ])
+    run(
+        [
+            "git",
+            "commit",
+            "-m",
+            f"chore: release:{version_type} - bump to v{new_version}",
+        ]
+    )
     run(["git", "tag", f"v{new_version}"])
     push_branch(branch)
     msg = Text(
