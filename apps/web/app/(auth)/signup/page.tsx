@@ -1,6 +1,6 @@
 "use client";
 
-import { SignupForm } from "@workspace/ui/components/auth/signup-form";
+import { SignupForm } from "./signup-form";
 import {
   Card,
   CardContent,

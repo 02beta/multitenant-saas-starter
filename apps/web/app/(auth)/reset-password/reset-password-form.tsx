@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Button } from "../ui/button";
+import { Button } from "@workspace/ui/components/ui/button";
 import {
   Form,
   FormControl,
@@ -11,46 +11,47 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
+} from "@workspace/ui/components/ui/form";
+import { Input } from "@workspace/ui/components/ui/input";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
-const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/,
-      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
-    ),
-});
+const resetPasswordSchema = z
+  .object({
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
-interface LoginFormProps {
-  onSubmit: (values: LoginFormValues) => Promise<void>;
+interface ResetPasswordFormProps {
+  onSubmit: (values: ResetPasswordFormValues) => Promise<void>;
 }
 
-export function LoginForm({ onSubmit }: LoginFormProps) {
+export function ResetPasswordForm({ onSubmit }: ResetPasswordFormProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<ResetPasswordFormValues>({
+    resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
-  async function handleSubmit(values: LoginFormValues) {
+  async function handleSubmit(values: ResetPasswordFormValues) {
     setIsLoading(true);
     try {
       await onSubmit(values);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Login failed");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to reset password",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -61,12 +62,12 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="email"
+          name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>New Password</FormLabel>
               <FormControl>
-                <Input placeholder="you@example.com" type="email" {...field} />
+                <Input placeholder="••••••••" type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -74,10 +75,10 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
         />
         <FormField
           control={form.control}
-          name="password"
+          name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Confirm Password</FormLabel>
               <FormControl>
                 <Input placeholder="••••••••" type="password" {...field} />
               </FormControl>
@@ -87,7 +88,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Sign In
+          Reset Password
         </Button>
       </form>
     </Form>

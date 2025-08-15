@@ -341,7 +341,6 @@ async def create_tables_async(models: list | None = None):
     await db_manager.create_tables_async(models)
 
 
-@contextmanager
 def get_session() -> Generator[Session, None, None]:
     """Get database session with proper context management."""
     logger.info("Getting database session")
@@ -349,7 +348,6 @@ def get_session() -> Generator[Session, None, None]:
         yield session
 
 
-@asynccontextmanager
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     """Get async database session with proper context management."""
     async with db_manager.get_async_session_context() as session:

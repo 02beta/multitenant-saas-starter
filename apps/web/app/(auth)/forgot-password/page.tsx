@@ -1,6 +1,6 @@
 "use client";
 
-import { ForgotPasswordForm } from "@workspace/ui/components/auth/forgot-password-form";
+import { ForgotPasswordForm } from "./forgot-password-form";
 import {
   Card,
   CardContent,
