@@ -1,5 +1,6 @@
 """Organization domain models."""
 
+from typing import Optional
 from uuid import UUID, uuid4
 
 from sqlmodel import Field
@@ -30,6 +31,14 @@ class Organization(
         nullable=False,
         title="Is Active",
         description="Whether the organization is active",
+    )
+
+    avatar_url: Optional[str] = Field(
+        default=None,
+        max_length=512,
+        nullable=True,
+        title="Avatar URL",
+        description="URL to the organization's avatar image",
     )
 
     @staticmethod

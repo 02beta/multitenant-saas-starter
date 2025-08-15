@@ -86,4 +86,3 @@ After deployment, you can monitor your application using:
 - Fly.io dashboard: [https://fly.io/apps/mss-demo-api](https://fly.io/apps/mss-demo-api)
 - Application logs: `flyctl logs -a mss-demo-api`
 - Application status: `flyctl status -a mss-demo-api`
-

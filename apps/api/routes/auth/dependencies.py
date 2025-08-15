@@ -9,8 +9,8 @@ from core.database import get_session
 from core.domains.auth import (
     AuthProviderRegistry,
     AuthService,
-    AuthSessionModel,
 )
+from core.domains.auth.service import SessionData
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlmodel import Session
@@ -38,13 +38,20 @@ async def get_auth_service(
     return AuthService(provider, session)
 
 
-async def get_current_session(
+async def get_current_token(
     credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> str:
+    """Get current access token from request."""
+    return credentials.credentials
+
+
+async def get_current_session(
+    access_token: str = Depends(get_current_token),
     auth_service: AuthService = Depends(get_auth_service),
-) -> AuthSessionModel:
+) -> SessionData:
     """Get current authentication session."""
     try:
-        return await auth_service.validate_session(credentials.credentials)
+        return await auth_service.validate_session(access_token)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -53,15 +60,26 @@ async def get_current_session(
 
 
 async def get_current_user(
-    session: AuthSessionModel = Depends(get_current_session),
+    access_token: str = Depends(get_current_token),
     auth_service: AuthService = Depends(get_auth_service),
 ):
     """Get current authenticated user."""
-    return await auth_service.get_current_user(session)
+    return await auth_service.get_current_user(access_token)
 
 
 async def get_current_organization(
-    session: AuthSessionModel = Depends(get_current_session),
+    session: SessionData = Depends(get_current_session),
 ) -> Optional[UUID]:
     """Get current organization context from session."""
     return session.organization_id
+
+
+async def get_current_user_context(
+    session: SessionData = Depends(get_current_session),
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    """Get current user with full context including membership."""
+    return await auth_service.get_user_with_membership_context(
+        user_id=session.user_id,
+        organization_id=session.organization_id,
+    )

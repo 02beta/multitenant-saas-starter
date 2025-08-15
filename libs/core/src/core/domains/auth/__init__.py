@@ -11,10 +11,6 @@ from .exceptions import (
     UserNotFoundError,
 )
 from .factory import AuthProviderRegistry
-from .models import (
-    AuthSessionModel,
-    AuthUserModel,
-)
 from .protocols import AuthProvider, AuthProviderStub
 from .schemas import (
     AuthProviderType,
@@ -43,9 +39,6 @@ __all__ = [
     "ForgotPasswordRequest",
     "ResetPasswordRequest",
     "LoginResponseExtended",
-    # Models
-    "AuthSessionModel",
-    "AuthUserModel",
     # Factory
     "AuthProviderRegistry",
     # Service
