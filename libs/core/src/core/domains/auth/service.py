@@ -361,7 +361,7 @@ class AuthService:
             user_id=local_user.id,
             role=MembershipRole.OWNER,
             status=MembershipStatus.ACTIVE,
-            accepted_at=datetime.utcnow(),
+            accepted_at=datetime.now(timezone.utc),
         )
         self.session.add(membership)
         self.session.commit()
