@@ -14,13 +14,12 @@
     "format": "uv run ruff format .",
     "export": "cd ../.. && uv sync && uv export --no-hashes --format requirements-txt --output-file apps/api/requirements.txt",
     "precommit": "pnpm run lint:fix && pnpm run format",
-    "docker:build": "cd ../../ && docker build -t multitenant-saas-starter-api apps/api",
-    "docker:run": "docker run -p 8080:8080 multitenant-saas-starter-api",
-    "docker:stop": "docker stop multitenant-saas-starter-api || true",
-    "docker:rm": "docker rm multitenant-saas-starter-api || true",
-    "docker:logs": "docker logs -f multitenant-saas-starter-api",
-    "docker:exec": "docker exec -it multitenant-saas-starter-api /bin/bash",
-    "docker:push": "docker push multitenant-saas-starter-api",
-    "docker:pull": "docker pull multitenant-saas-starter-api"
+    "deploy:staging:latest": "fly deploy --app mss-api-staging --image registry.fly.io/mss-api:latest && fly scale -a mss-api-staging -m 1gb -c 2 --region lax --min-machines 0",
+    "deploy:production:latest": "fly deploy --app mss-api --image registry.fly.io/mss-api:latest && fly scale -a mss-api -m 1gb -c 4 --region lax --min-machines 1",
+    "docker:latest:run": "docker run --name mss-api -p 8080:8080 registry.fly.io/mss-api:latest",
+    "docker:build:latest": "cd ../../ && docker build -t registry.fly.io/mss-api:latest -f apps/api/Dockerfile .",
+    "docker:pull:latest": "docker pull registry.fly.io/mss-api:latest",
+    "docker:push:latest": "docker push registry.fly.io/mss-api:latest",
+    "docker:release:latest": "pnpm run docker:build:latest && pnpm run docker:push:latest"
   }
 }

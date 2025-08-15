@@ -99,4 +99,4 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8080/docs || exit 1
 
 # Run the FastAPI app in production mode using start.py
-CMD ["uv", "run", "python", "apps/api/start.py"]
+CMD ["uv", "run", "python", "start.py"]

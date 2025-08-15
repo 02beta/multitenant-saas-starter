@@ -20,6 +20,7 @@ class UserBase(SQLModel):
         max_length=320,
         regex=r"^[^@]+@[^@]+\.[^@]+$",
     )
+
     first_name: str = Field(
         nullable=False,
         title="First Name",
@@ -27,6 +28,7 @@ class UserBase(SQLModel):
         min_length=1,
         max_length=64,
     )
+
     last_name: str = Field(
         nullable=False,
         title="Last Name",
