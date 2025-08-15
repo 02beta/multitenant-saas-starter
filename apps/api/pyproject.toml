@@ -1,6 +1,6 @@
 [project]
 name = "api"
-version = "0.3.0"
+version = "0.3.1"
 description = "FastAPI backend server"
 requires-python = ">=3.11"
 dependencies = [

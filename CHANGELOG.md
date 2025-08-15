@@ -4,6 +4,16 @@
 
 This changelog groups changes by app/library/functional area, then by category: New, Improved, Fixed.
 
+## [0.3.1] - 2025-08-15
+
+### Added
+
+- A new precommit script has been introduced to the workspace root. This comes with the aim to enhance the efficiency and ease of workflows.
+
+### Fixed
+
+- This version includes remedies to all previously existing bugs and issues, thereby promising seamless and improved performance.
+
 ## [0.3.0] - 2025-08-15
 
 ### Added
