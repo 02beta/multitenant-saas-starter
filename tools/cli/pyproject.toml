@@ -1,6 +1,6 @@
 [project]
 name = "cli"
-version = "0.1.1"
+version = "0.3.1"
 description = "02Beta monorepo CLI tool for development, workspace, database, and release management"
 readme = "README.md"
 requires-python = ">=3.11"

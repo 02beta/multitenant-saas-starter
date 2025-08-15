@@ -1,16 +1,26 @@
 {
   "name": "api",
-  "version": "0.1.1",
+  "version": "0.3.1",
   "description": "API for the project",
   "private": true,
   "scripts": {
-    "dev": "pnpm run dev:kill && uv run fastapi dev --host 0.0.0.0 --port 8080",
-    "dev:kill": "lsof -t -i:8080 | xargs -r kill -9",
+    "dev": "pnpm run dev:kill && cd ../.. && uv run python apps/api/dev.py",
+    "dev:kill": "lsof -t -i:8080 | xargs -r kill -9 || true",
+    "start": "cd ../.. && uv run python apps/api/start.py",
+    "start:kill": "lsof -t -i:8080 | xargs -r kill -9 || true",
     "lint": "uv run ruff check .",
     "lint:fix": "uv run ruff check --fix .",
     "clean": "rm -rf __pycache__ .pytest_cache .ruff_cache dist build *.egg-info .turbo",
     "format": "uv run ruff format .",
     "export": "cd ../.. && uv sync && uv export --no-hashes --format requirements-txt --output-file apps/api/requirements.txt",
-    "precommit": "pnpm run lint:fix && pnpm run format"
+    "precommit": "pnpm run lint:fix && pnpm run format",
+    "docker:build": "cd ../../ && docker build -t multitenant-saas-starter-api apps/api",
+    "docker:run": "docker run -p 8080:8080 multitenant-saas-starter-api",
+    "docker:stop": "docker stop multitenant-saas-starter-api || true",
+    "docker:rm": "docker rm multitenant-saas-starter-api || true",
+    "docker:logs": "docker logs -f multitenant-saas-starter-api",
+    "docker:exec": "docker exec -it multitenant-saas-starter-api /bin/bash",
+    "docker:push": "docker push multitenant-saas-starter-api",
+    "docker:pull": "docker pull multitenant-saas-starter-api"
   }
 }

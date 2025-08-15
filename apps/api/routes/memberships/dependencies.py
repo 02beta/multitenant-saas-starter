@@ -2,7 +2,6 @@
 
 from uuid import UUID
 
-from api.routes.auth.dependencies import get_current_user
 from core.database import get_session
 from core.domains.memberships import (
     MembershipRepository,
@@ -12,6 +11,8 @@ from core.domains.memberships import (
 from core.domains.users import User
 from fastapi import Depends, HTTPException, status
 from sqlmodel import Session
+
+from ...routes.auth.dependencies import get_current_user
 
 
 def get_membership_service() -> MembershipService:

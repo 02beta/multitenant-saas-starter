@@ -64,8 +64,10 @@ class SupabaseAuthProvider(AuthProvider):
                 email,
             )
             response = self.client.auth.sign_in_with_password(
-                email=email,
-                password=password,
+                {
+                    "email": email,
+                    "password": password,
+                }
             )
             logger.info("Authentication successful (email=%s)", email)
             return self._convert_to_auth_result(response)
@@ -101,9 +103,9 @@ class SupabaseAuthProvider(AuthProvider):
         """Refresh token with Supabase."""
         try:
             logger.info("Refreshing access token via Supabase")
-            response = self.client.auth.refresh_session({
-                "refresh_token": refresh_token
-            })
+            response = self.client.auth.refresh_session(
+                {"refresh_token": refresh_token}
+            )
 
             return TokenPair(
                 access_token=response.session.access_token,
@@ -125,7 +127,11 @@ class SupabaseAuthProvider(AuthProvider):
         try:
             logger.info("Creating user via Supabase (email=%s)", email)
             response = self.client.auth.sign_up(
-                email=email, password=password, options={"data": user_data}
+                {
+                    "email": email,
+                    "password": password,
+                    "options": {"data": user_data},
+                }
             )
             logger.info("User created via Supabase (email=%s)", email)
             return self._convert_user_to_auth_user(response.user)
@@ -181,7 +187,7 @@ class SupabaseAuthProvider(AuthProvider):
             logger.info("Updating user via Supabase (user_id=%s)", user_id)
             response = self.admin_client.auth.admin.update_user_by_id(
                 user_id,
-                attributes={"user_metadata": user_data},
+                {"user_metadata": user_data},
             )
 
             return self._convert_user_to_auth_user(response.user)
@@ -241,9 +247,12 @@ class SupabaseAuthProvider(AuthProvider):
         return AuthResult(
             user=user,
             tokens=tokens,
-            session_metadata={
-                "supabase_session_id": str(supabase_response.session.id)
-            },
+            session_metadata=(
+                {"supabase_session_id": str(supabase_response.session.id)}
+                if hasattr(supabase_response.session, "id")
+                and supabase_response.session.id is not None
+                else {}
+            ),
         )
 
     def _convert_user_to_auth_user(self, supabase_user) -> AuthUser:
@@ -285,7 +294,7 @@ class SupabaseAuthProvider(AuthProvider):
                 "send_password_reset(str) -> bool: Sending password reset email via Supabase (email=%s)",
                 email,
             )
-            self.client.auth.reset_password_email(email)
+            self.client.auth.reset_password_email({"email": email})
             logger.info(
                 "Password reset email sent via Supabase (email=%s)", email
             )

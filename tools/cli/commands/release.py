@@ -345,9 +345,9 @@ Return only the markdown changelog entry, nothing else.
             import json as pyjson
 
             openai_prompt = prompt.replace('"', '\\"')
-            openai_prompt = pyjson.dumps([
-                {"role": "user", "content": openai_prompt}
-            ])
+            openai_prompt = pyjson.dumps(
+                [{"role": "user", "content": openai_prompt}]
+            )
             logging.info("Generating release notes using OpenAI CLI...")
             result = run(
                 [
@@ -581,16 +581,18 @@ def create_pull_request(branch, new_version, release_notes):
             with tempfile.NamedTemporaryFile("w", delete=False) as tf:
                 tf.write(release_notes)
                 tf.flush()
-                run([
-                    "gh",
-                    "pr",
-                    "edit",
-                    pr_number,
-                    "--title",
-                    pr_title,
-                    "--body-file",
-                    tf.name,
-                ])
+                run(
+                    [
+                        "gh",
+                        "pr",
+                        "edit",
+                        pr_number,
+                        "--title",
+                        pr_title,
+                        "--body-file",
+                        tf.name,
+                    ]
+                )
 
             done_msg = Text(
                 f"Updated existing PR #{pr_number}: {url}", style="green"
@@ -605,19 +607,21 @@ def create_pull_request(branch, new_version, release_notes):
         tf.write(release_notes)
         tf.flush()
         logging.info(f"Creating pull request from '{branch}' to 'main'...")
-        run([
-            "gh",
-            "pr",
-            "create",
-            "--base",
-            "main",
-            "--head",
-            branch,
-            "--title",
-            pr_title,
-            "--body-file",
-            tf.name,
-        ])
+        run(
+            [
+                "gh",
+                "pr",
+                "create",
+                "--base",
+                "main",
+                "--head",
+                branch,
+                "--title",
+                pr_title,
+                "--body-file",
+                tf.name,
+            ]
+        )
     msg = Text(
         f"Pull request created for release v{new_version}", style="green"
     )
@@ -628,15 +632,46 @@ def create_pull_request(branch, new_version, release_notes):
 def commit_and_push(version_type, new_version, branch):
     """Commit and push changes, create tag (but do not push tag yet)."""
     logging.info("Committing and pushing changes...")
-    run(["git", "add", "."])
-    run([
-        "git",
-        "commit",
-        "-m",
-        f"chore: release:{version_type} - bump to v{new_version}",
-    ])
-    run(["git", "tag", f"v{new_version}"])
-    push_branch(branch)
+    try:
+        run(["pnpm", "run", "precommit"], capture_output=True)
+    except Exception as e:
+        logging.warning(f"Pre-commit failed: {e}")
+        msg = Text(
+            "Pre-commit failed. I will re-run it for you and commit the changes.",
+            style="bold red",
+        )
+        console.print(Panel(msg, title="Pre-commit", style="red"))
+        run(["pnpm", "run", "precommit"], capture_output=True)
+    try:
+        run(["git", "add", "."])
+        run(
+            [
+                "git",
+                "commit",
+                "-m",
+                f"chore: release:{version_type} - bump to v{new_version}",
+            ]
+        )
+        run(["git", "tag", f"v{new_version}"])
+        push_branch(branch)
+    except Exception as e:
+        logging.warning(f"Commit failed: {e}")
+        msg = Text(
+            "Commit failed. I will re-run it for you and commit the changes.",
+            style="bold red",
+        )
+        console.print(Panel(msg, title="Commit", style="red"))
+        run(["git", "add", "."])
+        run(
+            [
+                "git",
+                "commit",
+                "-m",
+                f"chore: release:{version_type} - bump to v{new_version}",
+            ]
+        )
+        run(["git", "tag", f"v{new_version}"])
+        push_branch(branch)
     msg = Text(
         f"Changes committed and pushed to branch '{branch}' with tag v{new_version}",
         style="green",

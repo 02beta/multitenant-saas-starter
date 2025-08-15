@@ -11,9 +11,9 @@ const API_URL = apiUrl;
 export async function getCurrentUserClient(): Promise<any | null> {
   try {
     const response = await fetch(`${API_URL}/auth/me/extended`, {
-      credentials: 'include', // Include HTTP-only cookies
+      credentials: "include", // Include HTTP-only cookies
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
@@ -24,9 +24,9 @@ export async function getCurrentUserClient(): Promise<any | null> {
         if (refreshed) {
           // Retry the request after refresh
           const retryResponse = await fetch(`${API_URL}/auth/me/extended`, {
-            credentials: 'include',
+            credentials: "include",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
           });
           if (retryResponse.ok) {
@@ -76,9 +76,9 @@ export async function getOrganizationMembersClient(
     const response = await fetch(
       `${API_URL}/memberships?organization_id=${organizationId}`,
       {
-        credentials: 'include', // Include HTTP-only cookies
+        credentials: "include", // Include HTTP-only cookies
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
@@ -92,9 +92,9 @@ export async function getOrganizationMembersClient(
           const retryResponse = await fetch(
             `${API_URL}/memberships?organization_id=${organizationId}`,
             {
-              credentials: 'include',
+              credentials: "include",
               headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
               },
             }
           );
@@ -119,10 +119,10 @@ export async function getOrganizationMembersClient(
 export async function refreshTokenClient(): Promise<boolean> {
   try {
     const response = await fetch(`${API_URL}/auth/refresh`, {
-      method: 'POST',
-      credentials: 'include', // Include HTTP-only cookies
+      method: "POST",
+      credentials: "include", // Include HTTP-only cookies
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
@@ -139,16 +139,16 @@ export async function refreshTokenClient(): Promise<boolean> {
 export async function logoutClient(): Promise<boolean> {
   try {
     const response = await fetch(`${API_URL}/auth/logout`, {
-      method: 'POST',
-      credentials: 'include', // Include HTTP-only cookies
+      method: "POST",
+      credentials: "include", // Include HTTP-only cookies
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
     if (response.ok) {
       // Clear any client-side state if needed
-      window.location.href = '/login';
+      window.location.href = "/login";
       return true;
     }
     return false;

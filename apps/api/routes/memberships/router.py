@@ -3,8 +3,6 @@
 from typing import List
 from uuid import UUID
 
-from api.routes.auth.dependencies import get_current_user
-from api.utils import handle_domain_exception
 from core.common.exceptions import DomainException
 from core.database import get_session
 from core.domains.memberships import (
@@ -16,6 +14,8 @@ from core.domains.users import User
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
+from ...routes.auth.dependencies import get_current_user
+from ...utils import handle_domain_exception
 from .dependencies import get_membership_service
 
 router = APIRouter(prefix="/memberships", tags=["memberships"])
