@@ -5,8 +5,11 @@ from contextlib import asynccontextmanager
 from core.common.exceptions import DomainException
 from core.database import create_tables
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
+from .middleware.csrf import CSRFMiddleware
+from .middleware.rate_limit import RateLimitMiddleware
 from .routes import (
     auth_router,
     memberships_router,
@@ -39,10 +42,43 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.api_title,
     description=settings.api_description,
-    cors_origins=settings.api_cors_origins,
     version=settings.api_version,
     lifespan=lifespan,
     debug=settings.debug,
+)
+
+# Add Rate Limiting middleware (must be before other middleware)
+app.add_middleware(
+    RateLimitMiddleware,
+    requests_per_minute=60,  # General rate limit
+    requests_per_hour=1000,
+    auth_endpoints_per_minute=10,  # Stricter for auth endpoints
+    ban_duration_seconds=300,  # 5 minute ban for violations
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.api_cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["X-CSRF-Token", "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"],
+)
+
+# Add CSRF protection middleware
+app.add_middleware(
+    CSRFMiddleware,
+    cookie_secure=not settings.debug,  # Use secure cookies in production
+    exempt_paths=[
+        "/v1/auth/login",
+        "/v1/auth/signup",
+        "/v1/auth/forgot-password",
+        "/docs",
+        "/openapi.json",
+        "/health",
+        "/",
+    ]
 )
 
 # Include domain endpoint routers

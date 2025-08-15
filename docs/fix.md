@@ -2,6 +2,8 @@
 
 After analyzing the authentication system, here are identified bugs and suggestions for improvement:
 
+Axiom is used for logging in both python and typescript.
+
 ## 🐛 Bugs
 
 ### Token Storage Inconsistency

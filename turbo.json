@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalEnv": [".env*", "!.env*.example"],
+  "globalEnv": [".env.development.local", "!.env*.example", ".env.local"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

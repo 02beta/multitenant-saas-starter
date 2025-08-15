@@ -54,8 +54,12 @@ export function middleware(request: NextRequest) {
     pathname === "/forgot-password" ||
     pathname === "/reset-password";
 
-  // Don't redirect if already on the target page
-  if (!token && !isAuthPage && pathname !== "/") {
+  // Define public pages that don't require authentication
+  // Only the root landing page is public by default
+  const isPublicPage = pathname === "/";
+
+  // Redirect unauthenticated users to login, except for auth pages and public pages
+  if (!token && !isAuthPage && !isPublicPage) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 

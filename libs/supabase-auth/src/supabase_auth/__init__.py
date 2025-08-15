@@ -14,7 +14,7 @@ from typing import Any
 
 from core.domains.auth.factory import AuthProviderRegistry
 
-from .config import SupabaseConfig
+from .config import SupabaseConfig, settings
 from .provider import SupabaseAuthProvider
 
 logger = logging.getLogger("supabase_auth")
@@ -121,8 +121,9 @@ def create_supabase_provider(config: dict) -> SupabaseAuthProvider:
 # Auto-register the provider when this package is imported
 AuthProviderRegistry.register_provider("supabase", create_supabase_provider)
 
+
 __all__ = [
     "SupabaseAuthProvider",
-    "SupabaseConfig",
+    "settings",
     "create_supabase_provider",
 ]

@@ -24,10 +24,10 @@ async def get_auth_service(
 ) -> AuthService:
     """Create auth service with configured provider."""
     provider_config = {
-        "api_url": settings.supabase_api_url,
-        "anon_key": settings.supabase_public_key,
-        "service_role_key": settings.supabase_secret_key,
-        "jwt_secret": settings.auth_jwt_secret,
+        "api_url": supabase_auth.settings.supabase_api_url,
+        "anon_key": supabase_auth.settings.supabase_public_key,
+        "service_role_key": supabase_auth.settings.supabase_secret_key,
+        "jwt_secret": supabase_auth.settings.auth_jwt_secret,
     }
 
     provider = AuthProviderRegistry.create_provider(

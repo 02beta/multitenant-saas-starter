@@ -11,7 +11,11 @@
         "AUTH_PROVIDER",
         "API_TITLE",
         "API_VERSION",
-        "API_DESCRIPTION"
+        "API_DESCRIPTION",
+        "SUPABASE_PUBLIC_KEY",
+        "SUPABASE_SECRET_KEY",
+        "AUTH_JWT_SECRET",
+        "AUTH_PROVIDER"
       ]
     },
     "dev": {
@@ -23,7 +27,12 @@
         "AUTH_PROVIDER",
         "API_TITLE",
         "API_VERSION",
-        "API_DESCRIPTION"
+        "API_DESCRIPTION",
+        "AUTH_PROVIDER",
+        "SUPABASE_API_URL",
+        "SUPABASE_PUBLIC_KEY",
+        "SUPABASE_SECRET_KEY",
+        "AUTH_JWT_SECRET"
       ]
     }
   }
