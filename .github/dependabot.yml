@@ -9,3 +9,31 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "apps/web"
+    schedule:
+      interval: "weekly"
+ - package-ecosystem: "npm" # See documentation for possible values
+    directory: "libs/ui" # Location of package manifests
+    schedule:
+      interval: "weekly"
+- package-ecosystem: "npm" # See documentation for possible values
+    directory: "libs/shared" # Location of package manifests
+    schedule:
+      interval: "weekly"
+- package-ecosystem: "uv" # See documentation for possible values
+    directory: "libs/core" # Location of package manifests
+    schedule:
+      interval: "weekly"
+- package-ecosystem: "uv" # See documentation for possible values
+    directory: "libs/supabase-auth-provider" # Location of package manifests
+    schedule:
+      interval: "weekly"
+- package-ecosystem: "uv" # See documentation for possible values
+    directory: "apps/api" # Location of package manifests
+    schedule:
+      interval: "weekly"
+- package-ecosystem: "uv" # See documentation for possible values
+    directory: "tools/cli" # Location of package manifests
+    schedule:
+      interval: "weekly"
