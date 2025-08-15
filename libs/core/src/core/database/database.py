@@ -5,6 +5,7 @@ Enhanced database connection and session management using PostgreSQL as the back
 from contextlib import asynccontextmanager, contextmanager
 from typing import AsyncGenerator, Generator
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -27,6 +28,8 @@ from .exceptions import (
 __all__ = [
     "DatabaseManager",
     "db_manager",
+    "create_schemas",
+    "create_schemas_async",
     "create_tables",
     "create_tables_async",
     "get_session",
@@ -124,6 +127,18 @@ class DatabaseManager:
                     raise TransactionRollbackError(rollback_error) from e
                 raise
 
+    def get_schema_names(self, models: list | None = None):
+        """Get all schema names from the models."""
+        schema_names = set()
+        if models is not None:
+            target_models = models
+        else:
+            target_models = [m for m in SQLModel.metadata.tables.values()]
+
+        for model in target_models:
+            schema_names.add(model.schema)
+        return schema_names
+
     def create_schemas(self, models: list | None = None):
         """Create all database schemas.
 
@@ -134,49 +149,51 @@ class DatabaseManager:
             logger.error("Database engine not configured")
             return
 
-        # Collect schema names from models' __table_args__
-        schema_names = set()  # set provides unique values
+        schema_names = self.get_schema_names(models)
 
-        target_models = (
-            models
-            if models is not None
-            else [m for m in SQLModel.metadata.tables.values()]
-        )
-
-        for model in target_models:
-            logger.info(f"Creating schema for model: {model.__name__}")
-            table_args = getattr(model, "__table_args__", None)
-            if isinstance(table_args, dict):
-                schema = table_args.get("schema")
-                if schema:
-                    schema_names.add(schema)
-            elif isinstance(table_args, (tuple, list)):
-                for arg in table_args:
-                    if isinstance(arg, dict):
-                        schema = arg.get("schema")
-                        if schema:
-                            schema_names.add(schema)
-
-        # Create schemas in the database
         if schema_names:
-            logger.info(f"Creating schemas: {schema_names}")
             with self.engine.connect() as conn:
                 for schema in schema_names:
-                    conn.execute(f'CREATE SCHEMA IF NOT EXISTS "{schema}"')
+                    logger.info(f"Creating schema: {schema}")
+                    conn.execute(
+                        text(f'CREATE SCHEMA IF NOT EXISTS "{schema}"')
+                    )
                 conn.commit()
+            logger.info(f"Schemas created: {schema_names}")
+
+    async def create_schemas_async(self, models: list | None = None):
+        """Create all database schemas asynchronously."""
+        if not self.async_engine:
+            raise AsyncNotConfiguredError("create_schemas_async")
+
+        schema_names = self.get_schema_names(models)
+
+        if schema_names:
+            async with self.async_engine.connect() as conn:
+                for schema in schema_names:
+                    logger.info(f"Creating schema (async): {schema}")
+                    await conn.execute(
+                        text(f'CREATE SCHEMA IF NOT EXISTS "{schema}"')
+                    )
+                await conn.commit()
             logger.info(f"Schemas created: {schema_names}")
 
     def create_tables(self, models: list | None = None):
         """Create all database tables.
 
         Args:
-            models: list of SQLModel classes to create tables for, or None to create all tables from SQLModel.metadata.
+            models: list of SQLModel classes to create tables for, or None to
+                create all tables from SQLModel.metadata.
         """
         try:
             if models:
                 # Create tables for specific models
                 for model in models:
                     try:
+                        logger.info(
+                            f"Creating tables for model: "
+                            f"{getattr(model, '__tablename__', model.__name__)}"
+                        )
                         model.metadata.create_all(self.engine)
                     except Exception as e:
                         table_name = getattr(
@@ -184,7 +201,7 @@ class DatabaseManager:
                         )
                         raise TableCreationError(table_name, str(e))
             else:
-                # Create all tables
+                logger.info("Creating all tables from SQLModel.metadata")
                 SQLModel.metadata.create_all(self.engine)
         except TableCreationError:
             raise
@@ -195,7 +212,8 @@ class DatabaseManager:
         """Create all database tables asynchronously.
 
         Args:
-            models: list of SQLModel classes to create tables for, or None to create all tables from SQLModel.metadata.
+            models: list of SQLModel classes to create tables for, or None to
+                create all tables from SQLModel.metadata.
         """
         if not self.async_engine:
             raise AsyncNotConfiguredError("create_tables_async")
@@ -205,6 +223,10 @@ class DatabaseManager:
                 # Create tables for specific models
                 for model in models:
                     try:
+                        logger.info(
+                            f"Creating tables for model (async): "
+                            f"{getattr(model, '__tablename__', model.__name__)}"
+                        )
                         async with self.async_engine.begin() as conn:
                             await conn.run_sync(model.metadata.create_all)
                     except Exception as e:
@@ -213,7 +235,9 @@ class DatabaseManager:
                         )
                         raise TableCreationError(table_name, str(e))
             else:
-                # Create all tables
+                logger.info(
+                    "Creating all tables from SQLModel.metadata (async)"
+                )
                 async with self.async_engine.begin() as conn:
                     await conn.run_sync(SQLModel.metadata.create_all)
         except TableCreationError:
@@ -225,13 +249,18 @@ class DatabaseManager:
         """Drop all database tables.
 
         Args:
-            models: list of SQLModel classes to drop tables for, or None to drop all tables from SQLModel.metadata.
+            models: list of SQLModel classes to drop tables for, or None to
+                drop all tables from SQLModel.metadata.
         """
         try:
             if models:
                 # Drop tables for specific models
                 for model in models:
                     try:
+                        logger.info(
+                            f"Dropping tables for model: "
+                            f"{getattr(model, '__tablename__', model.__name__)}"
+                        )
                         model.metadata.drop_all(self.engine)
                     except Exception as e:
                         table_name = getattr(
@@ -239,7 +268,7 @@ class DatabaseManager:
                         )
                         raise TableDropError(table_name, str(e))
             else:
-                # Drop all tables
+                logger.info("Dropping all tables from SQLModel.metadata")
                 SQLModel.metadata.drop_all(self.engine)
         except TableDropError:
             raise
@@ -250,7 +279,8 @@ class DatabaseManager:
         """Drop all database tables asynchronously.
 
         Args:
-            models: list of SQLModel classes to drop tables for, or None to drop all tables from SQLModel.metadata.
+            models: list of SQLModel classes to drop tables for, or None to
+                drop all tables from SQLModel.metadata.
         """
         if not self.async_engine:
             raise AsyncNotConfiguredError("drop_tables_async")
@@ -260,6 +290,10 @@ class DatabaseManager:
                 # Drop tables for specific models
                 for model in models:
                     try:
+                        logger.info(
+                            f"Dropping tables for model (async): "
+                            f"{getattr(model, '__tablename__', model.__name__)}"
+                        )
                         async with self.async_engine.begin() as conn:
                             await conn.run_sync(model.metadata.drop_all)
                     except Exception as e:
@@ -268,7 +302,9 @@ class DatabaseManager:
                         )
                         raise TableDropError(table_name, str(e))
             else:
-                # Drop all tables
+                logger.info(
+                    "Dropping all tables from SQLModel.metadata (async)"
+                )
                 async with self.async_engine.begin() as conn:
                     await conn.run_sync(SQLModel.metadata.drop_all)
         except TableDropError:
@@ -283,27 +319,32 @@ db_manager = DatabaseManager()
 
 def create_schemas(models: list | None = None):
     """Create all database schemas."""
+    logger.info("Creating database schemas")
     db_manager.create_schemas(models)
 
 
 async def create_schemas_async(models: list | None = None):
     """Create all database schemas."""
-    await db_manager.create_schemas(models)
+    logger.info("Creating database schemas asynchronously")
+    await db_manager.create_schemas_async(models)
 
 
 def create_tables(models: list | None = None):
     """Create all database tables."""
+    logger.info("Creating database tables")
     db_manager.create_tables(models)
 
 
 async def create_tables_async(models: list | None = None):
     """Create all database tables asynchronously."""
+    logger.info("Creating database tables asynchronously")
     await db_manager.create_tables_async(models)
 
 
 @contextmanager
 def get_session() -> Generator[Session, None, None]:
     """Get database session with proper context management."""
+    logger.info("Getting database session")
     with db_manager.get_sync_session_context() as session:
         yield session
 

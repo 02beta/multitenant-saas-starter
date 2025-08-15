@@ -2,6 +2,8 @@
 
 from .database import (
     DatabaseManager,
+    create_schemas,
+    create_schemas_async,
     create_tables,
     create_tables_async,
     db_manager,
@@ -11,6 +13,8 @@ from .database import (
 
 __all__ = [
     "DatabaseManager",
+    "create_schemas",
+    "create_schemas_async",
     "create_tables",
     "create_tables_async",
     "db_manager",
