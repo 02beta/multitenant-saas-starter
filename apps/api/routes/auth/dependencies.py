@@ -5,7 +5,6 @@ from typing import Optional
 from uuid import UUID
 
 import supabase_auth  # Auto-registers Supabase provider
-from core.config import settings
 from core.database import get_session
 from core.domains.auth import (
     AuthProviderRegistry,
@@ -15,6 +14,8 @@ from core.domains.auth import (
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlmodel import Session
+
+from ...config.settings import settings
 
 security = HTTPBearer()
 

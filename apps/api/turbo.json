@@ -4,27 +4,24 @@
   "tasks": {
     "build": {
       "env": [
-        "KV_REST_API_TOKEN",
         "DATABASE_URL",
         "DATABASE_ASYNC_URL",
-        "AUTH_JWT_SECRET",
-        "AUTH_PROVIDER",
         "API_TITLE",
         "API_VERSION",
         "API_DESCRIPTION",
         "SUPABASE_PUBLIC_KEY",
         "SUPABASE_SECRET_KEY",
         "AUTH_JWT_SECRET",
-        "AUTH_PROVIDER"
+        "AUTH_PROVIDER",
+        "AXIOM_TOKEN",
+        "AXIOM_ORG_ID",
+        "AXIOM_DATASET"
       ]
     },
     "dev": {
       "env": [
-        "KV_REST_API_TOKEN",
         "DATABASE_URL",
         "DATABASE_ASYNC_URL",
-        "AUTH_JWT_SECRET",
-        "AUTH_PROVIDER",
         "API_TITLE",
         "API_VERSION",
         "API_DESCRIPTION",
@@ -32,7 +29,10 @@
         "SUPABASE_API_URL",
         "SUPABASE_PUBLIC_KEY",
         "SUPABASE_SECRET_KEY",
-        "AUTH_JWT_SECRET"
+        "AUTH_JWT_SECRET",
+        "AXIOM_TOKEN",
+        "AXIOM_ORG_ID",
+        "AXIOM_DATASET"
       ]
     }
   }
