@@ -4,9 +4,9 @@ import type { NextRequest } from "next/server";
 /**
  * Middleware to handle authentication-based redirects.
  *
- * Ensures that all files/resources/images/assets located in the public folder
- * (i.e., any path starting with /public/ or /assets/ or direct file access)
- * are accessible to unauthenticated users.
+ * Ensures that only specific static files/resources/images/assets located in
+ * the public folder (i.e., any path starting with /public/, /assets/, etc. and
+ * ending with an allowed extension) are accessible to unauthenticated users.
  *
  * Retrieves the access token from the HTTP-only cookie set by the FastAPI
  * server's login response. The token is accessed via request.cookies,
@@ -17,14 +17,31 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get("access_token")?.value;
   const pathname = request.nextUrl.pathname;
 
-  // Allow all requests to public assets (e.g., /public/*, /assets/*, /favicon.ico, etc.)
-  // Next.js serves static files from /public at the root, so we check for file extensions.
+  // Define allowed static file extensions for public assets
+  const allowedExtensions = [
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".svg",
+    ".gif",
+    ".webp",
+    ".ico",
+    ".css",
+    ".js",
+    ".woff",
+    ".woff2",
+    ".ttf",
+    ".eot",
+    ".otf",
+  ];
+
+  // Allow only requests to public assets with allowed extensions
   const isPublicAsset =
-    pathname.startsWith("/assets/") ||
-    pathname.startsWith("/images/") ||
-    pathname.startsWith("/fonts/") ||
-    pathname.startsWith("/public/") ||
-    /\.[a-zA-Z0-9]+$/.test(pathname); // matches file extensions like .png, .jpg, .svg, .css, etc.
+    (pathname.startsWith("/assets/") ||
+      pathname.startsWith("/images/") ||
+      pathname.startsWith("/fonts/") ||
+      pathname.startsWith("/public/")) &&
+    allowedExtensions.some(ext => pathname.toLowerCase().endsWith(ext));
 
   if (isPublicAsset) {
     return NextResponse.next();
