@@ -55,7 +55,7 @@ const options: Option[] = [
 
 export function SplitButtonDropdown() {
   const [selectedOption, setSelectedOption] = React.useState<Option>(
-    options[0] ?? { id: "", icon: <></>, label: "", description: "" },
+    options[0] ?? { id: "", icon: <></>, label: "", description: "" }
   );
   const [isOpen, setIsOpen] = React.useState(false);
   const handleMainButtonClick = () => {

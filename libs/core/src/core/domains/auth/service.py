@@ -144,12 +144,24 @@ class AuthService:
         # Create new local user
         from core.domains.users import User
 
+        meta = auth_user.provider_metadata or {}
+        sb = meta.get("supabase_data", {}) if isinstance(meta, dict) else {}
+        email_local = (
+            auth_user.email.split("@")[0]
+            if "@" in auth_user.email
+            else auth_user.email
+        )
+        first_name = sb.get("first_name") or email_local or "User"
+        last_name = sb.get("last_name") or "User"
+        placeholder_password = "external-auth"
+
         local_user = User(
             email=auth_user.email,
-            first_name="",
-            last_name="",
-            password="",  # Will be managed by auth provider
+            first_name=first_name,
+            last_name=last_name,
+            password=placeholder_password,
         )
+
         self.session.add(local_user)
         self.session.commit()
         self.session.refresh(local_user)
@@ -315,7 +327,7 @@ class AuthService:
             email=email,
             first_name=first_name,
             last_name=last_name,
-            password="",  # Managed by provider
+            password="external-auth",  # Managed by provider
         )
         self.session.add(local_user)
         self.session.commit()

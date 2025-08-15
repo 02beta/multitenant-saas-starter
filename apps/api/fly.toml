@@ -3,8 +3,8 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'api-cool-sun-8659'
-primary_region = 'sjc'
+app = 'mss-demo-api'
+primary_region = 'lax'
 
 [build]
   dockerfile = "apps/api/Dockerfile"

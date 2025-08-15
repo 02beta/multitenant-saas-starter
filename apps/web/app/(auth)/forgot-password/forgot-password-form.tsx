@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Button } from "../ui/button";
+import { Button } from "@workspace/ui/components/ui/button";
 import {
   Form,
   FormControl,
@@ -11,46 +11,40 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
+} from "@workspace/ui/components/ui/form";
+import { Input } from "@workspace/ui/components/ui/input";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
-const loginSchema = z.object({
+const forgotPasswordSchema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/,
-      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-    ),
 });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
-interface LoginFormProps {
-  onSubmit: (values: LoginFormValues) => Promise<void>;
+interface ForgotPasswordFormProps {
+  onSubmit: (values: ForgotPasswordFormValues) => Promise<void>;
 }
 
-export function LoginForm({ onSubmit }: LoginFormProps) {
+export function ForgotPasswordForm({ onSubmit }: ForgotPasswordFormProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
-      password: "",
     },
   });
 
-  async function handleSubmit(values: LoginFormValues) {
+  async function handleSubmit(values: ForgotPasswordFormValues) {
     setIsLoading(true);
     try {
       await onSubmit(values);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Login failed");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to send reset email"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -72,22 +66,9 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input placeholder="••••••••" type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Sign In
+          Send Reset Link
         </Button>
       </form>
     </Form>

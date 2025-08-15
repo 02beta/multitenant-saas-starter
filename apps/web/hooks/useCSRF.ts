@@ -1,11 +1,11 @@
 /**
  * CSRF Protection Hook
- * 
+ *
  * This hook manages CSRF tokens for API requests.
  * It reads the CSRF token from cookies and includes it in request headers.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export function useCSRF() {
   const [csrfToken, setCSRFToken] = useState<string | null>(null);
@@ -14,7 +14,7 @@ export function useCSRF() {
     // Get CSRF token from cookie
     const getCSRFToken = () => {
       const match = document.cookie.match(/(?:^|; )csrf_token=([^;]*)/);
-      return match ? decodeURIComponent(match[1] || '') : null;
+      return match ? decodeURIComponent(match[1] || "") : null;
     };
 
     // Initial token fetch
@@ -24,7 +24,7 @@ export function useCSRF() {
     // If no token exists, make a GET request to initialize it
     if (!token) {
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/health`, {
-        credentials: 'include',
+        credentials: "include",
       }).then(() => {
         const newToken = getCSRFToken();
         setCSRFToken(newToken);
@@ -37,15 +37,15 @@ export function useCSRF() {
    */
   const fetchWithCSRF = async (url: string, options: RequestInit = {}) => {
     const headers = new Headers(options.headers);
-    
+
     if (csrfToken) {
-      headers.set('X-CSRF-Token', csrfToken);
+      headers.set("X-CSRF-Token", csrfToken);
     }
 
     return fetch(url, {
       ...options,
       headers,
-      credentials: 'include', // Always include cookies
+      credentials: "include", // Always include cookies
     });
   };
 
@@ -59,12 +59,12 @@ export function useCSRF() {
  * Helper function to get CSRF token for use in API client utilities
  */
 export function getCSRFToken(): string | null {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return null;
   }
-  
+
   const match = document.cookie.match(/(?:^|; )csrf_token=([^;]*)/);
-  return match ? decodeURIComponent(match[1] || '') : null;
+  return match ? decodeURIComponent(match[1] || "") : null;
 }
 
 /**
@@ -72,13 +72,13 @@ export function getCSRFToken(): string | null {
  */
 export function addCSRFHeader(options: RequestInit = {}): RequestInit {
   const csrfToken = getCSRFToken();
-  
+
   if (!csrfToken) {
     return options;
   }
 
   const headers = new Headers(options.headers);
-  headers.set('X-CSRF-Token', csrfToken);
+  headers.set("X-CSRF-Token", csrfToken);
 
   return {
     ...options,

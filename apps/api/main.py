@@ -3,7 +3,7 @@
 from contextlib import asynccontextmanager
 
 from core.common.exceptions import DomainException
-from core.database import create_tables
+from core.database import create_schemas, create_tables
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
         core_logger.info("Logging initialized")
     except Exception as ax_err:  # Soft-fail if not configured
         core_logger.warning("logging not initialized: %s", ax_err)
-
+    create_schemas()
     create_tables()
     print("Database tables created successfully")
     yield
@@ -63,7 +63,12 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["X-CSRF-Token", "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"],
+    expose_headers=[
+        "X-CSRF-Token",
+        "X-RateLimit-Limit",
+        "X-RateLimit-Remaining",
+        "X-RateLimit-Reset",
+    ],
 )
 
 # Add CSRF protection middleware
@@ -78,7 +83,7 @@ app.add_middleware(
         "/openapi.json",
         "/health",
         "/",
-    ]
+    ],
 )
 
 # Include domain endpoint routers

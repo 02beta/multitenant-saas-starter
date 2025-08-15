@@ -1,0 +1,70 @@
+name: Deploy API to Fly.io
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/api/**"
+      - "libs/core/**"
+      - "libs/supabase-auth-provider/**"
+      - "apps/api/fly.toml"
+      - "apps/api/Dockerfile"
+      - "apps/api/.dockerignore"
+  workflow_dispatch:
+
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+jobs:
+  deploy:
+    name: Deploy API
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Fly.io CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Verify Fly.io configuration
+        working-directory: apps/api
+        run: |
+          echo "🔍 Verifying Fly.io configuration..."
+          flyctl config show --config fly.toml
+
+      - name: Deploy to Fly.io
+        working-directory: apps/api
+        run: |
+          echo "🚀 Starting deployment to Fly.io..."
+          flyctl deploy \
+            --config fly.toml \
+            --dockerfile Dockerfile \
+            --remote-only \
+            --wait-timeout 600
+
+      - name: Verify deployment
+        working-directory: apps/api
+        run: |
+          echo "✅ Verifying deployment..."
+          flyctl status --config fly.toml
+
+      - name: Health check
+        working-directory: apps/api
+        run: |
+          echo "🏥 Running health check..."
+          # Wait a bit for the app to fully start
+          sleep 30
+
+          # Get the app URL and check health
+          APP_URL=$(flyctl status --config fly.toml --json | jq -r '.Hostname // empty')
+          if [ -n "$APP_URL" ]; then
+            echo "Checking health at: https://$APP_URL/docs"
+            curl -f --retry 3 --retry-delay 5 https://$APP_URL/docs || exit 1
+            echo "✅ Health check passed!"
+          else
+            echo "⚠️  Could not determine app URL for health check"
+          fi

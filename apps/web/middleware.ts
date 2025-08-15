@@ -55,8 +55,15 @@ export function middleware(request: NextRequest) {
     pathname === "/reset-password";
 
   // Define public pages that don't require authentication
-  // Only the root landing page is public by default
-  const isPublicPage = pathname === "/";
+  // Root landing page and legal pages are public
+  const publicPages = new Set([
+    "/",
+    "/privacy",
+    "/terms",
+    "/imprint",
+    "/cookies",
+  ]);
+  const isPublicPage = publicPages.has(pathname);
 
   // Redirect unauthenticated users to login, except for auth pages and public pages
   if (!token && !isAuthPage && !isPublicPage) {

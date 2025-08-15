@@ -22,7 +22,7 @@ export function useToast() {
         | "bottom-center"
         | "bottom-right";
       variant?: "default" | "success" | "error" | "warning" | "info";
-    },
+    }
   ) {
     // 'variant' is not a valid property for sonner's toast options as of latest versions.
     // If you want to style based on variant, you should use the 'className' or 'description' props, or use custom logic.

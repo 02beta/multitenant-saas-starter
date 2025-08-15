@@ -1,15 +1,16 @@
 {
   "name": "multitenant-saas-starter",
-  "version": "0.1.1",
+  "version": "0.3.1",
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "uv run cli dev-stop && uv run cli dev dev",
-    "dev:kill": "uv run cli workspace dev-stop",
+    "dev": "echo 'Starting development environment...' && uv run cli dev stop && uv run cli dev start",
+    "dev:kill": "echo 'Stopping development environment...' && uv run cli dev stop",
     "lint": "turbo lint",
     "lint:fix": "turbo lint --fix",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "clean": "turbo clean"
+    "clean": "turbo clean",
+    "precommit": "pre-commit run --all-files"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
@@ -28,5 +29,8 @@
       "core-js-pure",
       "sharp"
     ]
+  },
+  "dependencies": {
+    "precommit": "^1.2.2"
   }
 }
