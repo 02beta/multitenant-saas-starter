@@ -48,7 +48,7 @@ class SoftDeleteMixin:
     """Mixin for soft delete functionality."""
 
     deleted_at: Optional[datetime] = Field(
-        default_factory=None,
+        default=None,
         nullable=True,
         title="Deleted at",
         description="The date and time the record was deleted",
