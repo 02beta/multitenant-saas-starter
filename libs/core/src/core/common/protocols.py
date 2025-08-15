@@ -49,12 +49,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         else:
             create_data = obj_in.dict(exclude_unset=True)
 
-        # Set created_at if present in model
-        if (
-            hasattr(self.model, "created_at")
-            and "created_at" not in create_data
-        ):
-            create_data["created_at"] = datetime.utcnow()
+        # Database triggers handle audit fields automatically
 
         db_obj = self.model(**create_data)
         session.add(db_obj)
@@ -98,11 +93,8 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             if hasattr(db_obj, field):
                 setattr(db_obj, field, value)
 
-        # If model supports audit fields, update them
-        if hasattr(db_obj, "set_audit_fields") and callable(
-            getattr(db_obj, "set_audit_fields")
-        ):
-            db_obj.set_audit_fields(updated_by_id)
+        # Database triggers handle audit fields automatically
+        # The set_audit_fields method is now a no-op
 
         session.add(db_obj)
         session.commit()

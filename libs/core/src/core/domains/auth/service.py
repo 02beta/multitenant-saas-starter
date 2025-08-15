@@ -175,8 +175,6 @@ class AuthService:
         if existing_user:
             # Update provider metadata
             existing_user.provider_metadata = auth_user.provider_metadata
-            existing_user.updated_at = datetime.now(timezone.utc)
-            existing_user.updated_by = existing_user.id
             self.session.commit()
             return existing_user
 
@@ -203,12 +201,6 @@ class AuthService:
         )
 
         self.session.add(new_user)
-        self.session.flush()  # Get ID before setting audit fields
-
-        # Set audit fields to self-reference
-        new_user.created_by = new_user.id
-        new_user.updated_by = new_user.id
-
         self.session.commit()
         self.session.refresh(new_user)
 
@@ -304,11 +296,6 @@ class AuthService:
             provider_metadata=auth_user.provider_metadata,
         )
         self.session.add(local_user)
-        self.session.flush()  # Get ID before setting audit fields
-
-        # Set audit fields to self-reference
-        local_user.created_by = local_user.id
-        local_user.updated_by = local_user.id
         self.session.commit()
         self.session.refresh(local_user)
 
@@ -331,8 +318,6 @@ class AuthService:
             name=org_name,
             slug=org_slug,
             description=f"Organization for {first_name} {last_name}",
-            created_by=local_user.id,
-            updated_by=local_user.id,
         )
         self.session.add(organization)
         self.session.commit()
@@ -345,8 +330,6 @@ class AuthService:
             role=MembershipRole.OWNER,
             status=MembershipStatus.ACTIVE,
             accepted_at=datetime.now(timezone.utc),
-            created_by=local_user.id,
-            updated_by=local_user.id,
         )
         self.session.add(membership)
         self.session.commit()
