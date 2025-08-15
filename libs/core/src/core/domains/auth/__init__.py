@@ -12,33 +12,51 @@ from .exceptions import (
 )
 from .factory import AuthProviderRegistry
 from .models import (
-    AuthProviderType,
-    AuthResult,
     AuthSessionModel,
-    AuthUser,
     AuthUserModel,
-    TokenPair,
 )
 from .protocols import AuthProvider, AuthProviderStub
+from .schemas import (
+    AuthProviderType,
+    AuthResult,
+    AuthUser,
+    ForgotPasswordRequest,
+    LoginResponseExtended,
+    ResetPasswordRequest,
+    SignupRequest,
+    SignupResponse,
+    TokenPair,
+)
 from .service import AuthService
 
 __all__ = [
+    # Protocols
     "AuthProvider",
     "AuthProviderStub",
+    # Schemas
     "AuthProviderType",
-    "AuthUser",
     "AuthResult",
+    "AuthUser",
     "TokenPair",
-    "AuthUserModel",
+    "SignupRequest",
+    "SignupResponse",
+    "ForgotPasswordRequest",
+    "ResetPasswordRequest",
+    "LoginResponseExtended",
+    # Models
     "AuthSessionModel",
+    "AuthUserModel",
+    # Factory
     "AuthProviderRegistry",
+    # Service
     "AuthService",
+    # Exceptions
     "AuthenticationError",
     "InvalidCredentialsError",
-    "TokenExpiredError",
     "InvalidTokenError",
-    "UserNotFoundError",
-    "UnsupportedAuthProviderError",
-    "SessionNotFoundError",
     "OrganizationAccessDeniedError",
+    "SessionNotFoundError",
+    "TokenExpiredError",
+    "UnsupportedAuthProviderError",
+    "UserNotFoundError",
 ]

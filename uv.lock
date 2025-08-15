@@ -52,6 +52,7 @@ name = "api"
 version = "0.1.1"
 source = { virtual = "apps/api" }
 dependencies = [
+    { name = "axiom-py" },
     { name = "core" },
     { name = "fastapi", extra = ["standard"] },
     { name = "pydantic-settings" },
@@ -68,6 +69,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "axiom-py", specifier = ">=0.9.0" },
     { name = "core", editable = "libs/core" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.116.1" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10.0" },
@@ -347,6 +349,7 @@ dependencies = [
     { name = "pydantic-settings" },
     { name = "python-jose", extra = ["cryptography"] },
     { name = "python-multipart" },
+    { name = "python-slugify" },
     { name = "sqlmodel" },
 ]
 
@@ -372,6 +375,7 @@ requires-dist = [
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
     { name = "python-jose", extras = ["cryptography"], specifier = ">=3.3.0" },
     { name = "python-multipart", specifier = ">=0.0.6" },
+    { name = "python-slugify", specifier = ">=8.0.1" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4.2" },
     { name = "sqlmodel", specifier = ">=0.0.24" },
 ]
@@ -1232,6 +1236,18 @@ wheels = [
 ]
 
 [[package]]
+name = "python-slugify"
+version = "8.0.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "text-unidecode" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/87/c7/5e1547c44e31da50a460df93af11a535ace568ef89d7a811069ead340c4a/python-slugify-8.0.4.tar.gz", hash = "sha256:59202371d1d05b54a9e7720c5e038f928f45daaffe41dd10822f3907b937c856", size = 10921, upload-time = "2024-02-08T18:32:45.488Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a4/62/02da182e544a51a5c3ccf4b03ab79df279f9c60c5e82d5e8bec7ca26ac11/python_slugify-8.0.4-py2.py3-none-any.whl", hash = "sha256:276540b79961052b66b7d116620b36518847f52d5fd9e3a70164fc8c50faa6b8", size = 10051, upload-time = "2024-02-08T18:32:43.911Z" },
+]
+
+[[package]]
 name = "pyyaml"
 version = "6.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1589,6 +1605,7 @@ name = "supabase-auth"
 version = "0.1.1"
 source = { editable = "libs/supabase-auth" }
 dependencies = [
+    { name = "axiom-py" },
     { name = "core" },
     { name = "cryptography" },
     { name = "pyjwt" },
@@ -1604,6 +1621,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "axiom-py", specifier = ">=0.9.0" },
     { name = "core", editable = "libs/core" },
     { name = "cryptography", specifier = ">=41.0.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10.0" },
@@ -1625,6 +1643,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/e8/4b/16f94bcae8a49f5e09544a4fb0e6ad1c2288038036cefdeedb72fcffd92c/supafunc-0.10.1.tar.gz", hash = "sha256:a5b33c8baecb6b5297d25da29a2503e2ec67ee6986f3d44c137e651b8a59a17d", size = 5036, upload-time = "2025-06-23T18:26:50.327Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/76/4a/9cbea12d86a741d4e73a6e278c2b1d6479fb03d1002efb00e8e71aea76db/supafunc-0.10.1-py3-none-any.whl", hash = "sha256:26df9bd25ff2ef56cb5bfb8962de98f43331f7f8ff69572bac3ed9c3a9672040", size = 8028, upload-time = "2025-06-23T18:26:49.176Z" },
+]
+
+[[package]]
+name = "text-unidecode"
+version = "1.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ab/e2/e9a00f0ccb71718418230718b3d900e71a5d16e701a3dae079a21e9cd8f8/text-unidecode-1.3.tar.gz", hash = "sha256:bad6603bb14d279193107714b288be206cac565dfa49aa5b105294dd5c4aab93", size = 76885, upload-time = "2019-08-30T21:36:45.405Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a6/a5/c0b6468d3824fe3fde30dbb5e1f687b291608f9473681bbf7dabbf5a87d7/text_unidecode-1.3-py2.py3-none-any.whl", hash = "sha256:1311f10e8b895935241623731c2ba64f4c455287888b18189350b67134a822e8", size = 78154, upload-time = "2019-08-30T21:37:03.543Z" },
 ]
 
 [[package]]

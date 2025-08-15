@@ -1,6 +1,10 @@
 """User domain specific exceptions."""
 
-from core.common.exceptions import AlreadyExistsError, NotFoundError, ValidationError
+from core.common.exceptions import (
+    AlreadyExistsError,
+    NotFoundError,
+    ValidationError,
+)
 
 __all__ = [
     "UserNotFoundError",

@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/typescript-sdk",
+  "name": "@workspace/shared",
   "version": "0.1.1",
   "type": "module",
   "private": true,
@@ -24,10 +24,13 @@
     "clean": "rm -rf node_modules dist .turbo"
   },
   "devDependencies": {
-    "@eslint/js": "^9.32.0",
-    "eslint-config-prettier": "^9.1.2",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
     "prettier": "^3.6.2",
-    "typescript": "^5.9.2",
-    "typescript-eslint": "^8.39.0"
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@zodios/core": "^10.9.6",
+    "zod": "^3.25.76"
   }
 }

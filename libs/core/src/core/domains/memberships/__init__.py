@@ -12,21 +12,19 @@ from .exceptions import (
 )
 from .models import (
     Membership,
-    MembershipCreate,
-    MembershipPublic,
     MembershipRole,
     MembershipStatus,
-    MembershipUpdate,
 )
 from .repository import MembershipRepository
+from .schemas import (
+    MembershipBase,
+    MembershipCreate,
+    MembershipPublic,
+    MembershipUpdate,
+)
 from .services import MembershipService
 
 __all__ = [
-    # Models and schemas
-    "Membership",
-    "MembershipCreate",
-    "MembershipUpdate",
-    "MembershipPublic",
     # Enums
     "MembershipRole",
     "MembershipStatus",
@@ -35,10 +33,16 @@ __all__ = [
     "InvitationAlreadyAcceptedError",
     "InvitationNotFoundError",
     "LastOwnerRemovalError",
-    "NotOrganizationMemberError",
     "MembershipNotFoundError",
+    "NotOrganizationMemberError",
     "UserAlreadyInvitedError",
     "UserAlreadyMemberError",
+    # Models and schemas
+    "Membership",
+    "MembershipBase",
+    "MembershipCreate",
+    "MembershipPublic",
+    "MembershipUpdate",
     # Repository and service
     "MembershipRepository",
     "MembershipService",

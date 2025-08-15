@@ -13,7 +13,8 @@ from .exceptions import (
     UserAlreadyExistsError,
     WeakPasswordError,
 )
-from .models import User, UserCreate, UserPublic, UserUpdate
+from .models import User
+from .schemas import UserCreate, UserPublic, UserUpdate
 from .repository import UserRepository
 
 
@@ -82,10 +83,14 @@ class PasswordService:
             WeakPasswordError: If password doesn't meet requirements
         """
         if len(password) < 8:
-            raise WeakPasswordError("Password must be at least 8 characters long")
+            raise WeakPasswordError(
+                "Password must be at least 8 characters long"
+            )
 
         if len(password) > 128:
-            raise WeakPasswordError("Password must be no more than 128 characters long")
+            raise WeakPasswordError(
+                "Password must be no more than 128 characters long"
+            )
 
         if not re.search(r"[A-Z]", password):
             raise WeakPasswordError(
@@ -119,7 +124,9 @@ class PasswordService:
             "monkey",
         }
         if password.lower() in common_passwords:
-            raise WeakPasswordError("Password is too common and easily guessable")
+            raise WeakPasswordError(
+                "Password is too common and easily guessable"
+            )
 
     @staticmethod
     def generate_secure_password(length: int = 16) -> str:
@@ -237,7 +244,9 @@ class UserService:
         """
         return self.repository.get(session, user_id)
 
-    def get_user_by_email(self, session: Session, *, email: str) -> Optional[User]:
+    def get_user_by_email(
+        self, session: Session, *, email: str
+    ) -> Optional[User]:
         """
         Get user by email address.
 
@@ -320,7 +329,9 @@ class UserService:
         if "password" in update_data:
             new_password = update_data["password"]
             self.password_service.validate_password_strength(new_password)
-            update_data["password"] = self.password_service.hash_password(new_password)
+            update_data["password"] = self.password_service.hash_password(
+                new_password
+            )
 
         return self.repository.update(
             session,
@@ -355,7 +366,9 @@ class UserService:
             WeakPasswordError: If current password is wrong or new password is weak
         """
         # Verify current password
-        if not self.password_service.verify_password(current_password, user.password):
+        if not self.password_service.verify_password(
+            current_password, user.password
+        ):
             raise WeakPasswordError("Current password is incorrect")
 
         # Validate new password
@@ -368,7 +381,10 @@ class UserService:
 
         # Update password
         return self.repository.update(
-            session, db_obj=user, obj_in=update_data, updated_by_id=updated_by_id
+            session,
+            db_obj=user,
+            obj_in=update_data,
+            updated_by_id=updated_by_id,
         )
 
     def deactivate_user(
@@ -391,7 +407,10 @@ class UserService:
         """
         update_data = UserUpdate(is_active=False)
         return self.repository.update(
-            session, db_obj=user, obj_in=update_data, updated_by_id=deactivated_by_id
+            session,
+            db_obj=user,
+            obj_in=update_data,
+            updated_by_id=deactivated_by_id,
         )
 
     def activate_user(
@@ -414,7 +433,10 @@ class UserService:
         """
         update_data = UserUpdate(is_active=True)
         return self.repository.update(
-            session, db_obj=user, obj_in=update_data, updated_by_id=activated_by_id
+            session,
+            db_obj=user,
+            obj_in=update_data,
+            updated_by_id=activated_by_id,
         )
 
     def delete_user(
@@ -435,7 +457,9 @@ class UserService:
         Returns:
             True if successful
         """
-        return self.repository.remove(session, id=user_id, deleted_by_id=deleted_by_id)
+        return self.repository.remove(
+            session, id=user_id, deleted_by_id=deleted_by_id
+        )
 
     def get_users(
         self,
@@ -458,7 +482,9 @@ class UserService:
             List of UserPublic instances
         """
         if active_only:
-            users = self.repository.get_active_users(session, skip=skip, limit=limit)
+            users = self.repository.get_active_users(
+                session, skip=skip, limit=limit
+            )
         else:
             users = self.repository.get_multi(session, skip=skip, limit=limit)
 
@@ -512,7 +538,9 @@ class UserService:
             for user in users
         ]
 
-    def get_user_count(self, session: Session, *, active_only: bool = True) -> int:
+    def get_user_count(
+        self, session: Session, *, active_only: bool = True
+    ) -> int:
         """
         Get total count of users.
 
@@ -545,7 +573,10 @@ class UserService:
         """
         update_data = UserUpdate(is_superuser=True)
         return self.repository.update(
-            session, db_obj=user, obj_in=update_data, updated_by_id=promoted_by_id
+            session,
+            db_obj=user,
+            obj_in=update_data,
+            updated_by_id=promoted_by_id,
         )
 
     def revoke_superuser(
@@ -568,5 +599,8 @@ class UserService:
         """
         update_data = UserUpdate(is_superuser=False)
         return self.repository.update(
-            session, db_obj=user, obj_in=update_data, updated_by_id=revoked_by_id
+            session,
+            db_obj=user,
+            obj_in=update_data,
+            updated_by_id=revoked_by_id,
         )
