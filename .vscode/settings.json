@@ -23,7 +23,8 @@
     "**/temp": true,
     "**/.venv": true,
     "**/.mypy_cache": true,
-    "**/uv.lock": true
+    "**/uv.lock": false,
+    "**/pnpm-lock.yaml": false
   },
 
   // TypeScript settings for better monorepo DX
