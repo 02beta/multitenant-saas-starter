@@ -6,7 +6,7 @@ This package provides command-line utilities to help with development and projec
 """
 
 import typer
-from commands import db, dev, release
+from commands import db, release, serve, workspace
 from rich.console import Console
 
 app = typer.Typer(
@@ -21,8 +21,11 @@ console = Console()
 
 # Typer Command Groups
 app.add_typer(db, name="db", help="Database administration commands")
-app.add_typer(dev, name="dev", help="Development environment commands")
+app.add_typer(serve, name="serve", help="Development environment commands")
 app.add_typer(release, name="release", help="Release automation commands")
+app.add_typer(
+    workspace, name="workspace", help="Workspace administration commands"
+)
 
 
 def main():

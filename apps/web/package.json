@@ -4,8 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "pnpm run dev:kill && next dev --turbopack",
-    "dev:kill": "uv run cli dev dev-stop",
+    "dev": "pnpm run dev:kill && next dev --turbopack --port 3000",
+    "dev:kill": "lsof -t -i:3000 | xargs -r kill -9",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

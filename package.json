@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev",
+    "dev": "uv run cli dev-stop && uv run cli dev dev",
     "dev:kill": "uv run cli workspace dev-stop",
     "lint": "turbo lint",
     "lint:fix": "turbo lint --fix",

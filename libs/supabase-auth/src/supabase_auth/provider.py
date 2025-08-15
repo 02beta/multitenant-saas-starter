@@ -97,7 +97,7 @@ class SupabaseAuthProvider(AuthProvider):
                 "password": password,
                 "options": {"data": user_data},
             })
-
+            logger.info("User created via Supabase (email=%s)", email)
             return self._convert_user_to_auth_user(response.user)
 
         except Exception as e:
@@ -199,21 +199,56 @@ class SupabaseAuthProvider(AuthProvider):
 
     def _convert_user_to_auth_user(self, supabase_user) -> AuthUser:
         """Convert Supabase user to our AuthUser format."""
+        # Handle different timestamp formats
+        if isinstance(supabase_user.created_at, str):
+            created_at = datetime.fromisoformat(
+                supabase_user.created_at.replace("Z", "+00:00")
+            )
+        elif isinstance(supabase_user.created_at, (int, float)):
+            # Unix timestamp
+            created_at = datetime.fromtimestamp(supabase_user.created_at)
+        else:
+            # Already a datetime object
+            created_at = supabase_user.created_at
+
+        if isinstance(supabase_user.updated_at, str):
+            updated_at = datetime.fromisoformat(
+                supabase_user.updated_at.replace("Z", "+00:00")
+            )
+        elif isinstance(supabase_user.updated_at, (int, float)):
+            updated_at = datetime.fromtimestamp(supabase_user.updated_at)
+        else:
+            updated_at = supabase_user.updated_at
+
         return AuthUser(
             provider_user_id=supabase_user.id,
             email=supabase_user.email,
             provider_type=AuthProviderType.SUPABASE,
             provider_metadata={
-                "supabase_data": supabase_user.user_metadata,
-                "app_metadata": supabase_user.app_metadata,
+                "supabase_data": supabase_user.user_metadata or {},
+                "app_metadata": supabase_user.app_metadata or {},
             },
-            created_at=datetime.fromisoformat(
-                supabase_user.created_at.replace("Z", "+00:00")
-            ),
-            updated_at=datetime.fromisoformat(
-                supabase_user.updated_at.replace("Z", "+00:00")
-            ),
+            created_at=created_at,
+            updated_at=updated_at,
         )
+
+    # def _convert_user_to_auth_user(self, supabase_user) -> AuthUser:
+    #     """Convert Supabase user to our AuthUser format."""
+    #     return AuthUser(
+    #         provider_user_id=supabase_user.id,
+    #         email=supabase_user.email,
+    #         provider_type=AuthProviderType.SUPABASE,
+    #         provider_metadata={
+    #             "supabase_data": supabase_user.user_metadata,
+    #             "app_metadata": supabase_user.app_metadata,
+    #         },
+    #         created_at=datetime.fromisoformat(
+    #             supabase_user.created_at.replace("Z", "+00:00")
+    #         ),
+    #         updated_at=datetime.fromisoformat(
+    #             supabase_user.updated_at.replace("Z", "+00:00")
+    #         ),
+    #     )
 
     async def send_password_reset(self, email: str) -> bool:
         """Send password reset email via Supabase."""

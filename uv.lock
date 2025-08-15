@@ -7,7 +7,7 @@ members = [
     "api",
     "cli",
     "core",
-    "supabase-auth",
+    "multitenant-supabase-auth",
 ]
 
 [[package]]
@@ -55,8 +55,8 @@ dependencies = [
     { name = "axiom-py" },
     { name = "core" },
     { name = "fastapi", extra = ["standard"] },
+    { name = "multitenant-supabase-auth" },
     { name = "pydantic-settings" },
-    { name = "supabase-auth" },
 ]
 
 [package.optional-dependencies]
@@ -72,12 +72,12 @@ requires-dist = [
     { name = "axiom-py", specifier = ">=0.9.0" },
     { name = "core", editable = "libs/core" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.116.1" },
+    { name = "multitenant-supabase-auth", editable = "libs/supabase-auth" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10.0" },
     { name = "pydantic-settings", specifier = ">=2.10.1" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.2.1" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4.2" },
-    { name = "supabase-auth", editable = "libs/supabase-auth" },
 ]
 provides-extras = ["dev"]
 
@@ -540,20 +540,6 @@ wheels = [
 ]
 
 [[package]]
-name = "gotrue"
-version = "2.12.3"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "httpx", extra = ["http2"] },
-    { name = "pydantic" },
-    { name = "pyjwt" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/fe/67/ae47f68daae1bbb56a9fbf960dfb7d08b3dec52a6ad1e96f69c2ba5b3116/gotrue-2.12.3.tar.gz", hash = "sha256:f874cf9d0b2f0335bfbd0d6e29e3f7aff79998cd1c14d2ad814db8c06cee3852", size = 38323, upload-time = "2025-07-04T06:50:03.941Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/42/fa/4165d298ef89254c9f742faa3f99a61fe6fd3552b4ba44df6924f8d307d7/gotrue-2.12.3-py3-none-any.whl", hash = "sha256:b1a3c6a5fe3f92e854a026c4c19de58706a96fd5fbdcc3d620b2802f6a46a26b", size = 44022, upload-time = "2025-07-04T06:50:02.591Z" },
-]
-
-[[package]]
 name = "greenlet"
 version = "3.2.4"
 source = { registry = "https://pypi.org/simple" }
@@ -859,6 +845,38 @@ sdist = { url = "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec9
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979, upload-time = "2022-08-14T12:40:09.779Z" },
 ]
+
+[[package]]
+name = "multitenant-supabase-auth"
+version = "0.1.1"
+source = { editable = "libs/supabase-auth" }
+dependencies = [
+    { name = "axiom-py" },
+    { name = "core" },
+    { name = "cryptography" },
+    { name = "pyjwt" },
+    { name = "supabase" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "mypy" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "axiom-py", specifier = ">=0.9.0" },
+    { name = "core", editable = "libs/core" },
+    { name = "cryptography", specifier = ">=41.0.0" },
+    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10.0" },
+    { name = "pyjwt", specifier = ">=2.8.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.2.1" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4.2" },
+    { name = "supabase", specifier = ">=2.18.1" },
+]
+provides-extras = ["dev"]
 
 [[package]]
 name = "mypy"
@@ -1585,64 +1603,46 @@ wheels = [
 
 [[package]]
 name = "supabase"
-version = "2.18.0"
+version = "2.18.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "gotrue" },
     { name = "httpx" },
     { name = "postgrest" },
     { name = "realtime" },
     { name = "storage3" },
-    { name = "supafunc" },
+    { name = "supabase-auth" },
+    { name = "supabase-functions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5c/e1/511411018596cfecfac99d9091630606e9a03cb07bd5dec2f15621d38b84/supabase-2.18.0.tar.gz", hash = "sha256:b1e98f0faff6e041e5347393a82524d9d5c2ddb87cb844e7557f967f23d8bc70", size = 11521, upload-time = "2025-08-05T18:30:25.218Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/99/d2/3b135af55dd5788bd47875bb81f99c870054b990c030e51fd641a61b10b5/supabase-2.18.1.tar.gz", hash = "sha256:205787b1fbb43d6bc997c06fe3a56137336d885a1b56ec10f0012f2a2905285d", size = 11549, upload-time = "2025-08-12T19:02:27.852Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f7/78/67238701e0253fdfef222a39df32f9883de2a8b046fa68d1ae47f3e52979/supabase-2.18.0-py3-none-any.whl", hash = "sha256:73774e6edd5ffd02653a99e2e98f92191c4ffb5089dcff3ed93f5d7c18ddaeb3", size = 18677, upload-time = "2025-08-05T18:30:23.641Z" },
+    { url = "https://files.pythonhosted.org/packages/a8/33/0e0062fea22cfe01d466dee83f56b3ed40c89bdcbca671bafeba3fe86b92/supabase-2.18.1-py3-none-any.whl", hash = "sha256:4fdd7b7247178a847f97ecd34f018dcb4775e487c8ff46b1208a01c933691fe9", size = 18683, upload-time = "2025-08-12T19:02:26.68Z" },
 ]
 
 [[package]]
 name = "supabase-auth"
-version = "0.1.1"
-source = { editable = "libs/supabase-auth" }
+version = "2.12.3"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "axiom-py" },
-    { name = "core" },
-    { name = "cryptography" },
+    { name = "httpx", extra = ["http2"] },
+    { name = "pydantic" },
     { name = "pyjwt" },
-    { name = "supabase" },
 ]
-
-[package.optional-dependencies]
-dev = [
-    { name = "mypy" },
-    { name = "pytest" },
-    { name = "ruff" },
+sdist = { url = "https://files.pythonhosted.org/packages/e9/e9/3d6f696a604752803b9e389b04d454f4b26a29b5d155b257fea4af8dc543/supabase_auth-2.12.3.tar.gz", hash = "sha256:8d3b67543f3b27f5adbfe46b66990424c8504c6b08c1141ec572a9802761edc2", size = 38430, upload-time = "2025-07-04T06:49:22.906Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/96/a6/4102d5fa08a8521d9432b4d10bb58fedbd1f92b211d1b45d5394f5cb9021/supabase_auth-2.12.3-py3-none-any.whl", hash = "sha256:15c7580e1313d30ffddeb3221cb3cdb87c2a80fd220bf85d67db19cd1668435b", size = 44417, upload-time = "2025-07-04T06:49:21.351Z" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "axiom-py", specifier = ">=0.9.0" },
-    { name = "core", editable = "libs/core" },
-    { name = "cryptography", specifier = ">=41.0.0" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10.0" },
-    { name = "pyjwt", specifier = ">=2.8.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.2.1" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4.2" },
-    { name = "supabase", specifier = ">=2.6.0" },
-]
-provides-extras = ["dev"]
 
 [[package]]
-name = "supafunc"
+name = "supabase-functions"
 version = "0.10.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx", extra = ["http2"] },
     { name = "strenum" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e8/4b/16f94bcae8a49f5e09544a4fb0e6ad1c2288038036cefdeedb72fcffd92c/supafunc-0.10.1.tar.gz", hash = "sha256:a5b33c8baecb6b5297d25da29a2503e2ec67ee6986f3d44c137e651b8a59a17d", size = 5036, upload-time = "2025-06-23T18:26:50.327Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6c/e4/6df7cd4366396553449e9907c745862ebf010305835b2bac99933dd7db9d/supabase_functions-0.10.1.tar.gz", hash = "sha256:4779d33a1cc3d4aea567f586b16d8efdb7cddcd6b40ce367c5fb24288af3a4f1", size = 5025, upload-time = "2025-06-23T18:26:12.239Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/76/4a/9cbea12d86a741d4e73a6e278c2b1d6479fb03d1002efb00e8e71aea76db/supafunc-0.10.1-py3-none-any.whl", hash = "sha256:26df9bd25ff2ef56cb5bfb8962de98f43331f7f8ff69572bac3ed9c3a9672040", size = 8028, upload-time = "2025-06-23T18:26:49.176Z" },
+    { url = "https://files.pythonhosted.org/packages/bc/06/060118a1e602c9bda8e4bf950bd1c8b5e1542349f2940ec57541266fabe1/supabase_functions-0.10.1-py3-none-any.whl", hash = "sha256:1db85e20210b465075aacee4e171332424f7305f9903c5918096be1423d6fcc5", size = 8275, upload-time = "2025-06-23T18:26:10.387Z" },
 ]
 
 [[package]]
