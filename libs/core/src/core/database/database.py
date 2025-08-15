@@ -14,6 +14,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlmodel import Session, SQLModel, create_engine
 
 from ..config import settings
+from ..utils import get_logger
 from .exceptions import (
     AsyncNotConfiguredError,
     MissingDatabaseURLError,
@@ -31,6 +32,8 @@ __all__ = [
     "get_session",
     "get_async_session",
 ]
+
+logger = get_logger(__name__)
 
 # Database URLs from settings
 DATABASE_URL = settings.database_url
@@ -120,6 +123,48 @@ class DatabaseManager:
                 except Exception as rollback_error:
                     raise TransactionRollbackError(rollback_error) from e
                 raise
+
+    def create_schemas(self, models: list | None = None):
+        """Create all database schemas.
+
+        Extracts schema names from the models' __table_args__ property and
+        creates them in the database if they do not already exist.
+        """
+        if not self.engine:
+            logger.error("Database engine not configured")
+            return
+
+        # Collect schema names from models' __table_args__
+        schema_names = set()  # set provides unique values
+
+        target_models = (
+            models
+            if models is not None
+            else [m for m in SQLModel.metadata.tables.values()]
+        )
+
+        for model in target_models:
+            logger.info(f"Creating schema for model: {model.__name__}")
+            table_args = getattr(model, "__table_args__", None)
+            if isinstance(table_args, dict):
+                schema = table_args.get("schema")
+                if schema:
+                    schema_names.add(schema)
+            elif isinstance(table_args, (tuple, list)):
+                for arg in table_args:
+                    if isinstance(arg, dict):
+                        schema = arg.get("schema")
+                        if schema:
+                            schema_names.add(schema)
+
+        # Create schemas in the database
+        if schema_names:
+            logger.info(f"Creating schemas: {schema_names}")
+            with self.engine.connect() as conn:
+                for schema in schema_names:
+                    conn.execute(f'CREATE SCHEMA IF NOT EXISTS "{schema}"')
+                conn.commit()
+            logger.info(f"Schemas created: {schema_names}")
 
     def create_tables(self, models: list | None = None):
         """Create all database tables.
@@ -234,6 +279,16 @@ class DatabaseManager:
 
 # Global database manager instance
 db_manager = DatabaseManager()
+
+
+def create_schemas(models: list | None = None):
+    """Create all database schemas."""
+    db_manager.create_schemas(models)
+
+
+async def create_schemas_async(models: list | None = None):
+    """Create all database schemas."""
+    await db_manager.create_schemas(models)
 
 
 def create_tables(models: list | None = None):
