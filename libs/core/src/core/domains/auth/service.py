@@ -74,9 +74,12 @@ class AuthService:
             # Log unexpected errors but don't deactivate session
             # This could be a temporary network issue
             import logging
+
             logger = logging.getLogger(__name__)
             logger.error(f"Unexpected error during token validation: {str(e)}")
-            raise SessionNotFoundError("Token validation temporarily unavailable")
+            raise SessionNotFoundError(
+                "Token validation temporarily unavailable"
+            )
 
         return local_session
 
@@ -185,7 +188,7 @@ class AuthService:
             existing_stmt = select(AuthSessionModel).where(
                 AuthSessionModel.local_user_id == local_user_id,
                 AuthSessionModel.organization_id == organization_id,
-                AuthSessionModel.is_active == True,
+                AuthSessionModel.is_active,
             )
             existing_sessions = self.session.exec(existing_stmt).all()
             for existing in existing_sessions:
@@ -216,13 +219,13 @@ class AuthService:
                 existing_stmt = select(AuthSessionModel).where(
                     AuthSessionModel.local_user_id == local_user_id,
                     AuthSessionModel.organization_id == organization_id,
-                    AuthSessionModel.is_active == True,
+                    AuthSessionModel.is_active,
                 )
                 existing = self.session.exec(existing_stmt).first()
                 if existing:
                     existing.is_active = False
                     self.session.commit()
-            
+
             # Retry the insert
             self.session.add(session)
             self.session.commit()

@@ -5,10 +5,6 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 import jwt
-from core.domains.auth.exceptions import (
-    InvalidCredentialsError,
-    InvalidTokenError,
-)
 from core.domains.auth.protocols import AuthProvider
 from core.domains.auth.schemas import (
     AuthProviderType,
@@ -19,6 +15,27 @@ from core.domains.auth.schemas import (
 from supabase import Client, create_client
 
 from .config import SupabaseConfig
+
+
+class SupabaseAuthProviderError(Exception):
+    """Base exception for SupabaseAuthProvider errors."""
+
+    pass
+
+
+class SupabaseAuthProviderCredentialsError(SupabaseAuthProviderError):
+    """Exception for authentication or signup failures."""
+
+    def __init__(self, message: str):
+        super().__init__(message)
+
+
+class SupabaseAuthProviderTokenError(SupabaseAuthProviderError):
+    """Exception for token validation or refresh failures."""
+
+    def __init__(self, message: str):
+        super().__init__(message)
+
 
 logger = logging.getLogger("supabase_auth.provider")
 
@@ -54,7 +71,8 @@ class SupabaseAuthProvider(AuthProvider):
             logger.warning(
                 "Authentication failed (email=%s): %s", email, str(e)
             )
-            raise InvalidCredentialsError() from e
+            error_message = self._extract_error_message(e)
+            raise SupabaseAuthProviderCredentialsError(f"{error_message}")
 
     async def validate_token(self, token: str) -> Dict[str, Any]:
         """Validate JWT token with Supabase."""
@@ -69,7 +87,8 @@ class SupabaseAuthProvider(AuthProvider):
             return payload
         except Exception as e:
             logger.warning("Invalid token: %s", str(e))
-            raise InvalidTokenError() from e
+            error_message = self._extract_error_message(e)
+            raise SupabaseAuthProviderTokenError(f"{error_message}") from e
 
     async def refresh_token(self, refresh_token: str) -> TokenPair:
         """Refresh token with Supabase."""
@@ -84,7 +103,8 @@ class SupabaseAuthProvider(AuthProvider):
             )
         except Exception as e:
             logger.warning("Refresh token failed: %s", str(e))
-            raise InvalidTokenError() from e
+            error_message = self._extract_error_message(e)
+            raise SupabaseAuthProviderTokenError(f"{error_message}") from e
 
     async def create_user(
         self, email: str, password: str, user_data: Dict[str, Any]
@@ -92,21 +112,23 @@ class SupabaseAuthProvider(AuthProvider):
         """Create user with Supabase."""
         try:
             logger.info("Creating user via Supabase (email=%s)", email)
-            response = self.client.auth.sign_up({
-                "email": email,
-                "password": password,
-                "options": {"data": user_data},
-            })
+            # The supabase-py sign_up method expects options to be a dict, but
+            # the context error suggests a context manager is being passed or
+            # used incorrectly. Let's ensure we are not using a context manager
+            # and that the call is correct.
+            response = self.client.auth.sign_up(
+                email=email, password=password, options={"data": user_data}
+            )
             logger.info("User created via Supabase (email=%s)", email)
             return self._convert_user_to_auth_user(response.user)
 
         except Exception as e:
             logger.warning("Create user failed (email=%s): %s", email, str(e))
-            raise InvalidCredentialsError() from e
+            error_message = self._extract_error_message(e)
+            raise SupabaseAuthProviderCredentialsError(error_message)
 
     async def get_user_by_id(self, user_id: str) -> Optional[AuthUser]:
         """Get user by ID from Supabase."""
-        # Implementation would use Supabase admin client
         try:
             logger.info(
                 "Fetching user by id via Supabase (user_id=%s)", user_id
@@ -119,7 +141,6 @@ class SupabaseAuthProvider(AuthProvider):
 
     async def get_user_by_email(self, email: str) -> Optional[AuthUser]:
         """Get user by email from Supabase."""
-        # Implementation would use Supabase admin client
         try:
             logger.info(
                 "Fetching user by email via Supabase (email=%s)", email
@@ -146,7 +167,8 @@ class SupabaseAuthProvider(AuthProvider):
             logger.warning(
                 "Update user failed (user_id=%s): %s", user_id, str(e)
             )
-            raise InvalidCredentialsError() from e
+            error_message = self._extract_error_message(e)
+            raise SupabaseAuthProviderCredentialsError(f"{error_message}")
 
     async def delete_user(self, user_id: str) -> bool:
         """Delete user from Supabase."""
@@ -199,16 +221,13 @@ class SupabaseAuthProvider(AuthProvider):
 
     def _convert_user_to_auth_user(self, supabase_user) -> AuthUser:
         """Convert Supabase user to our AuthUser format."""
-        # Handle different timestamp formats
         if isinstance(supabase_user.created_at, str):
             created_at = datetime.fromisoformat(
                 supabase_user.created_at.replace("Z", "+00:00")
             )
         elif isinstance(supabase_user.created_at, (int, float)):
-            # Unix timestamp
             created_at = datetime.fromtimestamp(supabase_user.created_at)
         else:
-            # Already a datetime object
             created_at = supabase_user.created_at
 
         if isinstance(supabase_user.updated_at, str):
@@ -232,24 +251,6 @@ class SupabaseAuthProvider(AuthProvider):
             updated_at=updated_at,
         )
 
-    # def _convert_user_to_auth_user(self, supabase_user) -> AuthUser:
-    #     """Convert Supabase user to our AuthUser format."""
-    #     return AuthUser(
-    #         provider_user_id=supabase_user.id,
-    #         email=supabase_user.email,
-    #         provider_type=AuthProviderType.SUPABASE,
-    #         provider_metadata={
-    #             "supabase_data": supabase_user.user_metadata,
-    #             "app_metadata": supabase_user.app_metadata,
-    #         },
-    #         created_at=datetime.fromisoformat(
-    #             supabase_user.created_at.replace("Z", "+00:00")
-    #         ),
-    #         updated_at=datetime.fromisoformat(
-    #             supabase_user.updated_at.replace("Z", "+00:00")
-    #         ),
-    #     )
-
     async def send_password_reset(self, email: str) -> bool:
         """Send password reset email via Supabase."""
         try:
@@ -265,3 +266,9 @@ class SupabaseAuthProvider(AuthProvider):
             return True
         except Exception:
             return False
+
+    def _extract_error_message(self, exc: Exception) -> str:
+        """Extract a human-readable error message from an exception."""
+        if hasattr(exc, "args") and exc.args:
+            return str(exc.args[0])
+        return str(exc)
