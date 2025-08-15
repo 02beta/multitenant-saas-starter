@@ -3,10 +3,28 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["NEXT_PUBLIC_APP_URL", "NEXT_PUBLIC_API_URL"]
+      "env": [
+        "NEXT_PUBLIC_APP_URL",
+        "NEXT_PUBLIC_API_URL",
+        "NEXT_PUBLIC_SITE_TITLE",
+        "NEXT_PUBLIC_SITE_DESCRIPTION",
+        "NEXT_PUBLIC_PRIVACY_URL",
+        "NEXT_PUBLIC_TERMS_URL",
+        "NEXT_PUBLIC_COOKIES_URL",
+        "NEXT_PUBLIC_IMPRINT_URL"
+      ]
     },
     "dev": {
-      "env": ["NEXT_PUBLIC_API_URL", "NEXT_PUBLIC_APP_URL"]
+      "env": [
+        "NEXT_PUBLIC_API_URL",
+        "NEXT_PUBLIC_APP_URL",
+        "NEXT_PUBLIC_SITE_TITLE",
+        "NEXT_PUBLIC_SITE_DESCRIPTION",
+        "NEXT_PUBLIC_PRIVACY_URL",
+        "NEXT_PUBLIC_TERMS_URL",
+        "NEXT_PUBLIC_COOKIES_URL",
+        "NEXT_PUBLIC_IMPRINT_URL"
+      ]
     }
   }
 }
