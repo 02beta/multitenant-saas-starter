@@ -1,19 +1,19 @@
 """Core authentication service - uses abstractions only."""
 
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, Tuple
 from uuid import UUID
 
 from sqlmodel import Session, select
 
 from .exceptions import (
     OrganizationAccessDeniedError,
-    UserNotFoundError,
     SessionNotFoundError,
+    UserNotFoundError,
 )
-from .models import AuthResult, AuthSessionModel, AuthUser, AuthUserModel
+from .models import AuthSessionModel, AuthUserModel
 from .protocols import AuthProvider
-from typing import Tuple
+from .schemas import AuthResult, AuthUser
 
 
 class AuthService:
@@ -256,14 +256,15 @@ class AuthService:
         auth_user = await self.provider.create_user(email, password, user_data)
 
         # Create local user
-        from core.domains.users import User
-        from core.domains.organizations import Organization
+        from slugify import slugify
+
         from core.domains.memberships import (
             Membership,
             MembershipRole,
             MembershipStatus,
         )
-        from slugify import slugify
+        from core.domains.organizations import Organization
+        from core.domains.users import User
 
         local_user = User(
             email=email,

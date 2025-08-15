@@ -1,9 +1,7 @@
 """Provider-agnostic authentication models."""
 
 from datetime import datetime
-
-# from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import Any, Dict, Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import JSON
@@ -11,8 +9,7 @@ from sqlmodel import Column, Field, SQLModel
 
 from core.common.mixins import AuditFieldsMixin, SoftDeleteMixin
 
-if TYPE_CHECKING:
-    from .schemas import AuthProviderType
+from .schemas import AuthProviderType
 
 
 class AuthUserModel(SQLModel, AuditFieldsMixin, SoftDeleteMixin, table=True):

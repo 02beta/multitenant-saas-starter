@@ -14,8 +14,8 @@
       "@workspace/ui/hooks/*": ["../../libs/ui/src/hooks/*"],
       "@workspace/eslint-config/*": ["../../libs/eslint-config/*"],
       "@workspace/typescript-config/*": ["../../libs/typescript-config/*"],
-      "@workspace/typescript-sdk": ["../../libs/typescript-sdk/src/index.ts"],
-      "@workspace/typescript-sdk/*": ["../../libs/typescript-sdk/src/*"]
+      "@workspace/typescript-sdk": ["../../libs/shared/src/index.ts"],
+      "@workspace/typescript-sdk/*": ["../../libs/shared/src/*"]
     },
     "plugins": [
       {

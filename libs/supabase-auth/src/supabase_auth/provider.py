@@ -1,5 +1,6 @@
 """Supabase authentication provider implementation."""
 
+import logging
 from datetime import datetime
 from typing import Any, Dict, Optional
 
@@ -19,12 +20,18 @@ from supabase import Client, create_client
 
 from .config import SupabaseConfig
 
+logger = logging.getLogger("supabase_auth.provider")
+
 
 class SupabaseAuthProvider(AuthProvider):
     """Supabase implementation of AuthProvider protocol."""
 
     def __init__(self, config: SupabaseConfig):
         self.config = config
+        logger.info(
+            "Initializing SupabaseAuthProvider (url=%s)",
+            config.supabase_api_url,
+        )
         self.client: Client = create_client(
             config.supabase_api_url, config.supabase_public_key
         )
@@ -35,19 +42,24 @@ class SupabaseAuthProvider(AuthProvider):
     async def authenticate(self, email: str, password: str) -> AuthResult:
         """Authenticate with Supabase."""
         try:
+            logger.info("Authenticating user via Supabase (email=%s)", email)
             response = self.client.auth.sign_in_with_password({
                 "email": email,
                 "password": password,
             })
-
+            logger.info("Authentication successful (email=%s)", email)
             return self._convert_to_auth_result(response)
 
         except Exception as e:
+            logger.warning(
+                "Authentication failed (email=%s): %s", email, str(e)
+            )
             raise InvalidCredentialsError() from e
 
     async def validate_token(self, token: str) -> Dict[str, Any]:
         """Validate JWT token with Supabase."""
         try:
+            logger.info("Validating access token with Supabase")
             payload = jwt.decode(
                 token,
                 self.config.auth_jwt_secret,
@@ -56,11 +68,13 @@ class SupabaseAuthProvider(AuthProvider):
             )
             return payload
         except Exception as e:
+            logger.warning("Invalid token: %s", str(e))
             raise InvalidTokenError() from e
 
     async def refresh_token(self, refresh_token: str) -> TokenPair:
         """Refresh token with Supabase."""
         try:
+            logger.info("Refreshing access token via Supabase")
             response = self.client.auth.refresh_session(refresh_token)
 
             return TokenPair(
@@ -69,6 +83,7 @@ class SupabaseAuthProvider(AuthProvider):
                 expires_at=datetime.fromtimestamp(response.session.expires_at),
             )
         except Exception as e:
+            logger.warning("Refresh token failed: %s", str(e))
             raise InvalidTokenError() from e
 
     async def create_user(
@@ -76,6 +91,7 @@ class SupabaseAuthProvider(AuthProvider):
     ) -> AuthUser:
         """Create user with Supabase."""
         try:
+            logger.info("Creating user via Supabase (email=%s)", email)
             response = self.client.auth.sign_up({
                 "email": email,
                 "password": password,
@@ -85,27 +101,36 @@ class SupabaseAuthProvider(AuthProvider):
             return self._convert_user_to_auth_user(response.user)
 
         except Exception as e:
+            logger.warning("Create user failed (email=%s): %s", email, str(e))
             raise InvalidCredentialsError() from e
 
     async def get_user_by_id(self, user_id: str) -> Optional[AuthUser]:
         """Get user by ID from Supabase."""
         # Implementation would use Supabase admin client
         try:
+            logger.info(
+                "Fetching user by id via Supabase (user_id=%s)", user_id
+            )
             response = self.admin_client.auth.admin.get_user_by_id(user_id)
             return self._convert_user_to_auth_user(response.user)
         except Exception:
+            logger.warning("Fetch user by id failed (user_id=%s)", user_id)
             return None
 
     async def get_user_by_email(self, email: str) -> Optional[AuthUser]:
         """Get user by email from Supabase."""
         # Implementation would use Supabase admin client
         try:
+            logger.info(
+                "Fetching user by email via Supabase (email=%s)", email
+            )
             response = self.admin_client.auth.admin.list_users()
             for user in response.users:
                 if user.email == email:
                     return self._convert_user_to_auth_user(user)
             return None
         except Exception:
+            logger.warning("Fetch user by email failed (email=%s)", email)
             return None
 
     async def update_user(
@@ -113,18 +138,24 @@ class SupabaseAuthProvider(AuthProvider):
     ) -> AuthUser:
         """Update user in Supabase."""
         try:
+            logger.info("Updating user via Supabase (user_id=%s)", user_id)
             response = self.client.auth.update_user({"data": user_data})
 
             return self._convert_user_to_auth_user(response.user)
         except Exception as e:
+            logger.warning(
+                "Update user failed (user_id=%s): %s", user_id, str(e)
+            )
             raise InvalidCredentialsError() from e
 
     async def delete_user(self, user_id: str) -> bool:
         """Delete user from Supabase."""
         try:
+            logger.info("Deleting user via Supabase (user_id=%s)", user_id)
             self.admin_client.auth.admin.delete_user(user_id)
             return True
         except Exception:
+            logger.warning("Delete user failed (user_id=%s)", user_id)
             return False
 
     async def logout(
@@ -132,9 +163,19 @@ class SupabaseAuthProvider(AuthProvider):
     ) -> bool:
         """Logout user from Supabase."""
         try:
+            logger.info(
+                "Logging out user via Supabase (user_id=%s, session_id=%s)",
+                user_id,
+                session_id,
+            )
             self.client.auth.sign_out()
             return True
         except Exception:
+            logger.warning(
+                "Logout failed (user_id=%s, session_id=%s)",
+                user_id,
+                session_id,
+            )
             return False
 
     def _convert_to_auth_result(self, supabase_response) -> AuthResult:

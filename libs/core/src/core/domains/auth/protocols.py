@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, Optional, Protocol, runtime_checkable
 
-from .models import AuthResult, AuthUser, TokenPair
+from .schemas import AuthResult, AuthUser, TokenPair
 
 
 @runtime_checkable

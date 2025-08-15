@@ -1,5 +1,6 @@
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+import { apiUrl } from "./constants";
+
+const API_URL = apiUrl;
 
 /**
  * Retrieve the current user from the API using the access token in localStorage.

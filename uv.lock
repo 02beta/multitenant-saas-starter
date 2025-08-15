@@ -52,6 +52,7 @@ name = "api"
 version = "0.1.1"
 source = { virtual = "apps/api" }
 dependencies = [
+    { name = "axiom-py" },
     { name = "core" },
     { name = "fastapi", extra = ["standard"] },
     { name = "pydantic-settings" },
@@ -68,6 +69,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "axiom-py", specifier = ">=0.9.0" },
     { name = "core", editable = "libs/core" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.116.1" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10.0" },
@@ -1603,6 +1605,7 @@ name = "supabase-auth"
 version = "0.1.1"
 source = { editable = "libs/supabase-auth" }
 dependencies = [
+    { name = "axiom-py" },
     { name = "core" },
     { name = "cryptography" },
     { name = "pyjwt" },
@@ -1618,6 +1621,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "axiom-py", specifier = ">=0.9.0" },
     { name = "core", editable = "libs/core" },
     { name = "cryptography", specifier = ">=41.0.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10.0" },
