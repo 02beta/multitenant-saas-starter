@@ -1,14 +1,14 @@
-import { Button } from "@workspace/ui/components/ui/button";
-import { AxiomDemo } from "@/components/axiom-demo";
+"use server";
 
-export default function Page() {
-  return (
-    <div className="flex items-center justify-center min-h-svh">
-      <div className="flex flex-col items-center justify-center gap-4">
-        <h1 className="text-2xl font-bold">Hello World</h1>
-        <Button size="sm">Button</Button>
-        <AxiomDemo />
-      </div>
-    </div>
-  );
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth.server";
+
+export default async function HomePage() {
+  const user = await getCurrentUser();
+  console.log(user);
+  if (user) {
+    redirect("/dashboard");
+  } else {
+    redirect("/login");
+  }
 }

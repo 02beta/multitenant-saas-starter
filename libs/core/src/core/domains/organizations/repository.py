@@ -7,7 +7,8 @@ from sqlmodel import Session, and_, select
 
 from core.common.protocols import CRUDBase
 
-from .models import Organization, OrganizationCreate, OrganizationUpdate
+from .models import Organization
+from .schemas import OrganizationCreate, OrganizationUpdate
 
 
 class OrganizationRepository(
@@ -18,7 +19,9 @@ class OrganizationRepository(
     def __init__(self):
         super().__init__(Organization)
 
-    def get_by_slug(self, session: Session, *, slug: str) -> Optional[Organization]:
+    def get_by_slug(
+        self, session: Session, *, slug: str
+    ) -> Optional[Organization]:
         """Get organization by slug."""
         stmt = select(Organization).where(
             and_(Organization.slug == slug, Organization.deleted_at.is_(None))

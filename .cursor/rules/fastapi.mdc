@@ -275,7 +275,9 @@ Dependencies can use other dependencies and avoid code repetition for similar lo
 ```python
 # dependencies.py
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+# NEW
+import jwt
+from jwt import InvalidTokenError as JWTError
 
 async def valid_post_id(post_id: UUID4) -> dict[str, Any]:
     post = await service.get_by_id(post_id)
@@ -330,7 +332,8 @@ but `parse_jwt_data` is called only once, in the very first call.
 # dependencies.py
 from fastapi import BackgroundTasks
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+import jwt
+from jwt import InvalidTokenError as JWTError
 
 async def valid_post_id(post_id: UUID4) -> Mapping:
     post = await service.get_by_id(post_id)

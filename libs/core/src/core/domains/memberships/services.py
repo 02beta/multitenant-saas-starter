@@ -18,10 +18,12 @@ from .exceptions import (
 )
 from .models import (
     Membership,
-    MembershipCreate,
-    MembershipPublic,
     MembershipRole,
     MembershipStatus,
+)
+from .schemas import (
+    MembershipCreate,
+    MembershipPublic,
     MembershipUpdate,
 )
 from .repository import MembershipRepository
@@ -196,7 +198,10 @@ class MembershipService:
             raise InsufficientPermissionsError("update user roles")
 
         # Prevent removing the last owner
-        if membership.role == MembershipRole.OWNER and new_role != MembershipRole.OWNER:
+        if (
+            membership.role == MembershipRole.OWNER
+            and new_role != MembershipRole.OWNER
+        ):
             owners = self.repository.get_organization_owners(
                 session, organization_id=organization_id
             )
@@ -257,7 +262,9 @@ class MembershipService:
         )
 
         # Users can remove themselves, or owners can remove others
-        if user_id != removed_by_id and (not remover or not remover.can_manage_users):
+        if user_id != removed_by_id and (
+            not remover or not remover.can_manage_users
+        ):
             raise InsufficientPermissionsError("remove users from")
 
         # Prevent removing the last owner
@@ -311,7 +318,10 @@ class MembershipService:
             user_id=current_user_id,
         )
 
-        if not current_member or current_member.status != MembershipStatus.ACTIVE:
+        if (
+            not current_member
+            or current_member.status != MembershipStatus.ACTIVE
+        ):
             raise NotOrganizationMemberError()
 
         # Get memberships

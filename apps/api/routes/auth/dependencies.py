@@ -4,13 +4,18 @@
 from typing import Optional
 from uuid import UUID
 
-import supabase_auth  # Auto-registers Supabase provider
-from core.auth import AuthProviderRegistry, AuthService, AuthSessionModel
-from core.config import settings
+import supabase_auth_provider  # Auto-registers Supabase provider
 from core.database import get_session
+from core.domains.auth import (
+    AuthProviderRegistry,
+    AuthService,
+    AuthSessionModel,
+)
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlmodel import Session
+
+from ...config.settings import settings
 
 security = HTTPBearer()
 
@@ -20,10 +25,10 @@ async def get_auth_service(
 ) -> AuthService:
     """Create auth service with configured provider."""
     provider_config = {
-        "api_url": settings.supabase_api_url,
-        "anon_key": settings.supabase_public_key,
-        "service_role_key": settings.supabase_secret_key,
-        "jwt_secret": settings.auth_jwt_secret,
+        "api_url": supabase_auth_provider.settings.supabase_api_url,
+        "anon_key": supabase_auth_provider.settings.supabase_public_key,
+        "service_role_key": supabase_auth_provider.settings.supabase_secret_key,
+        "jwt_secret": supabase_auth_provider.settings.auth_jwt_secret,
     }
 
     provider = AuthProviderRegistry.create_provider(

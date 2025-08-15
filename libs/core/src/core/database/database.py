@@ -5,7 +5,11 @@ Enhanced database connection and session management using PostgreSQL as the back
 from contextlib import asynccontextmanager, contextmanager
 from typing import AsyncGenerator, Generator
 
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import Session, SQLModel, create_engine
 
@@ -41,13 +45,17 @@ if not ASYNC_DATABASE_URL:
 # Create engines
 engine = create_engine(DATABASE_URL, echo=False)
 async_engine = (
-    create_async_engine(ASYNC_DATABASE_URL, echo=False) if ASYNC_DATABASE_URL else None
+    create_async_engine(ASYNC_DATABASE_URL, echo=False)
+    if ASYNC_DATABASE_URL
+    else None
 )
 
 # Create session factories
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 AsyncSessionLocal = (
-    async_sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
+    async_sessionmaker(
+        async_engine, class_=AsyncSession, expire_on_commit=False
+    )
     if async_engine
     else None
 )
@@ -92,7 +100,9 @@ class DatabaseManager:
         return self.AsyncSessionLocal()
 
     @asynccontextmanager
-    async def get_async_session_context(self) -> AsyncGenerator[AsyncSession, None]:
+    async def get_async_session_context(
+        self,
+    ) -> AsyncGenerator[AsyncSession, None]:
         """Get an asynchronous database session with context management."""
         if not self.AsyncSessionLocal:
             raise AsyncNotConfiguredError("get_async_session_context")
@@ -124,7 +134,9 @@ class DatabaseManager:
                     try:
                         model.metadata.create_all(self.engine)
                     except Exception as e:
-                        table_name = getattr(model, "__tablename__", model.__name__)
+                        table_name = getattr(
+                            model, "__tablename__", model.__name__
+                        )
                         raise TableCreationError(table_name, str(e))
             else:
                 # Create all tables
@@ -151,7 +163,9 @@ class DatabaseManager:
                         async with self.async_engine.begin() as conn:
                             await conn.run_sync(model.metadata.create_all)
                     except Exception as e:
-                        table_name = getattr(model, "__tablename__", model.__name__)
+                        table_name = getattr(
+                            model, "__tablename__", model.__name__
+                        )
                         raise TableCreationError(table_name, str(e))
             else:
                 # Create all tables
@@ -175,7 +189,9 @@ class DatabaseManager:
                     try:
                         model.metadata.drop_all(self.engine)
                     except Exception as e:
-                        table_name = getattr(model, "__tablename__", model.__name__)
+                        table_name = getattr(
+                            model, "__tablename__", model.__name__
+                        )
                         raise TableDropError(table_name, str(e))
             else:
                 # Drop all tables
@@ -202,7 +218,9 @@ class DatabaseManager:
                         async with self.async_engine.begin() as conn:
                             await conn.run_sync(model.metadata.drop_all)
                     except Exception as e:
-                        table_name = getattr(model, "__tablename__", model.__name__)
+                        table_name = getattr(
+                            model, "__tablename__", model.__name__
+                        )
                         raise TableDropError(table_name, str(e))
             else:
                 # Drop all tables

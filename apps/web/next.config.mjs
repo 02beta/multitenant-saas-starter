@@ -5,6 +5,7 @@ const nextConfig = {
   transpilePackages: ["@workspace/ui", "@workspace/typescript-sdk"],
   turbopack: {
     resolveAlias: {
+      "@/lib": "lib/index.ts",
       "@workspace/ui": "../../libs/ui/src",
       "@workspace/ui/components": "../../libs/ui/src/components",
       "@workspace/ui/components/ui": "../../libs/ui/src/components/ui",
