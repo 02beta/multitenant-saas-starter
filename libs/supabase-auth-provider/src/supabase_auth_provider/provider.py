@@ -59,23 +59,19 @@ class SupabaseAuthProvider(AuthProvider):
     async def authenticate(self, email: str, password: str) -> AuthResult:
         """Authenticate with Supabase."""
         try:
-            logger.info(
-                "authenticate(str, str) -> AuthResult: Authenticating user via Supabase (email=%s)",
-                email,
-            )
-            response = self.client.auth.sign_in_with_password(
-                email=email,
-                password=password,
-            )
+            logger.info("Authenticating user via Supabase (email=%s)", email)
+            response = self.client.auth.sign_in_with_password({
+                "email": email,
+                "password": password,
+            })
             logger.info("Authentication successful (email=%s)", email)
             return self._convert_to_auth_result(response)
 
         except Exception as e:
-            error_message = self._extract_error_message(e)
-            logger.error(
-                "authenticate(str, str) -> AuthResult: Error message: %s",
-                error_message,
+            logger.warning(
+                "Authentication failed (email=%s): %s", email, str(e)
             )
+            error_message = self._extract_error_message(e)
             raise SupabaseAuthProviderCredentialsError(f"{error_message}")
 
     async def validate_token(self, token: str) -> Dict[str, Any]:
@@ -90,20 +86,15 @@ class SupabaseAuthProvider(AuthProvider):
             )
             return payload
         except Exception as e:
+            logger.warning("Invalid token: %s", str(e))
             error_message = self._extract_error_message(e)
-            logger.error(
-                "validate_token(str) -> Dict[str, Any]: Error message: %s",
-                error_message,
-            )
             raise SupabaseAuthProviderTokenError(f"{error_message}") from e
 
     async def refresh_token(self, refresh_token: str) -> TokenPair:
         """Refresh token with Supabase."""
         try:
             logger.info("Refreshing access token via Supabase")
-            response = self.client.auth.refresh_session({
-                "refresh_token": refresh_token
-            })
+            response = self.client.auth.refresh_session(refresh_token)
 
             return TokenPair(
                 access_token=response.session.access_token,
@@ -111,10 +102,7 @@ class SupabaseAuthProvider(AuthProvider):
                 expires_at=datetime.fromtimestamp(response.session.expires_at),
             )
         except Exception as e:
-            logger.error(
-                "refresh_token(str) -> TokenPair: Error message: %s",
-                str(e),
-            )
+            logger.warning("Refresh token failed: %s", str(e))
             error_message = self._extract_error_message(e)
             raise SupabaseAuthProviderTokenError(f"{error_message}") from e
 
@@ -135,10 +123,7 @@ class SupabaseAuthProvider(AuthProvider):
             return self._convert_user_to_auth_user(response.user)
 
         except Exception as e:
-            logger.error(
-                "create_user(str, str, Dict[str, Any]) -> AuthUser: Error message: %s",
-                str(e),
-            )
+            logger.warning("Create user failed (email=%s): %s", email, str(e))
             error_message = self._extract_error_message(e)
             raise SupabaseAuthProviderCredentialsError(error_message)
 
@@ -146,35 +131,27 @@ class SupabaseAuthProvider(AuthProvider):
         """Get user by ID from Supabase."""
         try:
             logger.info(
-                "get_user_by_id(str) -> Optional[AuthUser]: Fetching user by id via Supabase (user_id=%s)",
-                user_id,
+                "Fetching user by id via Supabase (user_id=%s)", user_id
             )
             response = self.admin_client.auth.admin.get_user_by_id(user_id)
             return self._convert_user_to_auth_user(response.user)
-        except Exception as e:
-            logger.error(
-                "get_user_by_id(str) -> Optional[AuthUser]: Error message: %s",
-                str(e),
-            )
+        except Exception:
+            logger.warning("Fetch user by id failed (user_id=%s)", user_id)
             return None
 
     async def get_user_by_email(self, email: str) -> Optional[AuthUser]:
         """Get user by email from Supabase."""
         try:
             logger.info(
-                "get_user_by_email(str) -> Optional[AuthUser]: Fetching user by email via Supabase (email=%s)",
-                email,
+                "Fetching user by email via Supabase (email=%s)", email
             )
             response = self.admin_client.auth.admin.list_users()
             for user in response.users:
                 if user.email == email:
                     return self._convert_user_to_auth_user(user)
             return None
-        except Exception as e:
-            logger.error(
-                "get_user_by_email(str) -> Optional[AuthUser]: Error message: %s",
-                str(e),
-            )
+        except Exception:
+            logger.warning("Fetch user by email failed (email=%s)", email)
             return None
 
     async def update_user(
@@ -183,16 +160,12 @@ class SupabaseAuthProvider(AuthProvider):
         """Update user in Supabase."""
         try:
             logger.info("Updating user via Supabase (user_id=%s)", user_id)
-            response = self.admin_client.auth.admin.update_user_by_id(
-                user_id,
-                attributes={"user_metadata": user_data},
-            )
+            response = self.client.auth.update_user({"data": user_data})
 
             return self._convert_user_to_auth_user(response.user)
         except Exception as e:
-            logger.error(
-                "update_user(str, Dict[str, Any]) -> AuthUser: Error message: %s",
-                str(e),
+            logger.warning(
+                "Update user failed (user_id=%s): %s", user_id, str(e)
             )
             error_message = self._extract_error_message(e)
             raise SupabaseAuthProviderCredentialsError(f"{error_message}")
@@ -203,13 +176,9 @@ class SupabaseAuthProvider(AuthProvider):
             logger.info("Deleting user via Supabase (user_id=%s)", user_id)
             self.admin_client.auth.admin.delete_user(user_id)
             return True
-        except Exception as e:
-            logger.error(
-                "delete_user(str) -> bool: Error message: %s",
-                str(e),
-            )
-            error_message = self._extract_error_message(e)
-            raise SupabaseAuthProviderCredentialsError(f"{error_message}")
+        except Exception:
+            logger.warning("Delete user failed (user_id=%s)", user_id)
+            return False
 
     async def logout(
         self, user_id: str, session_id: Optional[str] = None
@@ -223,13 +192,13 @@ class SupabaseAuthProvider(AuthProvider):
             )
             self.client.auth.sign_out()
             return True
-        except Exception as e:
-            logger.error(
-                "logout(str, Optional[str]) -> bool: Error message: %s",
-                str(e),
+        except Exception:
+            logger.warning(
+                "Logout failed (user_id=%s, session_id=%s)",
+                user_id,
+                session_id,
             )
-            error_message = self._extract_error_message(e)
-            raise SupabaseAuthProviderCredentialsError(f"{error_message}")
+            return False
 
     def _convert_to_auth_result(self, supabase_response) -> AuthResult:
         """Convert Supabase response to our AuthResult format."""
@@ -285,37 +254,18 @@ class SupabaseAuthProvider(AuthProvider):
     async def send_password_reset(self, email: str) -> bool:
         """Send password reset email via Supabase."""
         try:
-            logger.info(
-                "send_password_reset(str) -> bool: Sending password reset email via Supabase (email=%s)",
-                email,
-            )
             self.client.auth.reset_password_email(email)
-            logger.info(
-                "Password reset email sent via Supabase (email=%s)", email
-            )
             return True
-        except Exception as e:
-            logger.error(
-                "send_password_reset(str) -> bool: Error message: %s",
-                str(e),
-            )
-            error_message = self._extract_error_message(e)
-            raise SupabaseAuthProviderCredentialsError(f"{error_message}")
+        except Exception:
+            return False
 
     async def reset_password(self, token: str, new_password: str) -> bool:
         """Reset password with token."""
         try:
-            # Verify recovery token and then update password in the verified session
-            self.client.auth.verify_otp({"token": token, "type": "recovery"})
             self.client.auth.update_user({"password": new_password})
             return True
-        except Exception as e:
-            logger.error(
-                "reset_password(str, str) -> bool: Error message: %s",
-                str(e),
-            )
-            error_message = self._extract_error_message(e)
-            raise SupabaseAuthProviderCredentialsError(f"{error_message}")
+        except Exception:
+            return False
 
     def _extract_error_message(self, exc: Exception) -> str:
         """Extract a human-readable error message from an exception."""
