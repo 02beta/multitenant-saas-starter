@@ -158,8 +158,6 @@ importers:
 
   libs/supabase-auth: {}
 
-  libs/supabase-auth-provider: {}
-
   libs/typescript-config: {}
 
   libs/typescript-sdk:

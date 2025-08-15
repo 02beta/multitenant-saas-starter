@@ -1,39 +1,27 @@
 import { apiUrl } from "./constants";
-import {} from "@workspace/shared";
+
 const API_URL = apiUrl;
 
 /**
- * Retrieve the current user from the API using the access token from HTTP-only cookies.
- * Client-side fetches will automatically include cookies with credentials: 'include'.
+ * Retrieve the current user from the API using the access token in localStorage.
  *
  * Returns the user object if authenticated, otherwise null.
  */
 export async function getCurrentUserClient(): Promise<any | null> {
+  const token = getAccessToken();
+
+  if (!token) {
+    return null;
+  }
+
   try {
     const response = await fetch(`${API_URL}/auth/me/extended`, {
-      credentials: 'include', // Include HTTP-only cookies
       headers: {
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
     });
 
     if (!response.ok) {
-      // Token might be expired, try to refresh
-      if (response.status === 401) {
-        const refreshed = await refreshTokenClient();
-        if (refreshed) {
-          // Retry the request after refresh
-          const retryResponse = await fetch(`${API_URL}/auth/me/extended`, {
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-          if (retryResponse.ok) {
-            return await retryResponse.json();
-          }
-        }
-      }
       return null;
     }
 
@@ -72,37 +60,23 @@ export async function getUserMembershipsClient(): Promise<any[]> {
 export async function getOrganizationMembersClient(
   organizationId: string
 ): Promise<any[]> {
+  const token = getAccessToken();
+
+  if (!token) {
+    return [];
+  }
+
   try {
     const response = await fetch(
       `${API_URL}/memberships?organization_id=${organizationId}`,
       {
-        credentials: 'include', // Include HTTP-only cookies
         headers: {
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
       }
     );
 
     if (!response.ok) {
-      // Token might be expired, try to refresh
-      if (response.status === 401) {
-        const refreshed = await refreshTokenClient();
-        if (refreshed) {
-          // Retry the request after refresh
-          const retryResponse = await fetch(
-            `${API_URL}/memberships?organization_id=${organizationId}`,
-            {
-              credentials: 'include',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            }
-          );
-          if (retryResponse.ok) {
-            return await retryResponse.json();
-          }
-        }
-      }
       return [];
     }
 
@@ -113,46 +87,21 @@ export async function getOrganizationMembersClient(
 }
 
 /**
- * Refresh the authentication token using the refresh token cookie.
- * Returns true if refresh was successful, false otherwise.
+ * Helper to get the access token from localStorage or cookies.
+ *
+ * Returns the access token string if present, otherwise null.
  */
-export async function refreshTokenClient(): Promise<boolean> {
-  try {
-    const response = await fetch(`${API_URL}/auth/refresh`, {
-      method: 'POST',
-      credentials: 'include', // Include HTTP-only cookies
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    return response.ok;
-  } catch {
-    return false;
+function getAccessToken(): string | null {
+  // if server side, return null
+  if (typeof window === "undefined") {
+    return null;
   }
-}
-
-/**
- * Logout the current user by calling the logout endpoint.
- * This will invalidate the session and clear cookies.
- */
-export async function logoutClient(): Promise<boolean> {
-  try {
-    const response = await fetch(`${API_URL}/auth/logout`, {
-      method: 'POST',
-      credentials: 'include', // Include HTTP-only cookies
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (response.ok) {
-      // Clear any client-side state if needed
-      window.location.href = '/login';
-      return true;
-    }
-    return false;
-  } catch {
-    return false;
+  // attempt to get from localStorage
+  const token = window.localStorage.getItem("access_token");
+  if (token) {
+    return token;
   }
+  // fallback: try to get from cookies
+  const match = document.cookie.match(/(?:^|; )access_token=([^;]*)/);
+  return match ? decodeURIComponent(match[1] || "") : null;
 }

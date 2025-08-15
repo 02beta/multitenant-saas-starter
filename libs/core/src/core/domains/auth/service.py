@@ -4,11 +4,9 @@ from datetime import datetime, timedelta
 from typing import Optional, Tuple
 from uuid import UUID
 
-from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
 from .exceptions import (
-    InvalidTokenError,
     OrganizationAccessDeniedError,
     SessionNotFoundError,
     UserNotFoundError,
@@ -65,21 +63,11 @@ class AuthService:
         try:
             # flake8: noqa: F841
             user_info = await self.provider.validate_token(access_token)
-        except (InvalidTokenError, SessionNotFoundError) as e:
+        except Exception:
             # Token invalid, deactivate local session
             local_session.is_active = False
             self.session.commit()
-            raise SessionNotFoundError(f"Token validation failed: {str(e)}")
-        except Exception as e:
-            # Log unexpected errors but don't deactivate session
-            # This could be a temporary network issue
-            import logging
-
-            logger = logging.getLogger(__name__)
-            logger.error(f"Unexpected error during token validation: {str(e)}")
-            raise SessionNotFoundError(
-                "Token validation temporarily unavailable"
-            )
+            raise SessionNotFoundError()
 
         return local_session
 
@@ -173,7 +161,7 @@ class AuthService:
         local_user_id: UUID,
         organization_id: Optional[UUID],
     ) -> AuthSessionModel:
-        """Create local session record with race condition handling."""
+        """Create local session record."""
         # Get auth_user record
         stmt = select(AuthUserModel).where(
             AuthUserModel.provider_type == auth_result.user.provider_type,
@@ -181,18 +169,6 @@ class AuthService:
             == auth_result.user.provider_user_id,
         )
         auth_user_record = self.session.exec(stmt).first()
-
-        # Deactivate any existing active sessions for this user/org combo
-        # This prevents the unique constraint violation
-        if organization_id:
-            existing_stmt = select(AuthSessionModel).where(
-                AuthSessionModel.local_user_id == local_user_id,
-                AuthSessionModel.organization_id == organization_id,
-                AuthSessionModel.is_active,
-            )
-            existing_sessions = self.session.exec(existing_stmt).all()
-            for existing in existing_sessions:
-                existing.is_active = False
 
         session = AuthSessionModel(
             local_user_id=local_user_id,
@@ -206,30 +182,9 @@ class AuthService:
             provider_metadata=auth_result.session_metadata,
         )
 
-        try:
-            self.session.add(session)
-            self.session.commit()
-            self.session.refresh(session)
-        except IntegrityError as e:
-            # Handle rare race condition where another session was created
-            # between our check and insert
-            self.session.rollback()
-            # Try once more after deactivating conflicting session
-            if organization_id:
-                existing_stmt = select(AuthSessionModel).where(
-                    AuthSessionModel.local_user_id == local_user_id,
-                    AuthSessionModel.organization_id == organization_id,
-                    AuthSessionModel.is_active,
-                )
-                existing = self.session.exec(existing_stmt).first()
-                if existing:
-                    existing.is_active = False
-                    self.session.commit()
-
-            # Retry the insert
-            self.session.add(session)
-            self.session.commit()
-            self.session.refresh(session)
+        self.session.add(session)
+        self.session.commit()
+        self.session.refresh(session)
 
         return session
 
@@ -361,7 +316,7 @@ class AuthService:
             user_id=local_user.id,
             role=MembershipRole.OWNER,
             status=MembershipStatus.ACTIVE,
-            accepted_at=datetime.now(timezone.utc),
+            accepted_at=datetime.utcnow(),
         )
         self.session.add(membership)
         self.session.commit()

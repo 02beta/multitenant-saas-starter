@@ -4,9 +4,9 @@ import type { NextRequest } from "next/server";
 /**
  * Middleware to handle authentication-based redirects.
  *
- * Ensures that only specific static files/resources/images/assets located in
- * the public folder (i.e., any path starting with /public/, /assets/, etc. and
- * ending with an allowed extension) are accessible to unauthenticated users.
+ * Ensures that all files/resources/images/assets located in the public folder
+ * (i.e., any path starting with /public/ or /assets/ or direct file access)
+ * are accessible to unauthenticated users.
  *
  * Retrieves the access token from the HTTP-only cookie set by the FastAPI
  * server's login response. The token is accessed via request.cookies,
@@ -17,31 +17,14 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get("access_token")?.value;
   const pathname = request.nextUrl.pathname;
 
-  // Define allowed static file extensions for public assets
-  const allowedExtensions = [
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".svg",
-    ".gif",
-    ".webp",
-    ".ico",
-    ".css",
-    ".js",
-    ".woff",
-    ".woff2",
-    ".ttf",
-    ".eot",
-    ".otf",
-  ];
-
-  // Allow only requests to public assets with allowed extensions
+  // Allow all requests to public assets (e.g., /public/*, /assets/*, /favicon.ico, etc.)
+  // Next.js serves static files from /public at the root, so we check for file extensions.
   const isPublicAsset =
-    (pathname.startsWith("/assets/") ||
-      pathname.startsWith("/images/") ||
-      pathname.startsWith("/fonts/") ||
-      pathname.startsWith("/public/")) &&
-    allowedExtensions.some(ext => pathname.toLowerCase().endsWith(ext));
+    pathname.startsWith("/assets/") ||
+    pathname.startsWith("/images/") ||
+    pathname.startsWith("/fonts/") ||
+    pathname.startsWith("/public/") ||
+    /\.[a-zA-Z0-9]+$/.test(pathname); // matches file extensions like .png, .jpg, .svg, .css, etc.
 
   if (isPublicAsset) {
     return NextResponse.next();
@@ -54,12 +37,8 @@ export function middleware(request: NextRequest) {
     pathname === "/forgot-password" ||
     pathname === "/reset-password";
 
-  // Define public pages that don't require authentication
-  // Only the root landing page is public by default
-  const isPublicPage = pathname === "/";
-
-  // Redirect unauthenticated users to login, except for auth pages and public pages
-  if (!token && !isAuthPage && !isPublicPage) {
+  // Don't redirect if already on the target page
+  if (!token && !isAuthPage && pathname !== "/") {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
