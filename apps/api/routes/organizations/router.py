@@ -15,9 +15,8 @@ from core.domains.users import User
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlmodel import Session
 
-from api.utils import handle_domain_exception
-
 from ...routes.auth.dependencies import get_current_user
+from ...utils import handle_domain_exception
 from .dependencies import get_organization_service
 
 router = APIRouter(prefix="/organizations", tags=["organizations"])
