@@ -1,6 +1,6 @@
 """Core authentication service - uses abstractions only."""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Tuple
 from uuid import UUID
 
