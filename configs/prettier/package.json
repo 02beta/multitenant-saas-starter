@@ -1,0 +1,13 @@
+{
+  "name": "@configs/prettier",
+  "version": "0.3.1",
+  "exports": {
+    "./prettier.config.mjs": "./prettier.config.mjs",
+    "./.prettierignore": "./.prettierignore"
+  },
+  "files": [
+    "prettier.config.mjs",
+    ".prettierignore"
+  ],
+  "type": "module"
+}

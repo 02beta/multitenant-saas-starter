@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID
 
+from sqlalchemy import text
 from sqlmodel import Field
 
 
@@ -16,11 +17,15 @@ class AuditFieldsMixin:
     """Mixin for created_at and updated_at timestamps."""
 
     created_at: datetime = Field(
+        default_factory=utcnow,
+        sa_column_kwargs={"server_default": text("NOW()")},
         nullable=False,
         title="Created at",
         description="The date and time the record was created",
     )
     updated_at: datetime = Field(
+        default_factory=utcnow,
+        sa_column_kwargs={"server_default": text("NOW()")},
         nullable=False,
         title="Updated at",
         description="The date and time the record was last updated",
@@ -29,13 +34,13 @@ class AuditFieldsMixin:
         nullable=False,
         title="Created by",
         description="The user who created the record",
-        foreign_key="identity.users.id",
+        foreign_key="usr.users.id",
     )
     updated_by: UUID = Field(
         nullable=False,
         title="Updated by",
         description="The user who updated the record",
-        foreign_key="identity.users.id",
+        foreign_key="usr.users.id",
     )
 
     def set_audit_fields(self, updated_by_id: Optional[UUID] = None) -> None:
@@ -57,14 +62,13 @@ class SoftDeleteMixin:
         nullable=True,
         title="Deleted by",
         description="The user who deleted the record",
-        foreign_key="identity.users.id",
+        foreign_key="usr.users.id",
     )
 
     def soft_delete(self, deleted_by_id: Optional[UUID] = None) -> None:
         """Mark record as soft deleted."""
-        self.deleted_at = datetime.now(
-            timezone.utc
-        )  # Triggers will set deleted_by
+        self.deleted_at = datetime.now(timezone.utc)
+        self.deleted_by = deleted_by_id
 
     def restore(self) -> None:
         """Restore soft deleted record."""

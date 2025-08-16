@@ -24,7 +24,7 @@ class MembershipBase(SQLModel):
         description="The ID of the organization this user belongs to",
     )
     user_id: UUID = Field(
-        foreign_key="identity.users.id",
+        foreign_key="usr.users.id",
         title="User ID",
         description="The ID of the user",
     )
@@ -40,7 +40,7 @@ class MembershipBase(SQLModel):
     )
     invited_by: UUID | None = Field(
         default=None,
-        foreign_key="identity.users.id",
+        foreign_key="usr.users.id",
         title="Invited By",
         description="The ID of the user who invited this user to the organization",
     )
@@ -104,9 +104,4 @@ class MembershipPublic(MembershipBase):
     accepted_at: datetime | None
     created_at: datetime
     updated_at: datetime | None = None
-
-    # Additional computed fields for API responses
-    is_owner: bool
-    is_active: bool
-    can_write: bool
-    can_manage_users: bool
+    deleted_at: datetime | None = None

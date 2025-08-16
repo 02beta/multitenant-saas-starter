@@ -1,0 +1,24 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": [
+        "SUPABASE_API_URL",
+        "SUPABASE_PUBLIC_KEY",
+        "SUPABASE_SECRET_KEY",
+        "AUTH_JWT_SECRET",
+        "SUPABASE_AUTH_PROVIDER_LOG_LEVEL"
+      ]
+    },
+    "dev": {
+      "env": [
+        "SUPABASE_API_URL",
+        "SUPABASE_PUBLIC_KEY",
+        "SUPABASE_SECRET_KEY",
+        "AUTH_JWT_SECRET",
+        "SUPABASE_AUTH_PROVIDER_LOG_LEVEL"
+      ]
+    }
+  }
+}

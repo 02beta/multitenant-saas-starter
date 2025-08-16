@@ -4,6 +4,7 @@ from datetime import datetime
 from enum import IntEnum
 from uuid import UUID, uuid4
 
+from sqlalchemy import Index, UniqueConstraint, text
 from sqlmodel import Field, SQLModel
 
 from core.common.mixins import AuditFieldsMixin, SoftDeleteMixin
@@ -35,7 +36,29 @@ class Membership(SQLModel, AuditFieldsMixin, SoftDeleteMixin, table=True):
 
     __tablename__ = "memberships"
     __table_args__ = (
-        # Ensure a user can only have one active role per organization
+        UniqueConstraint(
+            "organization_id",
+            "user_id",
+            "deleted_at",
+            name="unique_active_membership",
+        ),
+        Index(
+            "idx_memberships_org_user",
+            "organization_id",
+            "user_id",
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        Index(
+            "idx_memberships_user_id",
+            "user_id",
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        Index(
+            "idx_memberships_status",
+            "status",
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        Index("idx_memberships_deleted_at", "deleted_at"),
         {"schema": "org", "extend_existing": True},
     )
 
@@ -52,7 +75,7 @@ class Membership(SQLModel, AuditFieldsMixin, SoftDeleteMixin, table=True):
         description="The ID of the organization this user belongs to",
     )
     user_id: UUID = Field(
-        foreign_key="identity.users.id",
+        foreign_key="usr.users.id",
         title="User ID",
         description="The ID of the user",
     )
@@ -66,14 +89,16 @@ class Membership(SQLModel, AuditFieldsMixin, SoftDeleteMixin, table=True):
         title="Status",
         description="The user's status within the organization (0=invited, 1=active)",
     )
+
+    # Invitation fields
     invited_by: UUID | None = Field(
         default=None,
-        foreign_key="identity.users.id",
+        foreign_key="usr.users.id",
         title="Invited By",
         description="The ID of the user who invited this user to the organization",
     )
-    invited_at: datetime | None = Field(
-        default=None,
+    invited_at: datetime = Field(
+        default_factory=datetime.utcnow,
         title="Invited At",
         description="The date and time when the user was invited",
     )

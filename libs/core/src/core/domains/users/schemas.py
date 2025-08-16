@@ -4,47 +4,76 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 from uuid import UUID
 
-from pydantic import computed_field
 from sqlmodel import Field, SQLModel
 
 
 class UserBase(SQLModel):
     """Base User Model."""
 
+    full_name: str = Field(
+        nullable=False,
+        title="Full Name",
+        description="The user's full name",
+        min_length=1,
+        max_length=64,
+    )
+
     email: str = Field(
         unique=True,
         nullable=False,
         title="Email",
-        description="The user's email address is also used as the username for authentication",
+        description="The user's email address",
         min_length=5,
         max_length=320,
         regex=r"^[^@]+@[^@]+\.[^@]+$",
     )
 
-    first_name: str = Field(
-        nullable=False,
-        title="First Name",
-        description="The user's first name",
-        min_length=1,
-        max_length=64,
+    phone: Optional[str] = Field(
+        default=None,
+        max_length=20,
+        title="Phone Number",
+        description="User's phone number",
     )
 
-    last_name: str = Field(
-        nullable=False,
-        title="Last Name",
-        description="The user's last name",
-        min_length=1,
-        max_length=64,
+    avatar_url: Optional[str] = Field(
+        default=None,
+        max_length=512,
+        title="Avatar URL",
+        description="URL to the user's avatar image",
     )
 
-    @computed_field(return_type=str)
-    @property
-    def full_name(self) -> str:
-        """The user's full name, computed from first_name and last_name."""
-        return f"{self.first_name} {self.last_name}"
+    auth_user_id: UUID = Field(
+        nullable=False,
+        title="Auth User ID",
+        description="Reference to auth.users.id",
+    )
 
-    class Config:
-        arbitrary_types_allowed = True
+    hashed_password: str = Field(
+        min_length=8,
+        max_length=512,
+        title="Hashed Password",
+        description="The user's hashed password",
+    )
+
+    is_active: bool = Field(
+        default=True,
+        nullable=False,
+        title="Is Active",
+        description="Whether the user is active",
+    )
+
+    permissions: Dict[str, Any] = Field(
+        default_factory=dict,
+        title="Permissions",
+        description="User permissions as JSON",
+    )
+
+    is_superuser: bool = Field(
+        default=False,
+        nullable=False,
+        title="Is Superuser",
+        description="Whether the user is a superuser",
+    )
 
 
 class UserCreate(UserBase):
@@ -56,53 +85,36 @@ class UserCreate(UserBase):
 class UserUpdate(SQLModel):
     """Schema for updating users."""
 
+    full_name: Optional[str] = Field(default=None, min_length=1, max_length=64)
     email: Optional[str] = Field(
         default=None,
         min_length=5,
         max_length=320,
         regex=r"^[^@]+@[^@]+\.[^@]+$",
     )
-    password: Optional[str] = Field(default=None, min_length=8, max_length=128)
-    first_name: Optional[str] = Field(
-        default=None, min_length=1, max_length=64
+    phone: Optional[str] = Field(default=None, max_length=20)
+    avatar_url: Optional[str] = Field(default=None, max_length=512)
+    auth_user_id: Optional[UUID] = Field(default=None)
+    hashed_password: Optional[str] = Field(
+        default=None, min_length=8, max_length=512
     )
-    last_name: Optional[str] = Field(default=None, min_length=1, max_length=64)
     is_active: Optional[bool] = Field(default=None)
+    permissions: Optional[Dict[str, Any]] = Field(default=None)
     is_superuser: Optional[bool] = Field(default=None)
 
-    # Profile fields
-    avatar_url: Optional[str] = Field(default=None, max_length=512)
-    phone: Optional[str] = Field(default=None, max_length=20)
-    job_title: Optional[str] = Field(default=None, max_length=100)
-    organization_name: Optional[str] = Field(default=None, max_length=100)
-    timezone: Optional[str] = Field(default=None, max_length=50)
-    preferences: Optional[Dict[str, Any]] = Field(default=None)
 
-
-class UserPublic(UserBase):
+class UserPublic(SQLModel):
     """Public user schema for API responses."""
 
     id: UUID
+    full_name: str
+    email: str
+    phone: Optional[str] = None
+    avatar_url: Optional[str] = None
+    auth_user_id: Optional[UUID] = None
+    permissions: Optional[Dict[str, Any]] = None
     is_active: bool
     is_superuser: bool
     created_at: datetime
     updated_at: Optional[datetime] = None
-
-
-class UserPublicExtended(UserPublic):
-    """Extended public user schema with profile and provider fields."""
-
-    # Provider fields
-    provider_user_id: Optional[str] = None
-    provider_type: Optional[str] = None
-    provider_email: Optional[str] = None
-
-    # Profile fields
-    avatar_url: Optional[str] = None
-    phone: Optional[str] = None
-    job_title: Optional[str] = None
-    organization_name: Optional[str] = None
-    last_login_date: Optional[datetime] = None
-    last_login_location: Optional[str] = None
-    timezone: Optional[str] = None
-    preferences: Dict[str, Any] = Field(default_factory=dict)
+    deleted_at: Optional[datetime] = None

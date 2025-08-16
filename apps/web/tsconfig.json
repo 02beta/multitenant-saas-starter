@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": ["@workspace/typescript-config/nextjs.json"],
+  "extends": ["../../tsconfig.base.json"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
@@ -12,8 +12,8 @@
       "@workspace/ui/lib/*": ["../../libs/ui/src/lib/*"],
       "@workspace/ui/styles/*": ["../../libs/ui/src/styles/*"],
       "@workspace/ui/hooks/*": ["../../libs/ui/src/hooks/*"],
-      "@workspace/eslint-config/*": ["../../libs/eslint-config/*"],
-      "@workspace/typescript-config/*": ["../../libs/typescript-config/*"],
+      "@configs/eslint/*": ["../../libs/eslint-config/*"],
+      "@configs/typescript/*": ["../../libs/typescript-config/*"],
       "@workspace/typescript-sdk": ["../../libs/shared/src/index.ts"],
       "@workspace/typescript-sdk/*": ["../../libs/shared/src/*"]
     },
@@ -21,7 +21,20 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "incremental": true,
+    "module": "esnext",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve"
   },
   "include": [
     "next-env.d.ts",

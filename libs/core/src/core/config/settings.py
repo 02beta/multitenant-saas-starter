@@ -21,13 +21,52 @@ class Settings(BaseSettings):
         env_parse_enums=True,
     )
 
+    # Auth settings
+    auth_jwt_secret: str = Field(
+        ...,
+        description="JWT secret for authentication.",
+    )
+    auth_provider: str = Field(
+        "supabase",
+        description="Authentication provider.",
+    )
+
+    # Database settings
     database_url: str = Field(
         "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
-        description="Synchronous database connection URL",
+        description="Synchronous database connection URL.",
     )
     database_async_url: str = Field(
         "postgresql+asyncpg://postgres:postgres@127.0.0.1:54322/postgres",
-        description="Asynchronous database connection URL",
+        description="Asynchronous database connection URL.",
+    )
+
+    # Axiom logging settings
+    axiom_token: str = Field(
+        "",
+        description="Axiom logging token.",
+    )
+    axiom_org_id: str = Field(
+        "",
+        description="Axiom organization ID.",
+    )
+    axiom_dataset: str = Field(
+        "",
+        description="Axiom dataset name.",
+    )
+
+    # General logging settings
+    log_level: str = Field(
+        "INFO",
+        description="Logging level.",
+    )
+    log_format: str = Field(
+        "default",
+        description="Logging format.",
+    )
+    log_color: str = Field(
+        "auto",
+        description="Enable color in logs.",
     )
 
 

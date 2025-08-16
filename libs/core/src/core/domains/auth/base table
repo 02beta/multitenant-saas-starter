@@ -1,0 +1,25 @@
+
+
+-- Id is a UUID
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+-- Custom fields
+name VARCHAR(255) NOT NULL,
+slug VARCHAR(255) NOT NULL UNIQUE,
+image_url VARCHAR(255),
+description TEXT,
+website VARCHAR(255),
+is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+-- License & limits
+max_members INT NOT NULL DEFAULT 10,
+max_projects INT NOT NULL DEFAULT 10,
+
+
+-- Audit fields
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+created_by UUID NOT NULL REFERENCES identity.users(id),
+updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+updated_by UUID NOT NULL REFERENCES identity.users(id),
+deleted_at TIMESTAMP,
+deleted_by UUID REFERENCES identity.users(id)

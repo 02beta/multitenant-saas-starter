@@ -14,8 +14,8 @@ from .exceptions import (
     WeakPasswordError,
 )
 from .models import User
-from .schemas import UserCreate, UserPublic, UserUpdate
 from .repository import UserRepository
+from .schemas import UserCreate, UserPublic, UserUpdate
 
 
 class PasswordService:
@@ -179,6 +179,7 @@ class UserService:
 
         Args:
             repository: UserRepository instance
+            password_service: PasswordService instance
         """
         self.repository = repository
         self.password_service = password_service
@@ -191,7 +192,7 @@ class UserService:
         created_by_id: Optional[UUID] = None,
     ) -> User:
         """
-        Create a new user with validation and password hashing.
+        Create a new user with validation.
 
         Args:
             session: Database session
@@ -204,7 +205,6 @@ class UserService:
         Raises:
             UserAlreadyExistsError: If email already exists
             InvalidEmailFormatError: If email format is invalid
-            WeakPasswordError: If password doesn't meet requirements
         """
         # Validate email format
         if not self.repository.validate_email_format(user_in.email):
@@ -214,15 +214,8 @@ class UserService:
         if self.repository.check_email_exists(session, email=user_in.email):
             raise UserAlreadyExistsError(user_in.email)
 
-        # Validate password strength
-        self.password_service.validate_password_strength(user_in.password)
-
-        # Hash the password
-        hashed_password = self.password_service.hash_password(user_in.password)
-
-        # Create user data
+        # Create user data directly using provided hashed_password
         create_data = user_in.model_dump()
-        create_data["password"] = hashed_password
 
         if created_by_id:
             create_data["created_by"] = created_by_id
@@ -259,33 +252,6 @@ class UserService:
         """
         return self.repository.get_by_email(session, email=email)
 
-    def authenticate_user(
-        self, session: Session, *, email: str, password: str
-    ) -> Optional[User]:
-        """
-        Authenticate a user by email and password.
-
-        Args:
-            session: Database session
-            email: User's email address
-            password: Plain text password
-
-        Returns:
-            User instance if authentication successful, None otherwise
-        """
-        user = self.repository.get_by_email(session, email=email)
-
-        if not user:
-            return None
-
-        if not user.is_active:
-            return None
-
-        if not self.password_service.verify_password(password, user.password):
-            return None
-
-        return user
-
     def update_user(
         self,
         session: Session,
@@ -309,7 +275,6 @@ class UserService:
         Raises:
             UserAlreadyExistsError: If new email already exists
             InvalidEmailFormatError: If new email format is invalid
-            WeakPasswordError: If new password doesn't meet requirements
         """
         update_data = user_in.model_dump(exclude_unset=True)
 
@@ -325,118 +290,13 @@ class UserService:
             ):
                 raise UserAlreadyExistsError(new_email)
 
-        # Validate and hash password if being updated
-        if "password" in update_data:
-            new_password = update_data["password"]
-            self.password_service.validate_password_strength(new_password)
-            update_data["password"] = self.password_service.hash_password(
-                new_password
-            )
+        # No password hashing here; hashed_password can be provided directly
 
         return self.repository.update(
             session,
             db_obj=user,
             obj_in=UserUpdate(**update_data),
             updated_by_id=updated_by_id,
-        )
-
-    def change_password(
-        self,
-        session: Session,
-        *,
-        user: User,
-        current_password: str,
-        new_password: str,
-        updated_by_id: Optional[UUID] = None,
-    ) -> User:
-        """
-        Change user's password with current password verification.
-
-        Args:
-            session: Database session
-            user: User instance
-            current_password: Current password for verification
-            new_password: New password
-            updated_by_id: ID of the user making the change
-
-        Returns:
-            Updated User instance
-
-        Raises:
-            WeakPasswordError: If current password is wrong or new password is weak
-        """
-        # Verify current password
-        if not self.password_service.verify_password(
-            current_password, user.password
-        ):
-            raise WeakPasswordError("Current password is incorrect")
-
-        # Validate new password
-        self.password_service.validate_password_strength(new_password)
-
-        # Hash new password
-        update_data = UserUpdate(
-            password=self.password_service.hash_password(new_password)
-        )
-
-        # Update password
-        return self.repository.update(
-            session,
-            db_obj=user,
-            obj_in=update_data,
-            updated_by_id=updated_by_id,
-        )
-
-    def deactivate_user(
-        self,
-        session: Session,
-        *,
-        user: User,
-        deactivated_by_id: Optional[UUID] = None,
-    ) -> User:
-        """
-        Deactivate a user account.
-
-        Args:
-            session: Database session
-            user: User instance to deactivate
-            deactivated_by_id: ID of the user performing the deactivation
-
-        Returns:
-            Updated User instance
-        """
-        update_data = UserUpdate(is_active=False)
-        return self.repository.update(
-            session,
-            db_obj=user,
-            obj_in=update_data,
-            updated_by_id=deactivated_by_id,
-        )
-
-    def activate_user(
-        self,
-        session: Session,
-        *,
-        user: User,
-        activated_by_id: Optional[UUID] = None,
-    ) -> User:
-        """
-        Activate a user account.
-
-        Args:
-            session: Database session
-            user: User instance to activate
-            activated_by_id: ID of the user performing the activation
-
-        Returns:
-            Updated User instance
-        """
-        update_data = UserUpdate(is_active=True)
-        return self.repository.update(
-            session,
-            db_obj=user,
-            obj_in=update_data,
-            updated_by_id=activated_by_id,
         )
 
     def delete_user(
@@ -488,18 +348,21 @@ class UserService:
         else:
             users = self.repository.get_multi(session, skip=skip, limit=limit)
 
-        # Convert to public schema (exclude password)
+        # Convert to public schema
         return [
             UserPublic(
                 id=user.id,
+                full_name=user.full_name,
                 email=user.email,
-                password="",  # Never expose password
-                first_name=user.first_name,
-                last_name=user.last_name,
+                phone=user.phone,
+                avatar_url=user.avatar_url,
+                auth_user_id=user.auth_user_id,
                 is_active=user.is_active,
+                permissions=user.permissions,
                 is_superuser=user.is_superuser,
                 created_at=user.created_at,
                 updated_at=user.updated_at,
+                deleted_at=user.deleted_at,
             )
             for user in users
         ]
@@ -526,14 +389,17 @@ class UserService:
         return [
             UserPublic(
                 id=user.id,
+                full_name=user.full_name,
                 email=user.email,
-                password="",  # Never expose password
-                first_name=user.first_name,
-                last_name=user.last_name,
+                phone=user.phone,
+                avatar_url=user.avatar_url,
+                auth_user_id=user.auth_user_id,
                 is_active=user.is_active,
+                permissions=user.permissions,
                 is_superuser=user.is_superuser,
                 created_at=user.created_at,
                 updated_at=user.updated_at,
+                deleted_at=user.deleted_at,
             )
             for user in users
         ]
@@ -552,55 +418,3 @@ class UserService:
             Total number of users
         """
         return self.repository.count_users(session, active_only=active_only)
-
-    def promote_to_superuser(
-        self,
-        session: Session,
-        *,
-        user: User,
-        promoted_by_id: Optional[UUID] = None,
-    ) -> User:
-        """
-        Promote user to superuser status.
-
-        Args:
-            session: Database session
-            user: User instance to promote
-            promoted_by_id: ID of the user performing the promotion
-
-        Returns:
-            Updated User instance
-        """
-        update_data = UserUpdate(is_superuser=True)
-        return self.repository.update(
-            session,
-            db_obj=user,
-            obj_in=update_data,
-            updated_by_id=promoted_by_id,
-        )
-
-    def revoke_superuser(
-        self,
-        session: Session,
-        *,
-        user: User,
-        revoked_by_id: Optional[UUID] = None,
-    ) -> User:
-        """
-        Revoke superuser status from user.
-
-        Args:
-            session: Database session
-            user: User instance to revoke from
-            revoked_by_id: ID of the user performing the revocation
-
-        Returns:
-            Updated User instance
-        """
-        update_data = UserUpdate(is_superuser=False)
-        return self.repository.update(
-            session,
-            db_obj=user,
-            obj_in=update_data,
-            updated_by_id=revoked_by_id,
-        )

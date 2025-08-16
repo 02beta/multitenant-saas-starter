@@ -4,8 +4,9 @@ import re
 from typing import List, Optional
 from uuid import UUID
 
-from core.common.protocols import CRUDBase
 from sqlmodel import Session, and_, or_, select
+
+from core.common.protocols import CRUDBase
 
 from .models import User
 from .schemas import UserCreate, UserUpdate
@@ -125,8 +126,7 @@ class UserRepository(CRUDBase[User, UserCreate, UserUpdate]):
                 and_(
                     User.deleted_at.is_(None),
                     or_(
-                        User.first_name.ilike(search_pattern),
-                        User.last_name.ilike(search_pattern),
+                        User.full_name.ilike(search_pattern),
                         User.email.ilike(search_pattern),
                     ),
                 )
@@ -211,10 +211,10 @@ class UserRepository(CRUDBase[User, UserCreate, UserUpdate]):
         conditions = [User.deleted_at.is_(None)]
 
         if first_name:
-            conditions.append(User.first_name.ilike(f"%{first_name}%"))
+            conditions.append(User.full_name.ilike(f"%{first_name}%"))
 
         if last_name:
-            conditions.append(User.last_name.ilike(f"%{last_name}%"))
+            conditions.append(User.full_name.ilike(f"%{last_name}%"))
 
         stmt = select(User).where(and_(*conditions))
         return list(session.exec(stmt).all())
@@ -274,7 +274,6 @@ class UserRepository(CRUDBase[User, UserCreate, UserUpdate]):
         """
         Validate email format using regex.
 
-        Args:
             email: Email address to validate
 
         Returns:

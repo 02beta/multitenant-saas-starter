@@ -12,12 +12,15 @@ importers:
         specifier: ^1.2.2
         version: 1.2.2
     devDependencies:
-      '@workspace/eslint-config':
+      '@configs/eslint':
         specifier: workspace:*
-        version: link:libs/eslint-config
-      '@workspace/typescript-config':
+        version: link:configs/eslint
+      '@configs/prettier':
         specifier: workspace:*
-        version: link:libs/typescript-config
+        version: link:configs/prettier
+      '@configs/typescript':
+        specifier: workspace:*
+        version: link:configs/typescript
       openapi-zod-client:
         specifier: ^1.18.3
         version: 1.18.3(react@19.1.1)
@@ -41,9 +44,6 @@ importers:
       '@radix-ui/react-slot':
         specifier: ^1.2.3
         version: 1.2.3(@types/react@19.1.9)(react@19.1.1)
-      '@workspace/shared':
-        specifier: workspace:*
-        version: link:../../libs/shared
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../libs/ui
@@ -81,6 +81,12 @@ importers:
         specifier: ^3.25.76
         version: 3.25.76
     devDependencies:
+      '@configs/eslint':
+        specifier: workspace:^
+        version: link:../../configs/eslint
+      '@configs/typescript':
+        specifier: workspace:*
+        version: link:../../configs/typescript
       '@types/node':
         specifier: ^20.19.9
         version: 20.19.10
@@ -90,19 +96,11 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.7
         version: 19.1.7(@types/react@19.1.9)
-      '@workspace/eslint-config':
-        specifier: workspace:^
-        version: link:../../libs/eslint-config
-      '@workspace/typescript-config':
-        specifier: workspace:*
-        version: link:../../libs/typescript-config
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
 
-  libs/core: {}
-
-  libs/eslint-config:
+  configs/eslint:
     devDependencies:
       '@eslint/js':
         specifier: ^9.32.0
@@ -147,31 +145,13 @@ importers:
         specifier: ^8.39.0
         version: 8.39.0(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2)
 
-  libs/shared:
-    dependencies:
-      '@zodios/core':
-        specifier: ^10.9.6
-        version: 10.9.6(axios@1.11.0)(zod@3.25.76)
-      zod:
-        specifier: ^3.25.76
-        version: 3.25.76
-    devDependencies:
-      '@workspace/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@workspace/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      prettier:
-        specifier: ^3.6.2
-        version: 3.6.2
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.2
+  configs/prettier: {}
 
-  libs/supabase-auth-provider: {}
+  configs/typescript: {}
 
-  libs/typescript-config: {}
+  libs/auth-supabase: {}
+
+  libs/core: {}
 
   libs/ui:
     dependencies:
@@ -317,6 +297,12 @@ importers:
         specifier: ^3.25.76
         version: 3.25.76
     devDependencies:
+      '@configs/eslint':
+        specifier: workspace:*
+        version: link:../../configs/eslint
+      '@configs/typescript':
+        specifier: workspace:*
+        version: link:../../configs/typescript
       '@tailwindcss/postcss':
         specifier: ^4.1.11
         version: 4.1.11
@@ -332,12 +318,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.7
         version: 19.1.7(@types/react@19.1.9)
-      '@workspace/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@workspace/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       eslint:
         specifier: ^9.32.0
         version: 9.33.0(jiti@2.5.1)
@@ -347,6 +327,8 @@ importers:
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
+
+  tools/cli: {}
 
 packages:
 

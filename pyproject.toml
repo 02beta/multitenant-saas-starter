@@ -4,7 +4,7 @@ members = [
     "apps/api",
     "libs/core",
     "tools/cli",
-    "libs/supabase-auth-provider"
+    "auth-providers/auth-supabase",
 ]
 
 [tool.ruff]

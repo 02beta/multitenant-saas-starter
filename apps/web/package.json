@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
-    "@workspace/shared": "workspace:*",
     "@workspace/ui": "workspace:*",
     "@hookform/resolvers": "^5.2.1",
     "react-hook-form": "^7.62.0",
@@ -35,8 +34,8 @@
     "@types/node": "^20.19.9",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
-    "@workspace/eslint-config": "workspace:^",
-    "@workspace/typescript-config": "workspace:*",
+    "@configs/eslint": "workspace:^",
+    "@configs/typescript": "workspace:*",
     "typescript": "^5.9.2"
   }
 }

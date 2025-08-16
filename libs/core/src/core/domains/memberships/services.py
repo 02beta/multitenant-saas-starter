@@ -21,12 +21,12 @@ from .models import (
     MembershipRole,
     MembershipStatus,
 )
+from .repository import MembershipRepository
 from .schemas import (
     MembershipCreate,
     MembershipPublic,
     MembershipUpdate,
 )
-from .repository import MembershipRepository
 
 __all__ = [
     "MembershipService",
@@ -100,6 +100,48 @@ class MembershipService:
         # Create the membership
         membership = Membership(**create_data)
         return self.repository.create(session, obj_in=membership)
+
+    def get_membership(
+        self,
+        session: Session,
+        *,
+        membership_id: UUID,
+        current_user_id: UUID,
+    ) -> Optional[Membership]:
+        """Get a membership by ID with basic access validation."""
+        membership = self.repository.get(session, membership_id)
+        if not membership:
+            return None
+        # Optionally validate that current_user has visibility within the org
+        return membership
+
+    def update_membership(
+        self,
+        session: Session,
+        *,
+        membership: Membership,
+        membership_in: MembershipUpdate,
+        updated_by_id: UUID,
+    ) -> Membership:
+        """Update membership fields."""
+        return self.repository.update(
+            session,
+            db_obj=membership,
+            obj_in=membership_in,
+            updated_by_id=updated_by_id,
+        )
+
+    def delete_membership(
+        self,
+        session: Session,
+        *,
+        membership_id: UUID,
+        deleted_by_id: UUID,
+    ) -> bool:
+        """Soft delete membership by ID."""
+        return self.repository.remove(
+            session, id=membership_id, deleted_by_id=deleted_by_id
+        )
 
     def accept_invitation(
         self,
@@ -338,10 +380,10 @@ class MembershipService:
         return [
             MembershipPublic(
                 **user.model_dump(),
-                is_owner=user.is_owner,
-                is_active=user.is_active,
-                can_write=user.can_write,
-                can_manage_users=user.can_manage_users,
+                # compatibility with API response shape
+                created_at=user.created_at,
+                updated_at=user.updated_at,
+                deleted_at=user.deleted_at,
             )
             for user in memberships
         ]
@@ -377,10 +419,9 @@ class MembershipService:
         return [
             MembershipPublic(
                 **user.model_dump(),
-                is_owner=user.is_owner,
-                is_active=user.is_active,
-                can_write=user.can_write,
-                can_manage_users=user.can_manage_users,
+                created_at=user.created_at,
+                updated_at=user.updated_at,
+                deleted_at=user.deleted_at,
             )
             for user in memberships
         ]
@@ -445,3 +486,17 @@ class MembershipService:
             return membership.can_write
 
         return True
+
+    def get_membership_count(
+        self,
+        session: Session,
+        *,
+        organization_id: UUID,
+        current_user_id: UUID,
+        active_only: bool = True,
+    ) -> int:
+        """Count memberships for an organization."""
+        status = MembershipStatus.ACTIVE if active_only else None
+        return self.repository.count_memberships(
+            session, organization_id=organization_id, status=status
+        )

@@ -2,281 +2,15 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Multi-tenant SaaS API",
-    "description": "API for the Multi-tenant SaaS application",
-    "version": "0.0.0"
+    "description": "API for the Multi-tenant SaaS application (DB schema-aligned)",
+    "version": "0.0.1"
   },
   "paths": {
-    "/v1/auth/login": {
-      "post": {
-        "tags": ["authentication"],
-        "summary": "Login",
-        "description": "Login with provider-agnostic authentication.\n\nSets HTTP-only cookies for access_token and refresh_token.",
-        "operationId": "login_v1_auth_login_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/LoginRequest" }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/LoginResponse" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/auth/logout": {
-      "post": {
-        "tags": ["authentication"],
-        "summary": "Logout",
-        "description": "Logout and invalidate session.\n\nClears authentication cookies.",
-        "operationId": "logout_v1_auth_logout_post",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
-          }
-        },
-        "security": [{ "HTTPBearer": [] }]
-      }
-    },
-    "/v1/auth/refresh": {
-      "post": {
-        "tags": ["authentication"],
-        "summary": "Refresh Token",
-        "description": "Refresh access token.\n\nUses refresh_token from HTTP-only cookie if not provided in body.\nSets new tokens in cookies.",
-        "operationId": "refresh_token_v1_auth_refresh_post",
-        "parameters": [
-          {
-            "name": "refresh_token",
-            "in": "cookie",
-            "required": false,
-            "schema": {
-              "anyOf": [{ "type": "string" }, { "type": "null" }],
-              "title": "Refresh Token"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/LoginResponse" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/auth/me": {
-      "get": {
-        "tags": ["authentication"],
-        "summary": "Get Current User Profile",
-        "description": "Get current authenticated user profile.",
-        "operationId": "get_current_user_profile_v1_auth_me_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
-          }
-        },
-        "security": [{ "HTTPBearer": [] }]
-      }
-    },
-    "/v1/auth/signup": {
-      "post": {
-        "tags": ["authentication"],
-        "summary": "Signup",
-        "description": "Create new user with organization.",
-        "operationId": "signup_v1_auth_signup_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/SignupRequest" }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/SignupResponse" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/auth/forgot-password": {
-      "post": {
-        "tags": ["authentication"],
-        "summary": "Forgot Password",
-        "description": "Send password reset email.",
-        "operationId": "forgot_password_v1_auth_forgot_password_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/ForgotPasswordRequest" }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/auth/reset-password": {
-      "post": {
-        "tags": ["authentication"],
-        "summary": "Reset Password",
-        "description": "Reset password with token.",
-        "operationId": "reset_password_v1_auth_reset_password_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/ResetPasswordRequest" }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/auth/me/extended": {
-      "get": {
-        "tags": ["authentication"],
-        "summary": "Get Current User Extended",
-        "description": "Get current user with organization and memberships.",
-        "operationId": "get_current_user_extended_v1_auth_me_extended_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponseExtended"
-                }
-              }
-            }
-          }
-        },
-        "security": [{ "HTTPBearer": [] }]
-      }
-    },
-    "/v1/auth/organizations": {
-      "get": {
-        "tags": ["authentication"],
-        "summary": "Get User Organizations",
-        "description": "Get all organizations for current user.",
-        "operationId": "get_user_organizations_v1_auth_organizations_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
-          }
-        },
-        "security": [{ "HTTPBearer": [] }]
-      }
-    },
-    "/v1/auth/switch-organization": {
-      "post": {
-        "tags": ["authentication"],
-        "summary": "Switch Organization",
-        "description": "Switch to a different organization.\n\nUpdates the session and sets the organization_id in the session cookie.",
-        "operationId": "switch_organization_v1_auth_switch_organization_post",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "organization_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Organization Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
     "/v1/users/": {
       "post": {
         "tags": ["users"],
         "summary": "Create User",
-        "description": "Create a new user.",
+        "description": "Create a new user in usr.users. Requires full_name, email, auth_user_id, and hashed_password.",
         "operationId": "create_user_v1_users__post",
         "security": [{ "HTTPBearer": [] }],
         "requestBody": {
@@ -289,7 +23,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "User created",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/UserPublic" }
@@ -309,7 +43,7 @@
       "get": {
         "tags": ["users"],
         "summary": "List Users",
-        "description": "List users with pagination.",
+        "description": "List users from usr.users with pagination.",
         "operationId": "list_users_v1_users__get",
         "security": [{ "HTTPBearer": [] }],
         "parameters": [
@@ -349,13 +83,12 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "List of users",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/UserPublic" },
-                  "title": "Response List Users V1 Users  Get"
+                  "items": { "$ref": "#/components/schemas/UserPublic" }
                 }
               }
             }
@@ -375,7 +108,7 @@
       "get": {
         "tags": ["users"],
         "summary": "Get User",
-        "description": "Get a user by ID.",
+        "description": "Get a user by ID from usr.users.",
         "operationId": "get_user_v1_users__user_id__get",
         "security": [{ "HTTPBearer": [] }],
         "parameters": [
@@ -388,27 +121,22 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "User found",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/UserPublic" }
               }
             }
           },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
+          "404": {
+            "description": "User not found"
           }
         }
       },
       "put": {
         "tags": ["users"],
         "summary": "Update User",
-        "description": "Update a user.",
+        "description": "Update a user in usr.users.",
         "operationId": "update_user_v1_users__user_id__put",
         "security": [{ "HTTPBearer": [] }],
         "parameters": [
@@ -429,27 +157,22 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "User updated",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/UserPublic" }
               }
             }
           },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
+          "404": {
+            "description": "User not found"
           }
         }
       },
       "delete": {
         "tags": ["users"],
-        "summary": "Delete User",
-        "description": "Soft delete a user.",
+        "summary": "Soft Delete User",
+        "description": "Soft delete a user (sets deleted_at) in usr.users.",
         "operationId": "delete_user_v1_users__user_id__delete",
         "security": [{ "HTTPBearer": [] }],
         "parameters": [
@@ -462,403 +185,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "description": "User soft deleted"
           },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/users/{user_id}/activate": {
-      "post": {
-        "tags": ["users"],
-        "summary": "Activate User",
-        "description": "Activate a user account.",
-        "operationId": "activate_user_v1_users__user_id__activate_post",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string", "format": "uuid", "title": "User Id" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/UserPublic" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/users/{user_id}/deactivate": {
-      "post": {
-        "tags": ["users"],
-        "summary": "Deactivate User",
-        "description": "Deactivate a user account.",
-        "operationId": "deactivate_user_v1_users__user_id__deactivate_post",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string", "format": "uuid", "title": "User Id" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/UserPublic" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/users/{user_id}/promote": {
-      "post": {
-        "tags": ["users"],
-        "summary": "Promote To Superuser",
-        "description": "Promote user to superuser status.",
-        "operationId": "promote_to_superuser_v1_users__user_id__promote_post",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string", "format": "uuid", "title": "User Id" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/UserPublic" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/users/{user_id}/revoke-superuser": {
-      "post": {
-        "tags": ["users"],
-        "summary": "Revoke Superuser",
-        "description": "Revoke superuser status from user.",
-        "operationId": "revoke_superuser_v1_users__user_id__revoke_superuser_post",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string", "format": "uuid", "title": "User Id" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/UserPublic" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/users/{user_id}/change-password": {
-      "post": {
-        "tags": ["users"],
-        "summary": "Change Password",
-        "description": "Change user's password.",
-        "operationId": "change_password_v1_users__user_id__change_password_post",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string", "format": "uuid", "title": "User Id" }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/PasswordChangeRequest" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/UserPublic" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/users/search/by-name": {
-      "get": {
-        "tags": ["users"],
-        "summary": "Search Users By Name",
-        "description": "Search users by name or email.",
-        "operationId": "search_users_by_name_v1_users_search_by_name_get",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "search_term",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "title": "Search Term"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "maximum": 50,
-              "minimum": 1,
-              "default": 10,
-              "title": "Limit"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/UserPublic" },
-                  "title": "Response Search Users By Name V1 Users Search By Name Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/users/email/{email}": {
-      "get": {
-        "tags": ["users"],
-        "summary": "Get User By Email",
-        "description": "Get a user by email address.",
-        "operationId": "get_user_by_email_v1_users_email__email__get",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "email",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string", "title": "Email" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/UserPublic" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/users/count": {
-      "get": {
-        "tags": ["users"],
-        "summary": "Get User Count",
-        "description": "Get total count of users.",
-        "operationId": "get_user_count_v1_users_count_get",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "active_only",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": true,
-              "title": "Active Only"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/users/generate-password": {
-      "post": {
-        "tags": ["users"],
-        "summary": "Generate Secure Password",
-        "description": "Generate a secure random password.",
-        "operationId": "generate_secure_password_v1_users_generate_password_post",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "length",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "maximum": 128,
-              "minimum": 12,
-              "default": 16,
-              "title": "Length"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GeneratePasswordResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/users/authenticate": {
-      "post": {
-        "tags": ["users"],
-        "summary": "Authenticate User",
-        "description": "Authenticate a user by email and password.",
-        "operationId": "authenticate_user_v1_users_authenticate_post",
-        "parameters": [
-          {
-            "name": "email",
-            "in": "query",
-            "required": true,
-            "schema": { "type": "string", "title": "Email" }
-          },
-          {
-            "name": "password",
-            "in": "query",
-            "required": true,
-            "schema": { "type": "string", "title": "Password" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
+          "404": {
+            "description": "User not found"
           }
         }
       }
@@ -867,7 +197,7 @@
       "post": {
         "tags": ["organizations"],
         "summary": "Create Organization",
-        "description": "Create a new organization.",
+        "description": "Create a new organization in org.organizations.",
         "operationId": "create_organization_v1_organizations__post",
         "security": [{ "HTTPBearer": [] }],
         "requestBody": {
@@ -880,18 +210,10 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Organization created",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/OrganizationPublic" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
               }
             }
           }
@@ -899,9 +221,9 @@
       },
       "get": {
         "tags": ["organizations"],
-        "summary": "List User Organizations",
-        "description": "List organizations for the current user.",
-        "operationId": "list_user_organizations_v1_organizations__get",
+        "summary": "List Organizations",
+        "description": "List organizations from org.organizations.",
+        "operationId": "list_organizations_v1_organizations__get",
         "security": [{ "HTTPBearer": [] }],
         "parameters": [
           {
@@ -930,24 +252,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "List of organizations",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OrganizationPublic"
-                  },
-                  "title": "Response List User Organizations V1 Organizations  Get"
+                  "items": { "$ref": "#/components/schemas/OrganizationPublic" }
                 }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
               }
             }
           }
@@ -958,7 +269,7 @@
       "get": {
         "tags": ["organizations"],
         "summary": "Get Organization",
-        "description": "Get a specific organization by ID.",
+        "description": "Get an organization by ID from org.organizations.",
         "operationId": "get_organization_v1_organizations__organization_id__get",
         "security": [{ "HTTPBearer": [] }],
         "parameters": [
@@ -975,27 +286,22 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Organization found",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/OrganizationPublic" }
               }
             }
           },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
+          "404": {
+            "description": "Organization not found"
           }
         }
       },
       "put": {
         "tags": ["organizations"],
         "summary": "Update Organization",
-        "description": "Update a organization.",
+        "description": "Update an organization in org.organizations.",
         "operationId": "update_organization_v1_organizations__organization_id__put",
         "security": [{ "HTTPBearer": [] }],
         "parameters": [
@@ -1020,27 +326,22 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Organization updated",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/OrganizationPublic" }
               }
             }
           },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
+          "404": {
+            "description": "Organization not found"
           }
         }
       },
       "delete": {
         "tags": ["organizations"],
-        "summary": "Delete Organization",
-        "description": "Soft delete a organization.",
+        "summary": "Soft Delete Organization",
+        "description": "Soft delete an organization (sets deleted_at) in org.organizations.",
         "operationId": "delete_organization_v1_organizations__organization_id__delete",
         "security": [{ "HTTPBearer": [] }],
         "parameters": [
@@ -1057,149 +358,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "description": "Organization soft deleted"
           },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/organizations/slug/{slug}": {
-      "get": {
-        "tags": ["organizations"],
-        "summary": "Get Organization By Slug",
-        "description": "Get a specific organization by slug.",
-        "operationId": "get_organization_by_slug_v1_organizations_slug__slug__get",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "slug",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string", "title": "Slug" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/OrganizationPublic" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/organizations/search/by-name": {
-      "get": {
-        "tags": ["organizations"],
-        "summary": "Search Organizations By Name",
-        "description": "Search organizations by name.",
-        "operationId": "search_organizations_by_name_v1_organizations_search_by_name_get",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "search_term",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "title": "Search Term"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "maximum": 50,
-              "minimum": 1,
-              "default": 10,
-              "title": "Limit"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OrganizationPublic"
-                  },
-                  "title": "Response Search Organizations By Name V1 Organizations Search By Name Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/organizations/plan/{plan_name}": {
-      "get": {
-        "tags": ["organizations"],
-        "summary": "Get Organizations By Plan",
-        "description": "Get all active organizations on a specific plan.",
-        "operationId": "get_organizations_by_plan_v1_organizations_plan__plan_name__get",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "plan_name",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string", "title": "Plan Name" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OrganizationPublic"
-                  },
-                  "title": "Response Get Organizations By Plan V1 Organizations Plan  Plan Name  Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
+          "404": {
+            "description": "Organization not found"
           }
         }
       }
@@ -1208,7 +370,7 @@
       "post": {
         "tags": ["memberships"],
         "summary": "Create Membership",
-        "description": "Create a new organization user.",
+        "description": "Create a new membership in org.memberships.",
         "operationId": "create_membership_v1_memberships__post",
         "security": [{ "HTTPBearer": [] }],
         "requestBody": {
@@ -1221,18 +383,10 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Membership created",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/MembershipPublic" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
               }
             }
           }
@@ -1241,7 +395,7 @@
       "get": {
         "tags": ["memberships"],
         "summary": "List Memberships",
-        "description": "List organization users with pagination.",
+        "description": "List memberships from org.memberships.",
         "operationId": "list_memberships_v1_memberships__get",
         "security": [{ "HTTPBearer": [] }],
         "parameters": [
@@ -1270,22 +424,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "List of memberships",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/MembershipPublic" },
-                  "title": "Response List Memberships V1 Memberships  Get"
+                  "items": { "$ref": "#/components/schemas/MembershipPublic" }
                 }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
               }
             }
           }
@@ -1296,7 +441,7 @@
       "get": {
         "tags": ["memberships"],
         "summary": "Get Membership",
-        "description": "Get a specific organization user by ID.",
+        "description": "Get a membership by ID from org.memberships.",
         "operationId": "get_membership_v1_memberships__membership_id__get",
         "security": [{ "HTTPBearer": [] }],
         "parameters": [
@@ -1313,27 +458,22 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Membership found",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/MembershipPublic" }
               }
             }
           },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
+          "404": {
+            "description": "Membership not found"
           }
         }
       },
       "put": {
         "tags": ["memberships"],
         "summary": "Update Membership",
-        "description": "Update a organization user.",
+        "description": "Update a membership in org.memberships.",
         "operationId": "update_membership_v1_memberships__membership_id__put",
         "security": [{ "HTTPBearer": [] }],
         "parameters": [
@@ -1358,27 +498,22 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Membership updated",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/MembershipPublic" }
               }
             }
           },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
+          "404": {
+            "description": "Membership not found"
           }
         }
       },
       "delete": {
         "tags": ["memberships"],
-        "summary": "Delete Membership",
-        "description": "Soft delete a organization user.",
+        "summary": "Soft Delete Membership",
+        "description": "Soft delete a membership (sets deleted_at) in org.memberships.",
         "operationId": "delete_membership_v1_memberships__membership_id__delete",
         "security": [{ "HTTPBearer": [] }],
         "parameters": [
@@ -1395,163 +530,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "description": "Membership soft deleted"
           },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/memberships/{membership_id}/activate": {
-      "post": {
-        "tags": ["memberships"],
-        "summary": "Activate Membership",
-        "description": "Activate a organization user.",
-        "operationId": "activate_membership_v1_memberships__membership_id__activate_post",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "membership_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Membership Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/MembershipPublic" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/memberships/{membership_id}/deactivate": {
-      "post": {
-        "tags": ["memberships"],
-        "summary": "Deactivate Membership",
-        "description": "Deactivate a organization user.",
-        "operationId": "deactivate_membership_v1_memberships__membership_id__deactivate_post",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "membership_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Membership Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/MembershipPublic" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/memberships/organization/{organization_id}/count": {
-      "get": {
-        "tags": ["memberships"],
-        "summary": "Get Membership Count",
-        "description": "Get count of organization users for a specific organization.",
-        "operationId": "get_membership_count_v1_memberships_organization__organization_id__count_get",
-        "security": [{ "HTTPBearer": [] }],
-        "parameters": [
-          {
-            "name": "organization_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Organization Id"
-            }
-          },
-          {
-            "name": "active_only",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": true,
-              "title": "Active Only"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/": {
-      "get": {
-        "summary": "Root",
-        "operationId": "root__get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
-          }
-        }
-      }
-    },
-    "/health": {
-      "get": {
-        "summary": "Health",
-        "operationId": "health_health_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+          "404": {
+            "description": "Membership not found"
           }
         }
       }
@@ -1559,576 +541,80 @@
   },
   "components": {
     "schemas": {
-      "ForgotPasswordRequest": {
+      "UserCreate": {
+        "type": "object",
+        "required": ["full_name", "email", "auth_user_id", "hashed_password"],
         "properties": {
+          "full_name": {
+            "type": "string",
+            "maxLength": 64,
+            "title": "Full Name"
+          },
           "email": {
             "type": "string",
             "maxLength": 320,
-            "minLength": 5,
             "title": "Email"
-          }
-        },
-        "type": "object",
-        "required": ["email"],
-        "title": "ForgotPasswordRequest",
-        "description": "Password reset request."
-      },
-      "GeneratePasswordResponse": {
-        "properties": { "password": { "type": "string", "title": "Password" } },
-        "type": "object",
-        "required": ["password"],
-        "title": "GeneratePasswordResponse",
-        "description": "Schema for generated password response."
-      },
-      "HTTPValidationError": {
-        "properties": {
-          "detail": {
-            "items": { "$ref": "#/components/schemas/ValidationError" },
-            "type": "array",
-            "title": "Detail"
-          }
-        },
-        "type": "object",
-        "title": "HTTPValidationError"
-      },
-      "LoginRequest": {
-        "properties": {
-          "email": { "type": "string", "title": "Email" },
-          "password": { "type": "string", "title": "Password" },
-          "organization_id": {
-            "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
-            ],
-            "title": "Organization Id"
-          }
-        },
-        "type": "object",
-        "required": ["email", "password"],
-        "title": "LoginRequest"
-      },
-      "LoginResponse": {
-        "properties": {
-          "access_token": { "type": "string", "title": "Access Token" },
-          "refresh_token": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
-            "title": "Refresh Token"
           },
-          "token_type": { "type": "string", "title": "Token Type" },
-          "expires_in": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
-            "title": "Expires In"
+          "auth_user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Auth User Id"
           },
-          "user": {
-            "additionalProperties": true,
+          "hashed_password": {
+            "type": "string",
+            "maxLength": 512,
+            "title": "Hashed Password"
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 20,
+            "title": "Phone"
+          },
+          "avatar_url": {
+            "type": "string",
+            "maxLength": 512,
+            "title": "Avatar URL"
+          },
+          "permissions": {
             "type": "object",
-            "title": "User"
-          }
-        },
-        "type": "object",
-        "required": [
-          "access_token",
-          "refresh_token",
-          "token_type",
-          "expires_in",
-          "user"
-        ],
-        "title": "LoginResponse"
-      },
-      "LoginResponseExtended": {
-        "properties": {
-          "access_token": { "type": "string", "title": "Access Token" },
-          "refresh_token": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
-            "title": "Refresh Token"
-          },
-          "token_type": { "type": "string", "title": "Token Type" },
-          "expires_in": {
-            "anyOf": [{ "type": "integer" }, { "type": "null" }],
-            "title": "Expires In"
-          },
-          "user": {
-            "additionalProperties": true,
-            "type": "object",
-            "title": "User"
-          },
-          "organization": {
-            "anyOf": [
-              { "additionalProperties": true, "type": "object" },
-              { "type": "null" }
-            ],
-            "title": "Organization"
-          },
-          "memberships": {
-            "items": { "additionalProperties": true, "type": "object" },
-            "type": "array",
-            "title": "Memberships"
-          }
-        },
-        "type": "object",
-        "required": [
-          "access_token",
-          "refresh_token",
-          "token_type",
-          "expires_in",
-          "user"
-        ],
-        "title": "LoginResponseExtended",
-        "description": "Extended login response with organization data."
-      },
-      "MembershipCreate": {
-        "properties": {
-          "organization_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Organization ID",
-            "description": "The ID of the organization this user belongs to"
-          },
-          "user_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "User ID",
-            "description": "The ID of the user"
-          },
-          "role": {
-            "$ref": "#/components/schemas/MembershipRole",
-            "title": "Role",
-            "description": "The user's role within the organization (0=owner, 1=editor, 2=viewer)",
-            "default": 2
-          },
-          "status": {
-            "$ref": "#/components/schemas/MembershipStatus",
-            "title": "Status",
-            "description": "The user's status within the organization (0=invited, 1=active)",
-            "default": 0
-          },
-          "invited_by": {
-            "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
-            ],
-            "title": "Invited By",
-            "description": "The ID of the user who invited this user to the organization"
-          },
-          "invited_at": {
-            "anyOf": [
-              { "type": "string", "format": "date-time" },
-              { "type": "null" }
-            ],
-            "title": "Invited At",
-            "description": "The date and time when the user was invited"
-          },
-          "accepted_at": {
-            "anyOf": [
-              { "type": "string", "format": "date-time" },
-              { "type": "null" }
-            ],
-            "title": "Accepted At",
-            "description": "The date and time when the user accepted the invitation"
-          }
-        },
-        "type": "object",
-        "required": ["organization_id", "user_id"],
-        "title": "MembershipCreate",
-        "description": "Schema for creating memberships."
-      },
-      "MembershipPublic": {
-        "properties": {
-          "organization_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Organization Id"
-          },
-          "user_id": { "type": "string", "format": "uuid", "title": "User Id" },
-          "role": { "$ref": "#/components/schemas/MembershipRole" },
-          "status": { "$ref": "#/components/schemas/MembershipStatus" },
-          "invited_by": {
-            "anyOf": [
-              { "type": "string", "format": "uuid" },
-              { "type": "null" }
-            ],
-            "title": "Invited By"
-          },
-          "invited_at": {
-            "anyOf": [
-              { "type": "string", "format": "date-time" },
-              { "type": "null" }
-            ],
-            "title": "Invited At"
-          },
-          "accepted_at": {
-            "anyOf": [
-              { "type": "string", "format": "date-time" },
-              { "type": "null" }
-            ],
-            "title": "Accepted At"
-          },
-          "id": { "type": "string", "format": "uuid", "title": "Id" },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          },
-          "updated_at": {
-            "anyOf": [
-              { "type": "string", "format": "date-time" },
-              { "type": "null" }
-            ],
-            "title": "Updated At"
-          },
-          "is_owner": { "type": "boolean", "title": "Is Owner" },
-          "is_active": { "type": "boolean", "title": "Is Active" },
-          "can_write": { "type": "boolean", "title": "Can Write" },
-          "can_manage_users": { "type": "boolean", "title": "Can Manage Users" }
-        },
-        "type": "object",
-        "required": [
-          "organization_id",
-          "user_id",
-          "role",
-          "status",
-          "invited_by",
-          "invited_at",
-          "accepted_at",
-          "id",
-          "created_at",
-          "is_owner",
-          "is_active",
-          "can_write",
-          "can_manage_users"
-        ],
-        "title": "MembershipPublic",
-        "description": "Public membership schema for API responses."
-      },
-      "MembershipRole": {
-        "type": "integer",
-        "enum": [0, 1, 2],
-        "title": "MembershipRole",
-        "description": "Role enum for memberships."
-      },
-      "MembershipStatus": {
-        "type": "integer",
-        "enum": [0, 1],
-        "title": "MembershipStatus",
-        "description": "Status enum for memberships."
-      },
-      "MembershipUpdate": {
-        "properties": {
-          "role": {
-            "anyOf": [
-              { "$ref": "#/components/schemas/MembershipRole" },
-              { "type": "null" }
-            ],
-            "title": "Role",
-            "description": "The user's role within the organization"
-          },
-          "status": {
-            "anyOf": [
-              { "$ref": "#/components/schemas/MembershipStatus" },
-              { "type": "null" }
-            ],
-            "title": "Status",
-            "description": "The user's status within the organization"
-          },
-          "accepted_at": {
-            "anyOf": [
-              { "type": "string", "format": "date-time" },
-              { "type": "null" }
-            ],
-            "title": "Accepted At",
-            "description": "The date and time when the user accepted the invitation"
-          }
-        },
-        "type": "object",
-        "title": "MembershipUpdate",
-        "description": "Schema for updating memberships."
-      },
-      "OrganizationCreate": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "maxLength": 100,
-            "minLength": 1,
-            "title": "Name",
-            "description": "Display name"
-          },
-          "slug": {
-            "type": "string",
-            "maxLength": 50,
-            "minLength": 3,
-            "title": "Slug",
-            "description": "URL-friendly identifier"
-          },
-          "description": {
-            "anyOf": [
-              { "type": "string", "maxLength": 500 },
-              { "type": "null" }
-            ],
-            "title": "Description"
-          },
-          "website": {
-            "anyOf": [
-              { "type": "string", "maxLength": 255 },
-              { "type": "null" }
-            ],
-            "title": "Website"
-          },
-          "logo_url": {
-            "anyOf": [
-              { "type": "string", "maxLength": 512 },
-              { "type": "null" }
-            ],
-            "title": "Logo Url"
-          }
-        },
-        "type": "object",
-        "required": ["name", "slug"],
-        "title": "OrganizationCreate",
-        "description": "Schema for creating organizations."
-      },
-      "OrganizationPublic": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "maxLength": 100,
-            "minLength": 1,
-            "title": "Name",
-            "description": "Display name"
-          },
-          "slug": {
-            "type": "string",
-            "maxLength": 50,
-            "minLength": 3,
-            "title": "Slug",
-            "description": "URL-friendly identifier"
-          },
-          "description": {
-            "anyOf": [
-              { "type": "string", "maxLength": 500 },
-              { "type": "null" }
-            ],
-            "title": "Description"
-          },
-          "website": {
-            "anyOf": [
-              { "type": "string", "maxLength": 255 },
-              { "type": "null" }
-            ],
-            "title": "Website"
-          },
-          "logo_url": {
-            "anyOf": [
-              { "type": "string", "maxLength": 512 },
-              { "type": "null" }
-            ],
-            "title": "Logo Url"
-          },
-          "id": { "type": "string", "format": "uuid", "title": "Id" },
-          "is_active": { "type": "boolean", "title": "Is Active" },
-          "plan_name": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
-            "title": "Plan Name"
-          },
-          "max_members": { "type": "integer", "title": "Max Members" },
-          "member_count": { "type": "integer", "title": "Member Count" },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          },
-          "updated_at": {
-            "anyOf": [
-              { "type": "string", "format": "date-time" },
-              { "type": "null" }
-            ],
-            "title": "Updated At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "name",
-          "slug",
-          "id",
-          "is_active",
-          "max_members",
-          "member_count",
-          "created_at"
-        ],
-        "title": "OrganizationPublic",
-        "description": "Public organization schema for API responses."
-      },
-      "OrganizationUpdate": {
-        "properties": {
-          "name": {
-            "anyOf": [
-              { "type": "string", "maxLength": 100, "minLength": 1 },
-              { "type": "null" }
-            ],
-            "title": "Name"
-          },
-          "description": {
-            "anyOf": [
-              { "type": "string", "maxLength": 500 },
-              { "type": "null" }
-            ],
-            "title": "Description"
-          },
-          "website": {
-            "anyOf": [
-              { "type": "string", "maxLength": 255 },
-              { "type": "null" }
-            ],
-            "title": "Website"
-          },
-          "logo_url": {
-            "anyOf": [
-              { "type": "string", "maxLength": 512 },
-              { "type": "null" }
-            ],
-            "title": "Logo Url"
+            "title": "Permissions"
           },
           "is_active": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
-            "title": "Is Active"
-          }
-        },
-        "type": "object",
-        "title": "OrganizationUpdate",
-        "description": "Schema for updating organizations."
-      },
-      "PasswordChangeRequest": {
-        "properties": {
-          "current_password": { "type": "string", "title": "Current Password" },
-          "new_password": { "type": "string", "title": "New Password" }
-        },
-        "type": "object",
-        "required": ["current_password", "new_password"],
-        "title": "PasswordChangeRequest",
-        "description": "Schema for password change requests."
-      },
-      "ResetPasswordRequest": {
-        "properties": {
-          "password": {
-            "type": "string",
-            "maxLength": 128,
-            "minLength": 8,
-            "title": "Password"
-          },
-          "token": { "type": "string", "title": "Token" }
-        },
-        "type": "object",
-        "required": ["password", "token"],
-        "title": "ResetPasswordRequest",
-        "description": "Reset password request."
-      },
-      "SignupRequest": {
-        "properties": {
-          "first_name": {
-            "type": "string",
-            "maxLength": 64,
-            "minLength": 1,
-            "title": "First Name"
-          },
-          "last_name": {
-            "type": "string",
-            "maxLength": 64,
-            "minLength": 1,
-            "title": "Last Name"
-          },
-          "organization_name": {
-            "anyOf": [
-              { "type": "string", "maxLength": 100 },
-              { "type": "null" }
-            ],
-            "title": "Organization Name"
-          },
-          "email": {
-            "type": "string",
-            "maxLength": 320,
-            "minLength": 5,
-            "title": "Email"
-          },
-          "password": {
-            "type": "string",
-            "maxLength": 128,
-            "minLength": 8,
-            "title": "Password"
-          }
-        },
-        "type": "object",
-        "required": ["first_name", "last_name", "email", "password"],
-        "title": "SignupRequest",
-        "description": "User signup request."
-      },
-      "SignupResponse": {
-        "properties": {
-          "message": { "type": "string", "title": "Message" },
-          "user_id": { "type": "string", "title": "User Id" },
-          "organization_id": { "type": "string", "title": "Organization Id" },
-          "requires_email_verification": {
             "type": "boolean",
-            "title": "Requires Email Verification",
-            "default": true
+            "default": true,
+            "title": "Is Active"
+          },
+          "is_superuser": {
+            "type": "boolean",
+            "default": false,
+            "title": "Is Superuser"
           }
         },
-        "type": "object",
-        "required": ["message", "user_id", "organization_id"],
-        "title": "SignupResponse",
-        "description": "Signup response."
-      },
-      "UserCreate": {
-        "properties": {
-          "email": {
-            "type": "string",
-            "maxLength": 320,
-            "minLength": 5,
-            "title": "Email",
-            "description": "The user's email address is also used as the username for authentication"
-          },
-          "first_name": {
-            "type": "string",
-            "maxLength": 64,
-            "minLength": 1,
-            "title": "First Name",
-            "description": "The user's first name"
-          },
-          "last_name": {
-            "type": "string",
-            "maxLength": 64,
-            "minLength": 1,
-            "title": "Last Name",
-            "description": "The user's last name"
-          }
-        },
-        "type": "object",
-        "required": ["email", "first_name", "last_name"],
         "title": "UserCreate",
-        "description": "Schema for creating users."
+        "description": "Schema for creating users in usr.users."
       },
       "UserPublic": {
+        "type": "object",
+        "required": [
+          "id",
+          "full_name",
+          "email",
+          "is_active",
+          "is_superuser",
+          "created_at"
+        ],
         "properties": {
-          "email": {
-            "type": "string",
-            "maxLength": 320,
-            "minLength": 5,
-            "title": "Email",
-            "description": "The user's email address is also used as the username for authentication"
-          },
-          "first_name": {
-            "type": "string",
-            "maxLength": 64,
-            "minLength": 1,
-            "title": "First Name",
-            "description": "The user's first name"
-          },
-          "last_name": {
-            "type": "string",
-            "maxLength": 64,
-            "minLength": 1,
-            "title": "Last Name",
-            "description": "The user's last name"
-          },
           "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "full_name": { "type": "string", "title": "Full Name" },
+          "email": { "type": "string", "title": "Email" },
+          "phone": { "type": "string", "title": "Phone" },
+          "avatar_url": { "type": "string", "title": "Avatar URL" },
+          "auth_user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Auth User Id"
+          },
+          "permissions": { "type": "object", "title": "Permissions" },
           "is_active": { "type": "boolean", "title": "Is Active" },
           "is_superuser": { "type": "boolean", "title": "Is Superuser" },
           "created_at": {
@@ -2137,88 +623,297 @@
             "title": "Created At"
           },
           "updated_at": {
-            "anyOf": [
-              { "type": "string", "format": "date-time" },
-              { "type": "null" }
-            ],
+            "type": "string",
+            "format": "date-time",
             "title": "Updated At"
           },
-          "full_name": {
+          "deleted_at": {
             "type": "string",
-            "title": "Full Name",
-            "description": "The user's full name, computed from first_name and last_name.",
-            "readOnly": true
+            "format": "date-time",
+            "title": "Deleted At"
           }
         },
-        "type": "object",
-        "required": [
-          "email",
-          "first_name",
-          "last_name",
-          "id",
-          "is_active",
-          "is_superuser",
-          "created_at",
-          "full_name"
-        ],
         "title": "UserPublic",
-        "description": "Public user schema for API responses."
+        "description": "Public user schema for API responses from usr.users."
       },
       "UserUpdate": {
+        "type": "object",
         "properties": {
+          "full_name": {
+            "type": "string",
+            "maxLength": 64,
+            "title": "Full Name"
+          },
           "email": {
-            "anyOf": [
-              { "type": "string", "maxLength": 320, "minLength": 5 },
-              { "type": "null" }
-            ],
+            "type": "string",
+            "maxLength": 320,
             "title": "Email"
           },
-          "password": {
-            "anyOf": [
-              { "type": "string", "maxLength": 128, "minLength": 8 },
-              { "type": "null" }
-            ],
-            "title": "Password"
+          "phone": {
+            "type": "string",
+            "maxLength": 20,
+            "title": "Phone"
           },
-          "first_name": {
-            "anyOf": [
-              { "type": "string", "maxLength": 64, "minLength": 1 },
-              { "type": "null" }
-            ],
-            "title": "First Name"
+          "avatar_url": {
+            "type": "string",
+            "maxLength": 512,
+            "title": "Avatar URL"
           },
-          "last_name": {
-            "anyOf": [
-              { "type": "string", "maxLength": 64, "minLength": 1 },
-              { "type": "null" }
-            ],
-            "title": "Last Name"
+          "permissions": {
+            "type": "object",
+            "title": "Permissions"
           },
           "is_active": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "type": "boolean",
             "title": "Is Active"
           },
           "is_superuser": {
-            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "type": "boolean",
             "title": "Is Superuser"
           }
         },
-        "type": "object",
         "title": "UserUpdate",
-        "description": "Schema for updating users."
+        "description": "Schema for updating users in usr.users."
+      },
+      "OrganizationCreate": {
+        "type": "object",
+        "required": ["name", "slug"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Name"
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "Slug"
+          },
+          "avatar_url": {
+            "type": "string",
+            "maxLength": 512,
+            "title": "Avatar URL"
+          },
+          "is_active": {
+            "type": "boolean",
+            "default": true,
+            "title": "Is Active"
+          },
+          "owner_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Owner Id"
+          }
+        },
+        "title": "OrganizationCreate",
+        "description": "Schema for creating organizations in org.organizations."
+      },
+      "OrganizationPublic": {
+        "type": "object",
+        "required": ["id", "name", "slug", "is_active", "created_at"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "name": { "type": "string", "title": "Name" },
+          "slug": { "type": "string", "title": "Slug" },
+          "avatar_url": { "type": "string", "title": "Avatar URL" },
+          "is_active": { "type": "boolean", "title": "Is Active" },
+          "owner_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Owner Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Deleted At"
+          }
+        },
+        "title": "OrganizationPublic",
+        "description": "Public organization schema for API responses from org.organizations."
+      },
+      "OrganizationUpdate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Name"
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "Slug"
+          },
+          "avatar_url": {
+            "type": "string",
+            "maxLength": 512,
+            "title": "Avatar URL"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "owner_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Owner Id"
+          }
+        },
+        "title": "OrganizationUpdate",
+        "description": "Schema for updating organizations in org.organizations."
+      },
+      "MembershipCreate": {
+        "type": "object",
+        "required": ["organization_id", "user_id"],
+        "properties": {
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Organization Id"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "role": {
+            "type": "integer",
+            "enum": [0, 1, 2],
+            "default": 2,
+            "title": "Role"
+          },
+          "status": {
+            "type": "integer",
+            "enum": [0, 1],
+            "default": 0,
+            "title": "Status"
+          },
+          "invited_by": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Invited By"
+          },
+          "invited_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Invited At"
+          },
+          "accepted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Accepted At"
+          }
+        },
+        "title": "MembershipCreate",
+        "description": "Schema for creating memberships in org.memberships."
+      },
+      "MembershipPublic": {
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "user_id",
+          "role",
+          "status",
+          "created_at"
+        ],
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Organization Id"
+          },
+          "user_id": { "type": "string", "format": "uuid", "title": "User Id" },
+          "role": { "type": "integer", "enum": [0, 1, 2], "title": "Role" },
+          "status": { "type": "integer", "enum": [0, 1], "title": "Status" },
+          "invited_by": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Invited By"
+          },
+          "invited_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Invited At"
+          },
+          "accepted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Accepted At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Deleted At"
+          }
+        },
+        "title": "MembershipPublic",
+        "description": "Public membership schema for API responses from org.memberships."
+      },
+      "MembershipUpdate": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "integer",
+            "enum": [0, 1, 2],
+            "title": "Role"
+          },
+          "status": {
+            "type": "integer",
+            "enum": [0, 1],
+            "title": "Status"
+          },
+          "accepted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Accepted At"
+          }
+        },
+        "title": "MembershipUpdate",
+        "description": "Schema for updating memberships in org.memberships."
+      },
+      "HTTPValidationError": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ValidationError" }
+          }
+        },
+        "title": "HTTPValidationError"
       },
       "ValidationError": {
-        "properties": {
-          "loc": {
-            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
-            "type": "array",
-            "title": "Location"
-          },
-          "msg": { "type": "string", "title": "Message" },
-          "type": { "type": "string", "title": "Error Type" }
-        },
         "type": "object",
         "required": ["loc", "msg", "type"],
+        "properties": {
+          "loc": {
+            "type": "array",
+            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] }
+          },
+          "msg": { "type": "string" },
+          "type": { "type": "string" }
+        },
         "title": "ValidationError"
       }
     },

@@ -16,9 +16,13 @@ class OrganizationBase(SQLModel):
         regex=r"^[a-z0-9-]+$",
         description="URL-friendly identifier",
     )
-    description: str | None = Field(default=None, max_length=500)
-    website: str | None = Field(default=None, max_length=255)
-    logo_url: str | None = Field(default=None, max_length=512)
+    avatar_url: str | None = Field(default=None, max_length=512)
+    is_active: bool = Field(
+        default=True, description="Whether the organization is active"
+    )
+    owner_id: UUID | None = Field(
+        default=None, description="Link to owner usr.users record"
+    )
 
 
 class OrganizationCreate(OrganizationBase):
@@ -31,19 +35,21 @@ class OrganizationUpdate(SQLModel):
     """Schema for updating organizations."""
 
     name: str | None = Field(default=None, min_length=1, max_length=100)
-    description: str | None = Field(default=None, max_length=500)
-    website: str | None = Field(default=None, max_length=255)
-    logo_url: str | None = Field(default=None, max_length=512)
+    slug: str | None = Field(
+        default=None,
+        min_length=3,
+        max_length=50,
+        regex=r"^[a-z0-9-]+$",
+    )
+    avatar_url: str | None = Field(default=None, max_length=512)
     is_active: bool | None = None
+    owner_id: UUID | None = None
 
 
 class OrganizationPublic(OrganizationBase):
     """Public organization schema for API responses."""
 
     id: UUID
-    is_active: bool
-    plan_name: str | None = None
-    max_members: int
-    member_count: int
     created_at: datetime
     updated_at: datetime | None = None
+    deleted_at: datetime | None = None

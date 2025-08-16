@@ -5,9 +5,9 @@ requires-python = ">=3.11"
 [manifest]
 members = [
     "api",
+    "auth-supabase",
     "cli",
     "core",
-    "supabase-auth-provider",
 ]
 
 [[package]]
@@ -52,12 +52,12 @@ name = "api"
 version = "0.3.1"
 source = { virtual = "apps/api" }
 dependencies = [
+    { name = "auth-supabase" },
     { name = "axiom-py" },
     { name = "core" },
     { name = "fastapi", extra = ["standard"] },
     { name = "gunicorn" },
     { name = "pydantic-settings" },
-    { name = "supabase-auth-provider" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
@@ -71,6 +71,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "auth-supabase", editable = "auth-providers/auth-supabase" },
     { name = "axiom-py", specifier = ">=0.9.0" },
     { name = "core", editable = "libs/core" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.116.1" },
@@ -80,7 +81,6 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.2.1" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4.2" },
-    { name = "supabase-auth-provider", editable = "libs/supabase-auth-provider" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.35.0" },
 ]
 provides-extras = ["dev"]
@@ -116,6 +116,38 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/e7/31/1513d5a6412b98052c3ed9158d783b1e09d0910f51fbe0e05f56cc370bc4/asyncpg-0.30.0-cp313-cp313-win32.whl", hash = "sha256:ae374585f51c2b444510cdf3595b97ece4f233fde739aa14b50e0d64e8a7a590", size = 560404, upload-time = "2024-10-20T00:30:06.537Z" },
     { url = "https://files.pythonhosted.org/packages/c8/a4/cec76b3389c4c5ff66301cd100fe88c318563ec8a520e0b2e792b5b84972/asyncpg-0.30.0-cp313-cp313-win_amd64.whl", hash = "sha256:f59b430b8e27557c3fb9869222559f7417ced18688375825f8f12302c34e915e", size = 621623, upload-time = "2024-10-20T00:30:09.024Z" },
 ]
+
+[[package]]
+name = "auth-supabase"
+version = "0.1.0"
+source = { editable = "auth-providers/auth-supabase" }
+dependencies = [
+    { name = "axiom-py" },
+    { name = "core" },
+    { name = "cryptography" },
+    { name = "pyjwt" },
+    { name = "supabase" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "mypy" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "axiom-py", specifier = ">=0.9.0" },
+    { name = "core", editable = "libs/core" },
+    { name = "cryptography", specifier = ">=41.0.0" },
+    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10.0" },
+    { name = "pyjwt", specifier = ">=2.8.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.2.1" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4.2" },
+    { name = "supabase", specifier = ">=2.18.1" },
+]
+provides-extras = ["dev"]
 
 [[package]]
 name = "axiom-py"
@@ -1565,38 +1597,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/e9/e9/3d6f696a604752803
 wheels = [
     { url = "https://files.pythonhosted.org/packages/96/a6/4102d5fa08a8521d9432b4d10bb58fedbd1f92b211d1b45d5394f5cb9021/supabase_auth-2.12.3-py3-none-any.whl", hash = "sha256:15c7580e1313d30ffddeb3221cb3cdb87c2a80fd220bf85d67db19cd1668435b", size = 44417, upload-time = "2025-07-04T06:49:21.351Z" },
 ]
-
-[[package]]
-name = "supabase-auth-provider"
-version = "0.3.1"
-source = { editable = "libs/supabase-auth-provider" }
-dependencies = [
-    { name = "axiom-py" },
-    { name = "core" },
-    { name = "cryptography" },
-    { name = "pyjwt" },
-    { name = "supabase" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "mypy" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "axiom-py", specifier = ">=0.9.0" },
-    { name = "core", editable = "libs/core" },
-    { name = "cryptography", specifier = ">=41.0.0" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10.0" },
-    { name = "pyjwt", specifier = ">=2.8.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.2.1" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4.2" },
-    { name = "supabase", specifier = ">=2.18.1" },
-]
-provides-extras = ["dev"]
 
 [[package]]
 name = "supabase-functions"

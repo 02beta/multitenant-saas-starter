@@ -13,6 +13,8 @@ MONOREPO_ROOT = API_DIR.parent.parent
 
 # Add monorepo root to Python path so imports work correctly
 sys.path.insert(0, str(MONOREPO_ROOT))
+# Ensure src layout package is importable as top-level `api`
+sys.path.insert(0, str(API_DIR / "src"))
 
 # Change to monorepo root for consistent imports
 os.chdir(MONOREPO_ROOT)
@@ -25,8 +27,9 @@ def main():
     # Directories to watch for changes
     watch_dirs = [
         "apps/api",
+        "apps/api/src",
         "libs/core",
-        "libs/supabase-auth-provider",
+        "auth-providers/auth-supabase",
     ]
 
     # Convert to absolute paths
@@ -41,7 +44,7 @@ def main():
 
     # Run uvicorn with the correct module path
     uvicorn.run(
-        "apps.api.main:app",  # Full module path from monorepo root
+        "api.main:app",  # src-layout package entrypoint
         host="0.0.0.0",
         port=int(os.getenv("PORT", "8080")),
         reload=True,

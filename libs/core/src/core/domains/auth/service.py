@@ -175,6 +175,8 @@ class AuthService:
         if existing_user:
             # Update provider metadata
             existing_user.provider_metadata = auth_user.provider_metadata
+            existing_user.updated_at = datetime.now(timezone.utc)
+            existing_user.updated_by = existing_user.id
             self.session.commit()
             return existing_user
 
@@ -201,6 +203,12 @@ class AuthService:
         )
 
         self.session.add(new_user)
+        self.session.flush()  # Get ID before setting audit fields
+
+        # Set audit fields to self-reference
+        new_user.created_by = new_user.id
+        new_user.updated_by = new_user.id
+
         self.session.commit()
         self.session.refresh(new_user)
 
@@ -258,7 +266,6 @@ class AuthService:
     async def create_user_with_organization(
         self,
         email: str,
-        phone: str,
         password: str,
         first_name: str,
         last_name: str,
@@ -266,17 +273,12 @@ class AuthService:
     ) -> Tuple[AuthUser, UUID, UUID]:
         """Create user with organization and owner membership."""
         # Create user in provider
-        user_data = {
-            "first_name": first_name,
-            "last_name": last_name,
-            "email": email,
-            "phone": phone,
-            "organization_name": organization_name,
-        }
+        user_data = {"first_name": first_name, "last_name": last_name}
         auth_user = await self.provider.create_user(email, password, user_data)
 
         # Create local user with provider fields
         from slugify import slugify
+
         from core.domains.memberships import (
             Membership,
             MembershipRole,
@@ -296,6 +298,11 @@ class AuthService:
             provider_metadata=auth_user.provider_metadata,
         )
         self.session.add(local_user)
+        self.session.flush()  # Get ID before setting audit fields
+
+        # Set audit fields to self-reference
+        local_user.created_by = local_user.id
+        local_user.updated_by = local_user.id
         self.session.commit()
         self.session.refresh(local_user)
 
@@ -318,6 +325,8 @@ class AuthService:
             name=org_name,
             slug=org_slug,
             description=f"Organization for {first_name} {last_name}",
+            created_by=local_user.id,
+            updated_by=local_user.id,
         )
         self.session.add(organization)
         self.session.commit()
@@ -330,6 +339,8 @@ class AuthService:
             role=MembershipRole.OWNER,
             status=MembershipStatus.ACTIVE,
             accepted_at=datetime.now(timezone.utc),
+            created_by=local_user.id,
+            updated_by=local_user.id,
         )
         self.session.add(membership)
         self.session.commit()
@@ -361,9 +372,9 @@ class AuthService:
         self, user_id: UUID, organization_id: Optional[UUID] = None
     ) -> Dict:
         """Get user with full membership context."""
-        from core.domains.users import User
         from core.domains.memberships import Membership, MembershipStatus
         from core.domains.organizations import Organization
+        from core.domains.users import User
 
         # Get user
         stmt = select(User).where(User.id == user_id)

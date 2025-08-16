@@ -1,0 +1,14 @@
+{
+  "name": "@configs/typescript",
+  "version": "0.3.1",
+  "exports": {
+    "./base": "./base.json",
+    "./nextjs": "./nextjs.json",
+    "./react-library": "./react-library.json"
+  },
+  "files": [
+    "base.json",
+    "nextjs.json",
+    "react-library.json"
+  ]
+}

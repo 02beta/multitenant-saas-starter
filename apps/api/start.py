@@ -28,7 +28,7 @@ class GunicornConfig:
     bind = "0.0.0.0:8080"
 
     # Application entrypoint
-    app_module = "main:app"
+    app_module = "api.main:app"
 
     @classmethod
     def to_cmd(cls):
